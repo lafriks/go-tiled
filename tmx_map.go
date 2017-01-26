@@ -117,6 +117,7 @@ func (m *Map) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type Alias Map
 
 	item := Alias{
+		baseDir:     m.baseDir,
 		RenderOrder: "right-down",
 	}
 

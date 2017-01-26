@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/lafriks/go-tiled"
@@ -20,22 +20,25 @@ func main() {
 
 	m, err := tiled.LoadFromFile(filename)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 
 	rend, err := render.NewRenderer(m)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 
-	rend.RenderVisibleLayers()
+	if err = rend.RenderVisibleLayers(); err != nil {
+		fmt.Println(err)
+		return
+	}
 	//rend.RenderLayer(1)
 
 	w, err := os.Create(img)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	defer w.Close()

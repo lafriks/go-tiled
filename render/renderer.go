@@ -168,14 +168,18 @@ func (r *Renderer) RenderLayer(index int) error {
 	return nil
 }
 
-func (r *Renderer) RenderVisibleLayers() {
+func (r *Renderer) RenderVisibleLayers() error {
 	for i := range r.m.Layers {
 		if !r.m.Layers[i].Visible {
 			continue
 		}
 
-		r.RenderLayer(i)
+		if err := r.RenderLayer(i); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
 func (r *Renderer) SaveAsPng(w io.Writer) error {
