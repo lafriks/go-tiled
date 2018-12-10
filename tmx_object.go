@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017 Lauris Bukšis-Haberkorns <lauris@nix.lv>
+Copyright (c) 2017 Lauris Bukšis-Haberkorns <lauris@nix.lv> and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -65,16 +65,16 @@ type Object struct {
 	Name string `xml:"name,attr"`
 	// The type of the object. An arbitrary string.
 	Type string `xml:"type,attr"`
-	// The x coordinate of the object in pixels.
-	X int `xml:"x,attr"`
-	// The y coordinate of the object in pixels.
-	Y int `xml:"y,attr"`
-	// The width of the object in pixels (defaults to 0).
-	Width int `xml:"width,attr"`
-	// The height of the object in pixels (defaults to 0).
-	Height int `xml:"height,attr"`
+	// The x coordinate of the object.
+	X float64 `xml:"x,attr"`
+	// The y coordinate of the object.
+	Y float64 `xml:"y,attr"`
+	// The width of the object (defaults to 0).
+	Width float64 `xml:"width,attr"`
+	// The height of the object (defaults to 0).
+	Height float64 `xml:"height,attr"`
 	// The rotation of the object in degrees clockwise (defaults to 0). (since 0.10)
-	Rotation int `xml:"rotation,attr"`
+	Rotation float64 `xml:"rotation,attr"`
 	// An reference to a tile (optional).
 	GID uint32 `xml:"gid,attr"`
 	// Whether the object is shown (1) or hidden (0). Defaults to 1. (since 0.9)
