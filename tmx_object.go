@@ -87,6 +87,8 @@ type Object struct {
 	Polygons []*Polygon `xml:"polygon"`
 	// Poly lines
 	PolyLines []*PolyLine `xml:"polyline"`
+	// Text
+	Text Text `xml:"text"`
 }
 
 // Ellipse is used to mark an object as an ellipse.
@@ -127,7 +129,6 @@ func (m *Points) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if item == "" {
 		return nil
 	}
-
 	ps := strings.Split(item, " ")
 
 	points := make(Points, len(ps))
@@ -152,4 +153,19 @@ func (m *Points) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	*m = (Points)(points)
 	return nil
+}
+
+// Text contains a text and attributes such as bold, color, etc.
+type Text struct {
+	Text       string `xml:",chardata"`
+	Fontfamily string `xml:"fontfamily,attr"`
+	Pixelsize  int    `xml:"pixelsize,attr"`
+	Wrap       bool   `xml:"wrap,attr"`
+	Color      string `xml:"color,attr"`
+	Bold       bool   `xml:"bold,attr"`
+	Italic     bool   `xml:"italic,attr"`
+	Underline  bool   `xml:"underline,attr"`
+	Strikeout  bool   `xml:"strikeout,attr"`
+	Halign     string `xml:"halign,attr"`
+	Valign     string `xml:"valign,attr"`
 }
