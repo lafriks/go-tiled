@@ -129,6 +129,7 @@ func (m *Points) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if item == "" {
 		return nil
 	}
+
 	ps := strings.Split(item, " ")
 
 	points := make(Points, len(ps))
