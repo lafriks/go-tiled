@@ -1,0 +1,21 @@
+kind: pipeline
+name: testing
+
+clone:
+  depth: 50
+
+steps:
+  - name: lint
+    image: golang:1.11
+    pull: true
+    commands:
+      - go tool vet -all -shadowstrict .
+      - get -u github.com/mgechev/revive
+      - revive -config .revive.toml -exclude=./vendor/... ./...
+
+  - name: test
+    image: golang:1.11
+    pull: true
+    commands:
+      - go test -v .
+      - go vet
