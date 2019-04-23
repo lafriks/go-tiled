@@ -10,7 +10,7 @@ steps:
     pull: true
     commands:
       - go tool vet -all -shadowstrict .
-      - get -u github.com/mgechev/revive
+      - go get -u github.com/mgechev/revive
       - revive -config .revive.toml -exclude=./vendor/... ./...
 
   - name: test

@@ -1,4 +1,8 @@
 # go-tiled
+
+[![GoDoc](https://godoc.org/github.com/lafriks/go-tiled?status.svg)](https://godoc.org/github.com/lafriks/go-tiled)
+[![Build Status](https://cloud.drone.io/api/badges/lafriks/go-tiled/status.svg)](https://cloud.drone.io/lafriks/go-tiled)
+
 Go library to parse Tiled map editor file format (TMX) and render map to image
 
 Curently supports only orthogonal rendering
