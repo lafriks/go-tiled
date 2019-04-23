@@ -12,7 +12,7 @@
         "cwd": "${workspaceRoot}",
         "program": "${workspaceRoot}/example/tmx2img/main.go",
         "env": {},
-        "args": ["map.tmx"],
+        "args": ["assets/test.tmx"],
         "showLog": true
       }
     ]
