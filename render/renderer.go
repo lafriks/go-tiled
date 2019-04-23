@@ -40,10 +40,13 @@ import (
 )
 
 var (
+	// ErrUnsupportedOrientation represents an error in the unsupported orientation for rendering.
 	ErrUnsupportedOrientation = errors.New("tiled/render: unsupported orientation")
+	// ErrUnsupportedRenderOrder represents an error in the unsupported order for rendering.
 	ErrUnsupportedRenderOrder = errors.New("tiled/render: unsupported render order")
 )
 
+// RendererEngine is the interface implemented by objects that provide rendering engine for Tiled maps.
 type RendererEngine interface {
 	Init(m *tiled.Map)
 	GetFinalImageSize() image.Rectangle
@@ -51,6 +54,7 @@ type RendererEngine interface {
 	GetTilePosition(x, y int) image.Rectangle
 }
 
+// Renderer represents an rendering engine.
 type Renderer struct {
 	m         *tiled.Map
 	img       *image.NRGBA
@@ -62,6 +66,7 @@ type subImager interface {
 	SubImage(r image.Rectangle) image.Image
 }
 
+// NewRenderer creates new rendering engine instance.
 func NewRenderer(m *tiled.Map) (*Renderer, error) {
 	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image)}
 	if r.m.Orientation == "orthogonal" {
@@ -123,6 +128,7 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 	return timg, nil
 }
 
+// RenderLayer renders single map layer.
 func (r *Renderer) RenderLayer(index int) error {
 	layer := r.m.Layers[index]
 
@@ -168,6 +174,7 @@ func (r *Renderer) RenderLayer(index int) error {
 	return nil
 }
 
+// RenderVisibleLayers renders all visible map layers.
 func (r *Renderer) RenderVisibleLayers() error {
 	for i := range r.m.Layers {
 		if !r.m.Layers[i].Visible {
@@ -182,14 +189,17 @@ func (r *Renderer) RenderVisibleLayers() error {
 	return nil
 }
 
+// SaveAsPng writes rendered layers as PNG image to provided writer.
 func (r *Renderer) SaveAsPng(w io.Writer) error {
 	return png.Encode(w, r.img)
 }
 
+// SaveAsJpeg writes rendered layers as JPEG image to provided writer.
 func (r *Renderer) SaveAsJpeg(w io.Writer, options *jpeg.Options) error {
 	return jpeg.Encode(w, r.img, options)
 }
 
+// SaveAsGif writes rendered layers as GIF image to provided writer.
 func (r *Renderer) SaveAsGif(w io.Writer, options *gif.Options) error {
 	return gif.Encode(w, r.img, options)
 }

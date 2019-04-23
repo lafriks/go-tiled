@@ -29,18 +29,22 @@ import (
 	tiled "github.com/lafriks/go-tiled"
 )
 
+// OrthogonalRendererEngine represents orthogonal rendering engine.
 type OrthogonalRendererEngine struct {
 	m *tiled.Map
 }
 
+// Init initializes rendering engine with provided map options.
 func (e *OrthogonalRendererEngine) Init(m *tiled.Map) {
 	e.m = m
 }
 
+// GetFinalImageSize returns final image size based on map data.
 func (e *OrthogonalRendererEngine) GetFinalImageSize() image.Rectangle {
 	return image.Rect(0, 0, e.m.Width*e.m.TileWidth, e.m.Height*e.m.TileHeight)
 }
 
+// RotateTileImage rotates provided tile layer.
 func (e *OrthogonalRendererEngine) RotateTileImage(tile *tiled.LayerTile, img image.Image) image.Image {
 	timg := img
 	if tile.HorizontalFlip {
@@ -56,6 +60,7 @@ func (e *OrthogonalRendererEngine) RotateTileImage(tile *tiled.LayerTile, img im
 	return timg
 }
 
+// GetTilePosition returns tile position in image.
 func (e *OrthogonalRendererEngine) GetTilePosition(x, y int) image.Rectangle {
 	return image.Rect(x*e.m.TileWidth,
 		y*e.m.TileHeight,
