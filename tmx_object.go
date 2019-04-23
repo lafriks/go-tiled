@@ -117,20 +117,15 @@ type Point struct {
 }
 
 // Points is array of points
-type Points []Point
+type Points []*Point
 
-// UnmarshalXML decodes a single XML element beginning with the given start element.
-func (m *Points) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var item string
-	if err := d.DecodeElement(&item, &start); err != nil {
-		return err
-	}
-
-	if item == "" {
+// UnmarshalXMLAttr decodes a single XML element beginning with the given start element.
+func (m *Points) UnmarshalXMLAttr(attr xml.Attr) error {
+	if attr.Value == "" {
 		return nil
 	}
 
-	ps := strings.Split(item, " ")
+	ps := strings.Split(attr.Value, " ")
 
 	points := make(Points, len(ps))
 
@@ -148,11 +143,13 @@ func (m *Points) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		if y, err = strconv.Atoi(c[1]); err != nil {
 			return err
 		}
-		(*m)[i].X = x
-		(*m)[i].Y = y
+		points[i] = &Point{
+			X: x,
+			Y: y,
+		}
 	}
 
-	*m = (Points)(points)
+	*m = points
 	return nil
 }
 
