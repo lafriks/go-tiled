@@ -9,6 +9,8 @@ type Tileset struct {
 	// attribute missing and this source attribute is also not there. These two attributes are kept in the
 	// TMX map, since they are map specific.)
 	Source string `xml:"source,attr"`
+	// External TSX source loaded.
+	SourceLoaded bool `xml:"-"`
 	// The name of this tileset.
 	Name string `xml:"name,attr"`
 	// The (maximum) width of the tiles in this tileset.
