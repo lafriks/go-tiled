@@ -1,5 +1,10 @@
 package tiled
 
+import (
+	"encoding/xml"
+	"os"
+)
+
 // Tileset is collection of tiles
 type Tileset struct {
 	// The first global tile ID of this tileset (this global ID maps to the first tile in this tileset).
@@ -83,4 +88,30 @@ type AnimationFrame struct {
 	TileID uint32 `xml:"tileid,attr"`
 	// How long (in milliseconds) this frame should be displayed before advancing to the next frame.
 	Duration uint32 `xml:"duration,attr"`
+}
+
+func (ts *Tileset) initTileset(m *Map) error {
+	if ts.SourceLoaded || len(ts.Source) == 0 {
+		return nil
+	}
+	f, err := os.Open(m.GetFileFullPath(ts.Source))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	d := xml.NewDecoder(f)
+
+	tse := &Tileset{}
+	if err := d.Decode(tse); err != nil {
+		return err
+	}
+
+	tse.Source = ts.Source
+	tse.SourceLoaded = true
+	tse.FirstGID = ts.FirstGID
+
+	*ts = *tse
+
+	return nil
 }

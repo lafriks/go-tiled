@@ -25,7 +25,6 @@ package tiled
 import (
 	"encoding/xml"
 	"errors"
-	"os"
 	"path/filepath"
 )
 
@@ -84,30 +83,6 @@ type Map struct {
 	ObjectGroups []*ObjectGroup `xml:"objectgroup"`
 }
 
-func (m *Map) initTileset(ts *Tileset) (*Tileset, error) {
-	if ts.SourceLoaded || len(ts.Source) == 0 {
-		return ts, nil
-	}
-	f, err := os.Open(m.GetFileFullPath(ts.Source))
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	d := xml.NewDecoder(f)
-
-	tse := &Tileset{}
-	if err := d.Decode(tse); err != nil {
-		return nil, err
-	}
-
-	tse.Source = ts.Source
-	tse.SourceLoaded = true
-	tse.FirstGID = ts.FirstGID
-
-	return tse, nil
-}
-
 // TileGIDToTile is used to find tile data by GID
 func (m *Map) TileGIDToTile(gid uint32) (*LayerTile, error) {
 	if gid == 0 {
@@ -118,10 +93,7 @@ func (m *Map) TileGIDToTile(gid uint32) (*LayerTile, error) {
 
 	for i := len(m.Tilesets) - 1; i >= 0; i-- {
 		if m.Tilesets[i].FirstGID <= gidBare {
-			ts, err := m.initTileset(m.Tilesets[i])
-			if err != nil {
-				return nil, err
-			}
+			ts := m.Tilesets[i]
 			return &LayerTile{
 				ID:             gidBare - ts.FirstGID,
 				Tileset:        ts,
@@ -163,5 +135,12 @@ func (m *Map) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	*m = (Map)(item)
+
+	for _, tileset := range m.Tilesets {
+		err := tileset.initTileset(m)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
