@@ -126,21 +126,23 @@ func (m *Map) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return err
 	}
 
+	decodedMap := (*Map)(&item)
+	for _, tileset := range decodedMap.Tilesets {
+		err := tileset.initTileset(decodedMap)
+		if err != nil {
+			return err
+		}
+	}
+
 	// Decode layers data
 	for i := 0; i < len(item.Layers); i++ {
 		l := item.Layers[i]
-		if err := l.DecodeLayer((*Map)(&item)); err != nil {
+		if err := l.DecodeLayer(decodedMap); err != nil {
 			return err
 		}
 	}
 
 	*m = (Map)(item)
 
-	for _, tileset := range m.Tilesets {
-		err := tileset.initTileset(m)
-		if err != nil {
-			return err
-		}
-	}
 	return nil
 }
