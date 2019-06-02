@@ -83,9 +83,27 @@ func NewRenderer(m *tiled.Map) (*Renderer, error) {
 
 func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 	timg, ok := r.tileCache[tile.Tileset.FirstGID+tile.ID]
+	if ok {
+		return r.engine.RotateTileImage(tile, timg), nil
+	}
 	// Precache all tiles in tileset
-	if !ok {
-		sf, err := os.Open(r.m.GetFileFullPath(tile.Tileset.Image.Source))
+	if tile.Tileset.Image == nil {
+		for i := 0; i < len(tile.Tileset.Tiles); i++ {
+			if tile.Tileset.Tiles[i].ID == tile.ID {
+				sf, err := os.Open(tile.Tileset.GetFileFullPath(tile.Tileset.Tiles[i].Image.Source))
+				if err != nil {
+					return nil, err
+				}
+				defer sf.Close()
+				timg, _, err = image.Decode(sf)
+				if err != nil {
+					return nil, err
+				}
+				r.tileCache[tile.Tileset.FirstGID+tile.ID] = timg
+			}
+		}
+	} else {
+		sf, err := os.Open(tile.Tileset.GetFileFullPath(tile.Tileset.Image.Source))
 		if err != nil {
 			return nil, err
 		}
@@ -131,9 +149,7 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 		}
 	}
 
-	timg = r.engine.RotateTileImage(tile, timg)
-
-	return timg, nil
+	return r.engine.RotateTileImage(tile, timg), nil
 }
 
 // RenderLayer renders single map layer.
