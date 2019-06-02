@@ -85,10 +85,16 @@ type Map struct {
 }
 
 func (m *Map) initTileset(ts *Tileset) (*Tileset, error) {
-	if ts.SourceLoaded || len(ts.Source) == 0 {
+	if ts.SourceLoaded {
 		return ts, nil
 	}
-	f, err := os.Open(m.GetFileFullPath(ts.Source))
+	if len(ts.Source) == 0 {
+		ts.baseDir = m.baseDir
+		ts.SourceLoaded = true
+		return ts, nil
+	}
+	sourcePath := m.GetFileFullPath(ts.Source)
+	f, err := os.Open(sourcePath)
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +107,7 @@ func (m *Map) initTileset(ts *Tileset) (*Tileset, error) {
 		return nil, err
 	}
 
+	tse.baseDir = filepath.Dir(sourcePath)
 	tse.Source = ts.Source
 	tse.SourceLoaded = true
 	tse.FirstGID = ts.FirstGID

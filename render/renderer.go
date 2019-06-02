@@ -83,9 +83,27 @@ func NewRenderer(m *tiled.Map) (*Renderer, error) {
 
 func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 	timg, ok := r.tileCache[tile.Tileset.FirstGID+tile.ID]
+	if ok {
+		return r.engine.RotateTileImage(tile, timg), nil
+	}
 	// Precache all tiles in tileset
-	if !ok {
-		sf, err := os.Open(r.m.GetFileFullPath(tile.Tileset.Image.Source))
+	if tile.Tileset.Image == nil {
+		for i := 0; i < len(tile.Tileset.Tiles); i++ {
+			if tile.Tileset.Tiles[i].ID == tile.ID {
+				sf, err := os.Open(tile.Tileset.GetFileFullPath(tile.Tileset.Tiles[i].Image.Source))
+				if err != nil {
+					return nil, err
+				}
+				defer sf.Close()
+				timg, _, err = image.Decode(sf)
+				if err != nil {
+					return nil, err
+				}
+				r.tileCache[tile.Tileset.FirstGID+tile.ID] = timg
+			}
+		}
+	} else {
+		sf, err := os.Open(tile.Tileset.GetFileFullPath(tile.Tileset.Image.Source))
 		if err != nil {
 			return nil, err
 		}
@@ -99,22 +117,30 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 		tilesetTileCount := tile.Tileset.TileCount
 
 		tilesetColumns := tile.Tileset.Columns
+
+		margin := tile.Tileset.Margin
+
+		spacing := tile.Tileset.Spacing
+
 		if tilesetColumns == 0 {
-			tilesetColumns = tile.Tileset.Image.Width / (tile.Tileset.TileWidth + tile.Tileset.Spacing)
+			tilesetColumns = tile.Tileset.Image.Width / (tile.Tileset.TileWidth + spacing)
 		}
 
 		if tilesetTileCount == 0 {
-			tilesetTileCount = (tile.Tileset.Image.Height / (tile.Tileset.TileHeight + tile.Tileset.Spacing)) * tilesetColumns
+			tilesetTileCount = (tile.Tileset.Image.Height / (tile.Tileset.TileHeight + spacing)) * tilesetColumns
 		}
 
 		for i := tile.Tileset.FirstGID; i < tile.Tileset.FirstGID+uint32(tilesetTileCount); i++ {
 			x := int(i-tile.Tileset.FirstGID) % tilesetColumns
 			y := int(i-tile.Tileset.FirstGID) / tilesetColumns
 
-			rect := image.Rect(x*tile.Tileset.TileWidth,
-				y*tile.Tileset.TileHeight,
-				(x+1)*tile.Tileset.TileWidth,
-				(y+1)*tile.Tileset.TileHeight)
+			xOffset := int(x)*spacing + margin
+			yOffset := int(y)*spacing + margin
+
+			rect := image.Rect(x*tile.Tileset.TileWidth+xOffset,
+				y*tile.Tileset.TileHeight+yOffset,
+				(x+1)*tile.Tileset.TileWidth+xOffset,
+				(y+1)*tile.Tileset.TileHeight+yOffset)
 
 			r.tileCache[i] = imaging.Crop(img, rect)
 			if tile.ID == i-tile.Tileset.FirstGID {
@@ -123,9 +149,7 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 		}
 	}
 
-	timg = r.engine.RotateTileImage(tile, timg)
-
-	return timg, nil
+	return r.engine.RotateTileImage(tile, timg), nil
 }
 
 // RenderLayer renders single map layer.

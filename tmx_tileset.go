@@ -1,7 +1,13 @@
 package tiled
 
+import (
+	"path/filepath"
+)
+
 // Tileset is collection of tiles
 type Tileset struct {
+	// Base directory
+	baseDir string
 	// The first global tile ID of this tileset (this global ID maps to the first tile in this tileset).
 	FirstGID uint32 `xml:"firstgid,attr"`
 	// If this tileset is stored in an external TSX (Tile Set XML) file, this attribute refers to that file.
@@ -35,6 +41,11 @@ type Tileset struct {
 	TerrainTypes []*Terrain `xml:"terraintypes>terrain"`
 	// Tiles in tileset
 	Tiles []*TilesetTile `xml:"tile"`
+}
+
+// GetFileFullPath returns path to file relative to tileset file
+func (ts *Tileset) GetFileFullPath(fileName string) string {
+	return filepath.Join(ts.baseDir, fileName)
 }
 
 // TilesetTileOffset is used to specify an offset in pixels, to be applied when drawing a tile from the related tileset. When not present, no offset is applied
