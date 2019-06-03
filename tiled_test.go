@@ -82,3 +82,24 @@ func TestLoadFromFileError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, m)
 }
+
+func TestExternalTilesetImageLoaded(t *testing.T) {
+	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "test2.tmx"))
+
+	assert.NoError(t, err)
+	assert.NotNil(t, m)
+
+	for _, layer := range m.Layers {
+		var tileset *Tileset
+		for _, tile := range layer.Tiles {
+			if tile.ID > 0 {
+				tileset = tile.Tileset
+				assert.NotNil(t, tileset)
+				if tileset != nil {
+					assert.NotNil(t, tileset.Image)
+					assert.Equal(t, "ProjectUtumno_full.png", tileset.Image.Source)
+				}
+			}
+		}
+	}
+}
