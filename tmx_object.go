@@ -36,6 +36,10 @@ var (
 
 // ObjectGroup is in fact a map layer, and is hence called "object layer" in Tiled Qt
 type ObjectGroup struct {
+	// Unique ID of the layer.
+	// Each layer that added to a map gets a unique id. Even if a layer is deleted,
+	// no layer ever gets the same ID. Can not be changed in Tiled. (since Tiled 1.2)
+	ID uint32 `xml:"id,attr"`
 	// The name of the object group.
 	Name string `xml:"name,attr"`
 	// The color used to display the objects in this group.

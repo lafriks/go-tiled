@@ -73,7 +73,12 @@ func TestLoadFromFile(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, m)
+
 	assert.Len(t, m.Layers, 1)
+	assert.Equal(t, uint32(1), m.Layers[0].ID)
+
+	assert.Len(t, m.ObjectGroups, 1)
+	assert.Equal(t, uint32(2), m.ObjectGroups[0].ID)
 }
 
 func TestLoadFromFileError(t *testing.T) {
