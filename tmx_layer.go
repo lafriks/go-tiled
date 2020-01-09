@@ -75,7 +75,7 @@ type Layer struct {
 	OffsetY int `xml:"offsety,attr"`
 	// Custom properties
 	Properties Properties `xml:"properties>property"`
-	// This is the attiribute you'd like to use, not Data. Tile entry at (x,y) is obtained using l.DecodedTiles[y*map.Width+x].
+	// This is the attribute you'd like to use, not Data. Tile entry at (x,y) is obtained using l.DecodedTiles[y*map.Width+x].
 	Tiles []*LayerTile
 	// Data
 	data *Data

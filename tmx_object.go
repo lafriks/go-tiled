@@ -83,7 +83,7 @@ type Object struct {
 	Properties Properties `xml:"properties>property"`
 	// Used to mark an object as an ellipse. The existing x, y, width and height attributes are used to determine the size of the ellipse.
 	Ellipses []*Ellipse `xml:"ellipse"`
-	// Pollygons
+	// Polygons
 	Polygons []*Polygon `xml:"polygon"`
 	// Poly lines
 	PolyLines []*PolyLine `xml:"polyline"`
