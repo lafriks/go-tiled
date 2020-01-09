@@ -84,6 +84,8 @@ type Map struct {
 	ObjectGroups []*ObjectGroup `xml:"objectgroup"`
 	// Image layers
 	ImageLayers []*ImageLayer `xml:"imagelayer"`
+	// Group layers
+	Groups []*Group `xml:"group"`
 }
 
 func (m *Map) initTileset(ts *Tileset) (*Tileset, error) {
