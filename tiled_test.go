@@ -125,3 +125,31 @@ func TestImageLayer(t *testing.T) {
 
 	assert.Equal(t, image.Source, "background.jpg", image.Source)
 }
+
+func TestGroup(t *testing.T) {
+	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "groups.tmx"))
+
+	assert.NoError(t, err)
+	assert.NotNil(t, m)
+
+	assert.Len(t, m.Layers, 1)
+	assert.Len(t, m.Groups, 1)
+
+	a := m.Groups[0]
+	assert.Equal(t, uint32(2), a.ID)
+	assert.Equal(t, "A", a.Name)
+	assert.Len(t, a.ImageLayers, 1)
+	assert.Len(t, a.Groups, 1)
+
+	b := a.Groups[0]
+	assert.Equal(t, uint32(4), b.ID)
+	assert.Equal(t, "B", b.Name)
+	assert.Len(t, b.Layers, 1)
+	assert.Len(t, b.Groups, 1)
+
+	c := b.Groups[0]
+	assert.Equal(t, uint32(8), c.ID)
+	assert.Equal(t, "C", c.Name)
+	assert.Len(t, c.ObjectGroups, 1)
+	assert.Len(t, c.Groups, 0)
+}
