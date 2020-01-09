@@ -40,39 +40,36 @@ type Property struct {
 
 // Get finds all properties by specified name
 func (p Properties) Get(name string) []string {
-	values := make([]string, 0)
-	for i := 0; i < len(p); i++ {
-		if p[i].Name == name {
-			values = append(values, p[i].Value)
+	var values []string
+	for _, property := range p {
+		if property.Name == name {
+			values = append(values, property.Value)
 		}
 	}
-
 	return values
 }
 
 // GetString finds first string property by specified name
 func (p Properties) GetString(name string) string {
-	v := ""
-	for i := 0; i < len(p); i++ {
-		if p[i].Name == name {
-			if p[i].Type == "" {
-				return p[i].Value
+	var v string
+	for _, property := range p {
+		if property.Name == name {
+			if property.Type == "" {
+				return property.Value
 			} else if v == "" {
-				v = p[i].Value
+				v = property.Value
 			}
 		}
 	}
-
 	return v
 }
 
 // GetBool finds first bool property by specified name
 func (p Properties) GetBool(name string) bool {
-	for i := 0; i < len(p); i++ {
-		if p[i].Name == name && p[i].Type == "Boolean" {
-			return p[i].Value == "true"
+	for _, property := range p {
+		if property.Name == name && property.Type == "Boolean" {
+			return property.Value == "true"
 		}
 	}
-
 	return p.GetString(name) == "true"
 }
