@@ -103,3 +103,25 @@ func TestExternalTilesetImageLoaded(t *testing.T) {
 		}
 	}
 }
+
+func TestImageLayer(t *testing.T) {
+	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "imagelayer.tmx"))
+
+	assert.NoError(t, err)
+	assert.NotNil(t, m)
+
+	assert.Len(t, m.ImageLayers, 1)
+
+	layer := m.ImageLayers[0]
+	assert.Equal(t, uint32(2), layer.ID)
+	assert.Equal(t, "Image Layer", layer.Name)
+	assert.Equal(t, 0, layer.OffsetX)
+	assert.Equal(t, 0, layer.OffsetY)
+	assert.Equal(t, float32(1.0), layer.Opacity)
+	assert.Equal(t, true, layer.Visible)
+
+	image := layer.Image
+	assert.NotNil(t, image)
+
+	assert.Equal(t, image.Source, "background.jpg", image.Source)
+}
