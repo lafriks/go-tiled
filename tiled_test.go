@@ -158,3 +158,31 @@ func TestGroup(t *testing.T) {
 	assert.Len(t, c.ObjectGroups, 1)
 	assert.Len(t, c.Groups, 0)
 }
+
+func TestFont(t *testing.T) {
+	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "font.tmx"))
+
+	assert.NoError(t, err)
+	assert.NotNil(t, m)
+
+	if assert.Len(t, m.ObjectGroups, 1) {
+		if assert.Len(t, m.ObjectGroups[0].Objects, 1) {
+			if assert.NotNil(t, m.ObjectGroups[0].Objects[0].Text) {
+				text := m.ObjectGroups[0].Objects[0].Text
+
+				assert.Equal(t, "Hello World", text.Text)
+				assert.Equal(t, "sans-serif", text.FontFamily)
+				assert.Equal(t, 16, text.Size)
+				assert.Equal(t, true, text.Wrap)
+				assert.Equal(t, "#000000", text.Color)
+				assert.Equal(t, false, text.Bold)
+				assert.Equal(t, false, text.Italic)
+				assert.Equal(t, false, text.Underline)
+				assert.Equal(t, false, text.Strikethrough)
+				assert.Equal(t, true, text.Kerning)
+				assert.Equal(t, "left", text.HAlign)
+				assert.Equal(t, "top", text.VAlign)
+			}
+		}
+	}
+}

@@ -92,7 +92,7 @@ type Object struct {
 	// Poly lines
 	PolyLines []*PolyLine `xml:"polyline"`
 	// Text
-	Text Text `xml:"text"`
+	Text *Text `xml:"text"`
 }
 
 // Ellipse is used to mark an object as an ellipse.
@@ -159,15 +159,50 @@ func (m *Points) UnmarshalXMLAttr(attr xml.Attr) error {
 
 // Text contains a text and attributes such as bold, color, etc.
 type Text struct {
-	Text          string `xml:",chardata"`
-	FontFamily    string `xml:"fontfamily,attr"`
-	Size          int    `xml:"pixelsize,attr"`
-	Wrap          bool   `xml:"wrap,attr"`
-	Color         string `xml:"color,attr"`
-	Bold          bool   `xml:"bold,attr"`
-	Italic        bool   `xml:"italic,attr"`
-	Underline     bool   `xml:"underline,attr"`
-	Strikethrough bool   `xml:"strikeout,attr"`
-	HAlign        string `xml:"halign,attr"`
-	VAlign        string `xml:"valign,attr"`
+	// The actual text
+	Text string `xml:",chardata"`
+	// The font family used (default: "sans-serif")
+	FontFamily string `xml:"fontfamily,attr"`
+	// The size of the font in pixels (not using points, because other sizes in the TMX format are also using pixels) (default: 16)
+	Size int `xml:"pixelsize,attr"`
+	// Whether word wrapping is enabled (1) or disabled (0). Defaults to 0.
+	Wrap bool `xml:"wrap,attr"`
+	// Color of the text in #AARRGGBB or #RRGGBB format (default: #000000)
+	Color string `xml:"color,attr"`
+	// Whether the font is bold (1) or not (0). Defaults to 0.
+	Bold bool `xml:"bold,attr"`
+	// Whether the font is italic (1) or not (0). Defaults to 0.
+	Italic bool `xml:"italic,attr"`
+	// Whether a line should be drawn below the text (1) or not (0). Defaults to 0.
+	Underline bool `xml:"underline,attr"`
+	// Whether a line should be drawn through the text (1) or not (0). Defaults to 0.
+	Strikethrough bool `xml:"strikeout,attr"`
+	// Whether kerning should be used while rendering the text (1) or not (0). Default to 1.
+	Kerning bool `xml:"kerning,attr"`
+	// Horizontal alignment of the text within the object (left (default), center, right or justify (since Tiled 1.2.1))
+	HAlign string `xml:"halign,attr"`
+	// Vertical alignment of the text within the object (top (default), center or bottom)
+	VAlign string `xml:"valign,attr"`
+}
+
+// UnmarshalXML decodes a single XML element beginning with the given start element.
+func (t *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	type Alias Text
+
+	item := Alias{
+		FontFamily: "sans-serif",
+		Size:       16,
+		Color:      "#000000",
+		Kerning:    true,
+		HAlign:     "left",
+		VAlign:     "top",
+	}
+
+	if err := d.DecodeElement(&item, &start); err != nil {
+		return err
+	}
+
+	*t = (Text)(item)
+
+	return nil
 }
