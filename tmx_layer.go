@@ -63,6 +63,10 @@ func (t *LayerTile) IsNil() bool {
 // Layer is a map layer
 type Layer struct {
 	_map *Map
+	// Unique ID of the layer.
+	// Each layer that added to a map gets a unique id. Even if a layer is deleted,
+	// no layer ever gets the same ID. Can not be changed in Tiled. (since Tiled 1.2)
+	ID uint32 `xml:"id,attr"`
 	// The name of the layer.
 	Name string `xml:"name,attr"`
 	// The opacity of the layer as a value from 0 to 1. Defaults to 1.
