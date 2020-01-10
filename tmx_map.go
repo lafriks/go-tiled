@@ -25,7 +25,6 @@ package tiled
 import (
 	"encoding/xml"
 	"errors"
-	"os"
 	"path/filepath"
 )
 
@@ -47,10 +46,13 @@ var (
 // and image layers use the imagelayer tag. The order in which these layers appear is the order in which the
 // layers are rendered by Tiled
 type Map struct {
-	// The TMX format version, generally 1.0.
-	Version string `xml:"title,attr"`
+	// Loader for loading additional data
+	loader *Loader
 	// Base directory for loading additional data
 	baseDir string
+
+	// The TMX format version, generally 1.0.
+	Version string `xml:"title,attr"`
 	// Map orientation. Tiled supports "orthogonal", "isometric", "staggered" (since 0.9) and "hexagonal" (since 0.11).
 	Orientation string `xml:"orientation,attr"`
 	// The order in which tiles on tile layers are rendered. Valid values are right-down (the default), right-up, left-down and left-up.
@@ -98,7 +100,7 @@ func (m *Map) initTileset(ts *Tileset) (*Tileset, error) {
 		return ts, nil
 	}
 	sourcePath := m.GetFileFullPath(ts.Source)
-	f, err := os.Open(sourcePath)
+	f, err := m.loader.open(sourcePath)
 	if err != nil {
 		return nil, err
 	}
@@ -157,6 +159,7 @@ func (m *Map) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type Alias Map
 
 	item := Alias{
+		loader:      m.loader,
 		baseDir:     m.baseDir,
 		RenderOrder: "right-down",
 	}
