@@ -83,6 +83,6 @@ type Image struct {
 	Width int `xml:"width,attr"`
 	// The image height in pixels (optional)
 	Height int `xml:"height,attr"`
-	// Embeded immage content
+	// Embedded image content
 	Data *Data `xml:"data,attr"`
 }
