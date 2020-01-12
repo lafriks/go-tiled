@@ -103,6 +103,7 @@ func TestExternalTilesetImageLoaded(t *testing.T) {
 				if tileset != nil {
 					assert.NotNil(t, tileset.Image)
 					assert.Equal(t, "ProjectUtumno_full.png", tileset.Image.Source)
+					assert.Contains(t, m.Tilesets, tileset)
 				}
 			}
 		}
