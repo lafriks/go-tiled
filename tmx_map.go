@@ -111,9 +111,7 @@ func (m *Map) initTileset(ts *Tileset) error {
 	}
 
 	ts.baseDir = filepath.Dir(sourcePath)
-	ts.Source = ts.Source
 	ts.SourceLoaded = true
-	ts.FirstGID = ts.FirstGID
 
 	return nil
 }
