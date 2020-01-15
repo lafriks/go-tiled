@@ -24,6 +24,8 @@ package tiled
 
 import (
 	"bytes"
+	"net/http"
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -185,4 +187,33 @@ func TestFont(t *testing.T) {
 			}
 		}
 	}
+}
+
+type testFileSystem struct {
+	AttemptedOpen []string
+}
+
+func (t *testFileSystem) Open(filename string) (http.File, error) {
+	t.AttemptedOpen = append(t.AttemptedOpen, filename)
+	if filepath.Base(filename) == "loader.tmx" {
+		return os.Open(filepath.Join(GetAssetsDirectory(), "loader.tmx"))
+	}
+	return nil, os.ErrNotExist
+}
+
+func TestLoader(t *testing.T) {
+	fs := &testFileSystem{}
+	loader := &Loader{
+		FileSystem: fs,
+	}
+
+	mapFile := filepath.Join(GetAssetsDirectory(), "loader.tmx")
+	m, err := loader.LoadFromFile(mapFile)
+
+	if assert.Error(t, err) {
+		assert.True(t, os.IsNotExist(err), "expecting no exist error")
+	}
+	assert.Nil(t, m)
+
+	assert.Equal(t, []string{mapFile, filepath.Join(GetAssetsDirectory(), "..", "README.md")}, fs.AttemptedOpen)
 }

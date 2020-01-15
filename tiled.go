@@ -25,6 +25,7 @@ package tiled
 import (
 	"encoding/xml"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 )
@@ -32,9 +33,41 @@ import (
 // LoadFromReader function loads tiled map in TMX format from io.Reader
 // baseDir is used for loading additional tile data, current directory is used if empty
 func LoadFromReader(baseDir string, r io.Reader) (*Map, error) {
+	return (*Loader)(nil).LoadFromReader(baseDir, r)
+}
+
+// LoadFromFile function loads tiled map in TMX format from file
+func LoadFromFile(fileName string) (*Map, error) {
+	return (*Loader)(nil).LoadFromFile(fileName)
+}
+
+// Loader provides configuration on how TMX maps and resources are loaded.
+type Loader struct {
+	// A FileSystem that is used for loading TMX files and any external
+	// resources it may reference.
+	//
+	// A nil FileSystem uses the local file system.
+	FileSystem http.FileSystem
+}
+
+// open opens the given file using the Loader's FileSystem, or uses os.Open
+// if l or l.FileSystem is nil.
+func (l *Loader) open(name string) (http.File, error) {
+	if l == nil || l.FileSystem == nil {
+		return os.Open(name)
+	}
+	return l.FileSystem.Open(name)
+}
+
+// LoadFromReader function loads tiled map in TMX format from io.Reader
+// baseDir is used for loading additional tile data, current directory is used if empty
+func (l *Loader) LoadFromReader(baseDir string, r io.Reader) (*Map, error) {
 	d := xml.NewDecoder(r)
 
-	m := &Map{baseDir: baseDir}
+	m := &Map{
+		loader:  l,
+		baseDir: baseDir,
+	}
 	if err := d.Decode(m); err != nil {
 		return nil, err
 	}
@@ -43,8 +76,8 @@ func LoadFromReader(baseDir string, r io.Reader) (*Map, error) {
 }
 
 // LoadFromFile function loads tiled map in TMX format from file
-func LoadFromFile(fileName string) (*Map, error) {
-	f, err := os.Open(fileName)
+func (l *Loader) LoadFromFile(fileName string) (*Map, error) {
+	f, err := l.open(fileName)
 	if err != nil {
 		return nil, err
 	}
@@ -55,5 +88,5 @@ func LoadFromFile(fileName string) (*Map, error) {
 		return nil, err
 	}
 
-	return LoadFromReader(dir, f)
+	return l.LoadFromReader(dir, f)
 }
