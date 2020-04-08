@@ -57,7 +57,7 @@ type RendererEngine interface {
 // Renderer represents an rendering engine.
 type Renderer struct {
 	m         *tiled.Map
-	img       *image.NRGBA
+	Result    *image.NRGBA // The image result after rendering using the Render functions.
 	tileCache map[uint32]image.Image
 	engine    RendererEngine
 }
@@ -76,7 +76,7 @@ func NewRenderer(m *tiled.Map) (*Renderer, error) {
 	}
 
 	r.engine.Init(r.m)
-	r.img = image.NewNRGBA(r.engine.GetFinalImageSize())
+	r.Clear()
 
 	return r, nil
 }
@@ -186,9 +186,9 @@ func (r *Renderer) RenderLayer(index int) error {
 			if layer.Opacity < 1 {
 				mask := image.NewUniform(color.Alpha{uint8(layer.Opacity * 255)})
 
-				draw.DrawMask(r.img, pos, img, img.Bounds().Min, mask, mask.Bounds().Min, draw.Over)
+				draw.DrawMask(r.Result, pos, img, img.Bounds().Min, mask, mask.Bounds().Min, draw.Over)
 			} else {
-				draw.Draw(r.img, pos, img, img.Bounds().Min, draw.Over)
+				draw.Draw(r.Result, pos, img, img.Bounds().Min, draw.Over)
 			}
 
 			i++
@@ -213,17 +213,24 @@ func (r *Renderer) RenderVisibleLayers() error {
 	return nil
 }
 
+// Clear clears the render result to allow for separation of layers. For example, you can
+// render a layer, make a copy of the render, clear the renderer, and repeat for each
+// layer in the Map.
+func (r *Renderer) Clear() {
+	r.Result = image.NewNRGBA(r.engine.GetFinalImageSize())
+}
+
 // SaveAsPng writes rendered layers as PNG image to provided writer.
 func (r *Renderer) SaveAsPng(w io.Writer) error {
-	return png.Encode(w, r.img)
+	return png.Encode(w, r.Result)
 }
 
 // SaveAsJpeg writes rendered layers as JPEG image to provided writer.
 func (r *Renderer) SaveAsJpeg(w io.Writer, options *jpeg.Options) error {
-	return jpeg.Encode(w, r.img, options)
+	return jpeg.Encode(w, r.Result, options)
 }
 
 // SaveAsGif writes rendered layers as GIF image to provided writer.
 func (r *Renderer) SaveAsGif(w io.Writer, options *gif.Options) error {
-	return gif.Encode(w, r.img, options)
+	return gif.Encode(w, r.Result, options)
 }
