@@ -54,7 +54,7 @@ func (e *OrthogonalRendererEngine) RotateTileImage(tile *tiled.LayerTile, img im
 		timg = imaging.FlipV(timg)
 	}
 	if tile.DiagonalFlip {
-		timg = imaging.FlipH(imaging.Rotate270(timg))
+		timg = imaging.FlipH(imaging.Rotate90(timg))
 	}
 
 	return timg
