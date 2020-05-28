@@ -90,35 +90,32 @@ type Map struct {
 	Groups []*Group `xml:"group"`
 }
 
-func (m *Map) initTileset(ts *Tileset) (*Tileset, error) {
+func (m *Map) initTileset(ts *Tileset) error {
 	if ts.SourceLoaded {
-		return ts, nil
+		return nil
 	}
 	if len(ts.Source) == 0 {
 		ts.baseDir = m.baseDir
 		ts.SourceLoaded = true
-		return ts, nil
+		return nil
 	}
 	sourcePath := m.GetFileFullPath(ts.Source)
 	f, err := m.loader.open(sourcePath)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer f.Close()
 
 	d := xml.NewDecoder(f)
 
-	tse := &Tileset{}
-	if err := d.Decode(tse); err != nil {
-		return nil, err
+	if err := d.Decode(ts); err != nil {
+		return err
 	}
 
-	tse.baseDir = filepath.Dir(sourcePath)
-	tse.Source = ts.Source
-	tse.SourceLoaded = true
-	tse.FirstGID = ts.FirstGID
+	ts.baseDir = filepath.Dir(sourcePath)
+	ts.SourceLoaded = true
 
-	return tse, nil
+	return nil
 }
 
 // TileGIDToTile is used to find tile data by GID
@@ -131,8 +128,8 @@ func (m *Map) TileGIDToTile(gid uint32) (*LayerTile, error) {
 
 	for i := len(m.Tilesets) - 1; i >= 0; i-- {
 		if m.Tilesets[i].FirstGID <= gidBare {
-			ts, err := m.initTileset(m.Tilesets[i])
-			if err != nil {
+			ts := m.Tilesets[i]
+			if err := m.initTileset(ts); err != nil {
 				return nil, err
 			}
 			return &LayerTile{

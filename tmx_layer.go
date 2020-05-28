@@ -83,8 +83,6 @@ type Layer struct {
 	Tiles []*LayerTile
 	// Data
 	data *Data
-	// Tileset if only one is used in layer
-	tileset *Tileset
 	// Set when all entries of the layer are NilTile
 	empty bool
 }
@@ -193,26 +191,15 @@ func (l *Layer) DecodeLayer(m *Map) error {
 	// Data is not needed anymore
 	l.data = nil
 
-	var tileset *Tileset
 	for i := 0; i < len(l.Tiles); i++ {
 		tile := l.Tiles[i]
 		if !tile.Nil {
-			if tileset == nil {
-				tileset = tile.Tileset
-			} else if tileset != tile.Tileset {
-				l.tileset = nil
-				l.empty = false
-				return nil
-			}
+			l.empty = false
+			return nil
 		}
 	}
 
-	l.tileset = tileset
-	l.empty = false
-
-	if tileset == nil {
-		l.empty = true
-	}
+	l.empty = true
 
 	return nil
 }
