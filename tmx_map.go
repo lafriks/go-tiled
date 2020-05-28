@@ -127,8 +127,7 @@ func (m *Map) TileGIDToTile(gid uint32) (*LayerTile, error) {
 	for i := len(m.Tilesets) - 1; i >= 0; i-- {
 		if m.Tilesets[i].FirstGID <= gidBare {
 			ts := m.Tilesets[i]
-			err := m.initTileset(ts)
-			if err != nil {
+			if err := m.initTileset(ts); err != nil {
 				return nil, err
 			}
 			return &LayerTile{
