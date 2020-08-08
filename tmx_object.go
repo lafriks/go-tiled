@@ -115,9 +115,9 @@ type PolyLine struct {
 // Point is point
 type Point struct {
 	// Point X
-	X int
+	X float64
 	// Point Y
-	Y int
+	Y float64
 }
 
 // Points is array of points
@@ -139,12 +139,12 @@ func (m *Points) UnmarshalXMLAttr(attr xml.Attr) error {
 			return ErrInvalidObjectPoint
 		}
 
-		var x, y int
+		var x, y float64
 		var err error
-		if x, err = strconv.Atoi(c[0]); err != nil {
+		if x, err = strconv.ParseFloat(c[0], 64); err != nil {
 			return err
 		}
-		if y, err = strconv.Atoi(c[1]); err != nil {
+		if y, err = strconv.ParseFloat(c[1], 64); err != nil {
 			return err
 		}
 		points[i] = &Point{
