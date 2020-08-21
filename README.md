@@ -29,9 +29,8 @@ const mapPath = "maps/map.tmx" // Path to your Tiled Map.
 func main() {
     // Parse .tmx file.
 	gameMap, err := tiled.LoadFromFile(mapPath)
-
 	if err != nil {
-		fmt.Println("Error parsing map")
+		fmt.Printf("error parsing map: %s", err.Error()
 		os.Exit(2)
 	}
 
@@ -39,10 +38,18 @@ func main() {
 
 	// You can also render the map to an in-memory image for direct
 	// use with the default Renderer, or by making your own.
-	renderer := render.NewRenderer(gameMap)
+	renderer, err := render.NewRenderer(gameMap)
+	if err != nil {
+		fmt.Printf("map unsupported for rendering: %s", err.Error()
+		os.Exit(2)
+	}
 
 	// Render just layer 0 to the Renderer.
-	renderer.RenderLayer(0)
+	err = renderer.RenderLayer(0)
+	if err != nil {
+		fmt.Printf("layer unsupported for rendering: %s", err.Error()
+		os.Exit(2)
+	}
 
 	// Get a reference to the Renderer's output, an image.NRGBA struct.
 	img := renderer.Result
