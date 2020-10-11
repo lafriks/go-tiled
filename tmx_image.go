@@ -78,7 +78,7 @@ type Image struct {
 	Source string `xml:"source,attr"`
 	// Defines a specific color that is treated as transparent (example value: "#FF00FF" for magenta).
 	// Up until Tiled 0.12, this value is written out without a # but this is planned to change.
-	Trans string `xml:"trans,attr"`
+	Trans *HexColor `xml:"trans,attr"`
 	// The image width in pixels (optional, used for tile index correction when the image changes)
 	Width int `xml:"width,attr"`
 	// The image height in pixels (optional)

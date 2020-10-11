@@ -24,6 +24,8 @@ package tiled
 
 import (
 	"bytes"
+	"encoding/xml"
+	"image/color"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -177,7 +179,7 @@ func TestFont(t *testing.T) {
 				assert.Equal(t, "sans-serif", text.FontFamily)
 				assert.Equal(t, 16, text.Size)
 				assert.Equal(t, true, text.Wrap)
-				assert.Equal(t, "#000000", text.Color)
+				assert.Nil(t, text.Color)
 				assert.Equal(t, false, text.Bold)
 				assert.Equal(t, false, text.Italic)
 				assert.Equal(t, false, text.Underline)
@@ -217,4 +219,85 @@ func TestLoader(t *testing.T) {
 	assert.Nil(t, m)
 
 	assert.Equal(t, []string{mapFile, filepath.Join(GetAssetsDirectory(), "..", "README.md")}, fs.AttemptedOpen)
+}
+
+func TestParseHexColor(t *testing.T) {
+	type test struct {
+		name  string
+		attr  xml.Attr
+		color color.RGBA
+	}
+	cases := []test{
+		{
+			name: "Wihout alpha",
+			attr: xml.Attr{
+				Value: "#aabbcc",
+			},
+			color: color.RGBA{
+				R: 170,
+				G: 187,
+				B: 204,
+				A: 255,
+			},
+		},
+		{
+			name: "With alpha",
+			attr: xml.Attr{
+				Value: "#ffffffff",
+			},
+			color: color.RGBA{
+				R: 255,
+				G: 255,
+				B: 255,
+				A: 255,
+			},
+		},
+		{
+			name: "Simplified",
+			attr: xml.Attr{
+				Value: "#fff",
+			},
+			color: color.RGBA{
+				R: 255,
+				G: 255,
+				B: 255,
+				A: 255,
+			},
+		},
+		{
+			name: "Simplified with alpha",
+			attr: xml.Attr{
+				Value: "#ffff",
+			},
+			color: color.RGBA{
+				R: 255,
+				G: 255,
+				B: 255,
+				A: 255,
+			},
+		},
+		{
+			name: "Different values",
+			attr: xml.Attr{
+				Value: "#010203",
+			},
+			color: color.RGBA{
+				R: 1,
+				G: 2,
+				B: 3,
+				A: 255,
+			},
+		},
+	}
+
+	for _, c := range cases {
+		color := &HexColor{}
+		color.UnmarshalXMLAttr(c.attr)
+		assert.Equal(t, c.color, color.c, c.name)
+	}
+}
+
+func TestFormatHexColor(t *testing.T) {
+	color := NewHexColor(255, 255, 255, 255)
+	assert.Equal(t, "#ffffffff", color.String())
 }

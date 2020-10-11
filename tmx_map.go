@@ -73,7 +73,7 @@ type Map struct {
 	// For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted. (since 0.11)
 	StaggerIndex int `xml:"staggerindex,attr"`
 	// The background color of the map. (since 0.9, optional, may include alpha value since 0.15 in the form #AARRGGBB)
-	BackgroundColor string `xml:"backgroundcolor,attr"`
+	BackgroundColor *HexColor `xml:"backgroundcolor,attr"`
 	// Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed. (since 0.11)
 	NextObjectID uint32 `xml:"nextobjectid,attr"`
 	// Custom properties

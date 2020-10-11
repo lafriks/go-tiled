@@ -43,7 +43,7 @@ type ObjectGroup struct {
 	// The name of the object group.
 	Name string `xml:"name,attr"`
 	// The color used to display the objects in this group.
-	Color string `xml:"color,attr"`
+	Color *HexColor `xml:"color,attr"`
 	// The opacity of the layer as a value from 0 to 1. Defaults to 1.
 	Opacity float32 `xml:"opacity,attr"`
 	// Whether the layer is shown (1) or hidden (0). Defaults to 1.
@@ -167,8 +167,8 @@ type Text struct {
 	Size int `xml:"pixelsize,attr"`
 	// Whether word wrapping is enabled (1) or disabled (0). Defaults to 0.
 	Wrap bool `xml:"wrap,attr"`
-	// Color of the text in #AARRGGBB or #RRGGBB format (default: #000000)
-	Color string `xml:"color,attr"`
+	// Color of the text, Default nil
+	Color *HexColor `xml:"color,attr"`
 	// Whether the font is bold (1) or not (0). Defaults to 0.
 	Bold bool `xml:"bold,attr"`
 	// Whether the font is italic (1) or not (0). Defaults to 0.
@@ -192,7 +192,6 @@ func (t *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	item := Alias{
 		FontFamily: "sans-serif",
 		Size:       16,
-		Color:      "#000000",
 		Kerning:    true,
 		HAlign:     "left",
 		VAlign:     "top",
