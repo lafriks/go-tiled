@@ -288,6 +288,18 @@ func TestParseHexColor(t *testing.T) {
 				A: 255,
 			},
 		},
+		{
+			name: "uppercase",
+			attr: xml.Attr{
+				Value: "#ABCDEF",
+			},
+			color: color.RGBA{
+				R: 171,
+				G: 205,
+				B: 239,
+				A: 255,
+			},
+		},
 	}
 
 	for _, c := range cases {
