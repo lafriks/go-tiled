@@ -15,9 +15,9 @@ type HexColor struct {
 func ParseHexColor(s string) (HexColor, error) {
 	c, err := parseHexColor(s)
 	if err != nil {
-		return nil, err
+		return HexColor{}, err
 	}
-	return HexColor{ c: c }, nil
+	return HexColor{c: c}, nil
 }
 
 func NewHexColor(r, g, b, a uint32) HexColor {
