@@ -298,6 +298,44 @@ func TestParseHexColor(t *testing.T) {
 }
 
 func TestFormatHexColor(t *testing.T) {
-	color := NewHexColor(255, 255, 255, 255)
-	assert.Equal(t, "#ffffffff", color.String())
+	type test struct {
+		name  string
+		color HexColor
+		hex   string
+	}
+	cases := []test{
+		{
+			name:  "alpha ignored at 255",
+			color: NewHexColor(255, 255, 255, 255),
+			hex:   "#ffffff",
+		},
+		{
+			name:  "transparent black",
+			color: NewHexColor(255, 255, 255, 0),
+			hex:   "#ffffff00",
+		},
+		{
+			name:  "50% transparency",
+			color: NewHexColor(255, 255, 255, 128),
+			hex:   "#ffffff80",
+		},
+		{
+			name:  "values encoded with 2 numbers",
+			color: NewHexColor(16, 32, 48, 255),
+			hex:   "#102030",
+		},
+		{
+			name:  "values encoded with 1 numbers",
+			color: NewHexColor(1, 2, 3, 255),
+			hex:   "#010203",
+		},
+		{
+			name:  "zero",
+			color: NewHexColor(0, 0, 0, 0),
+			hex:   "#00000000",
+		},
+	}
+	for _, c := range cases {
+		assert.Equal(t, c.hex, c.color.String(), c.name)
+	}
 }

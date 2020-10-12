@@ -1,9 +1,9 @@
 package tiled
 
 import (
+	"encoding/hex"
 	"encoding/xml"
 	"errors"
-	"fmt"
 	"image/color"
 	"strings"
 )
@@ -36,7 +36,20 @@ func (color *HexColor) RGBA() (r, g, b, a uint32) {
 }
 
 func (color *HexColor) String() string {
-	return fmt.Sprintf("#%x%x%x%x", color.c.R, color.c.G, color.c.B, color.c.A)
+	src := []byte{
+		color.c.R,
+		color.c.G,
+		color.c.B,
+		color.c.A,
+	}
+	if color.c.A == 255 {
+		src = src[:len(src)-1]
+	}
+
+	dst := make([]byte, hex.EncodedLen(len(src))+1)
+	hex.Encode(dst[1:], src)
+	dst[0] = '#'
+	return string(dst)
 }
 
 func (color *HexColor) UnmarshalXMLAttr(attr xml.Attr) error {
