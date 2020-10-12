@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+// HexColor handles the conversion between hex color strings
+// to color.RGBA structure.
 type HexColor struct {
 	c color.RGBA
 }
@@ -58,6 +60,7 @@ func (color *HexColor) String() string {
 	return string(dst)
 }
 
+// UnmarshalXMLAttr implements xml.UnmarshalerAttr
 func (color *HexColor) UnmarshalXMLAttr(attr xml.Attr) error {
 	c, err := parseHexColor(attr.Value)
 	if err != nil {
@@ -67,6 +70,7 @@ func (color *HexColor) UnmarshalXMLAttr(attr xml.Attr) error {
 	return nil
 }
 
+// MarshalXMLAttr implements xml.MarshalerAttr
 func (color *HexColor) MarshalXMLAttr(name xml.Name) (attr xml.Attr, err error) {
 	attr.Name = name
 	attr.Value = color.String()
