@@ -114,36 +114,10 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 			return nil, err
 		}
 
-		tilesetTileCount := tile.Tileset.TileCount
-
-		tilesetColumns := tile.Tileset.Columns
-
-		margin := tile.Tileset.Margin
-
-		spacing := tile.Tileset.Spacing
-
-		if tilesetColumns == 0 {
-			tilesetColumns = tile.Tileset.Image.Width / (tile.Tileset.TileWidth + spacing)
-		}
-
-		if tilesetTileCount == 0 {
-			tilesetTileCount = (tile.Tileset.Image.Height / (tile.Tileset.TileHeight + spacing)) * tilesetColumns
-		}
-
-		for i := tile.Tileset.FirstGID; i < tile.Tileset.FirstGID+uint32(tilesetTileCount); i++ {
-			x := int(i-tile.Tileset.FirstGID) % tilesetColumns
-			y := int(i-tile.Tileset.FirstGID) / tilesetColumns
-
-			xOffset := int(x)*spacing + margin
-			yOffset := int(y)*spacing + margin
-
-			rect := image.Rect(x*tile.Tileset.TileWidth+xOffset,
-				y*tile.Tileset.TileHeight+yOffset,
-				(x+1)*tile.Tileset.TileWidth+xOffset,
-				(y+1)*tile.Tileset.TileHeight+yOffset)
-
-			r.tileCache[i] = imaging.Crop(img, rect)
-			if tile.ID == i-tile.Tileset.FirstGID {
+		for i := uint32(0); i < uint32(tile.Tileset.TileCount); i++ {
+			rect := tile.Tileset.GetTileRect(i)
+			r.tileCache[i+tile.Tileset.FirstGID] = imaging.Crop(img, rect)
+			if tile.ID == i {
 				timg = r.tileCache[i]
 			}
 		}

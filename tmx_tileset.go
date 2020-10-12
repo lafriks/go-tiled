@@ -1,6 +1,7 @@
 package tiled
 
 import (
+	"image"
 	"path/filepath"
 )
 
@@ -99,4 +100,29 @@ type AnimationFrame struct {
 	TileID uint32 `xml:"tileid,attr"`
 	// How long (in milliseconds) this frame should be displayed before advancing to the next frame.
 	Duration uint32 `xml:"duration,attr"`
+}
+
+// GetTileRect returns a rectangle that contains the tile in the tileset.Image
+func (tileset *Tileset) GetTileRect(tileID uint32) image.Rectangle {
+	tilesetTileCount := tileset.TileCount
+	tilesetColumns := tileset.Columns
+
+	if tilesetColumns == 0 {
+		tilesetColumns = tileset.Image.Width / (tileset.TileWidth + tileset.Spacing)
+	}
+
+	if tilesetTileCount == 0 {
+		tilesetTileCount = (tileset.Image.Height / (tileset.TileHeight + tileset.Spacing)) * tilesetColumns
+	}
+
+	x := int(tileID) % tilesetColumns
+	y := int(tileID) / tilesetColumns
+
+	xOffset := int(x)*tileset.Spacing + tileset.Margin
+	yOffset := int(y)*tileset.Spacing + tileset.Margin
+
+	return image.Rect(x*tileset.TileWidth+xOffset,
+		y*tileset.TileHeight+yOffset,
+		(x+1)*tileset.TileWidth+xOffset,
+		(y+1)*tileset.TileHeight+yOffset)
 }

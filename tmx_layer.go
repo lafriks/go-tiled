@@ -25,6 +25,7 @@ package tiled
 import (
 	"encoding/xml"
 	"errors"
+	"image"
 )
 
 // NilLayerTile is reusable layer tile that is nil
@@ -228,4 +229,16 @@ func (l *Layer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	l.data = item.Data
 
 	return nil
+}
+
+// GetTilePosition returns the x,y position of the tileID on the current layer
+func (l *Layer) GetTilePosition(tileID int) (int, int) {
+	x := tileID % l._map.Width
+	y := tileID / l._map.Width
+	return l.OffsetX + x*l._map.TileHeight, l.OffsetY + y*l._map.TileWidth
+}
+
+// GetTileRect returns the rectangle that contains the Tile in the original Tileset.Image
+func (t *LayerTile) GetTileRect() image.Rectangle {
+	return t.Tileset.GetTileRect(t.ID)
 }
