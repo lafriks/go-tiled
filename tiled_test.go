@@ -218,3 +218,19 @@ func TestLoader(t *testing.T) {
 
 	assert.Equal(t, []string{mapFile, filepath.Join(GetAssetsDirectory(), "..", "README.md")}, fs.AttemptedOpen)
 }
+
+func TestVersions(t *testing.T) {
+	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "test2.tmx"))
+
+	assert.Nil(t, err)
+
+	assert.Equal(t, m.Version, "1.2")
+	assert.Equal(t, m.TiledVersion, "1.2.3")
+
+	assert.Len(t, m.Tilesets, 1)
+
+	tileset := m.Tilesets[0]
+
+	assert.Equal(t, tileset.Version, "1.2")
+	assert.Equal(t, tileset.TiledVersion, "1.2.3")
+}
