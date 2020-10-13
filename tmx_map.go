@@ -52,7 +52,9 @@ type Map struct {
 	baseDir string
 
 	// The TMX format version, generally 1.0.
-	Version string `xml:"title,attr"`
+	Version string `xml:"version,attr"`
+	// The Tiled version used to generate this file
+	TiledVersion string `xml:"tiledversion,attr"`
 	// Map orientation. Tiled supports "orthogonal", "isometric", "staggered" (since 0.9) and "hexagonal" (since 0.11).
 	Orientation string `xml:"orientation,attr"`
 	// The order in which tiles on tile layers are rendered. Valid values are right-down (the default), right-up, left-down and left-up.

@@ -9,6 +9,10 @@ type Tileset struct {
 	// Base directory
 	baseDir string
 
+	// The TMX format version, generally 1.0.
+	Version string `xml:"version,attr"`
+	// The Tiled version used to generate this file
+	TiledVersion string `xml:"tiledversion,attr"`
 	// The first global tile ID of this tileset (this global ID maps to the first tile in this tileset).
 	FirstGID uint32 `xml:"firstgid,attr"`
 	// If this tileset is stored in an external TSX (Tile Set XML) file, this attribute refers to that file.
