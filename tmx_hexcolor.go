@@ -8,8 +8,9 @@ import (
 	"strings"
 )
 
-// HexColor handles the conversion between hex color strings
-// to color.RGBA structure.
+// HexColor handles the conversion between hex color strings in form #AARRGGBB
+// to color.RGBA structure. Be aware that this doesn't match CSS hex color because
+// the alpha channel appears first.
 type HexColor struct {
 	c color.RGBA
 }
