@@ -243,13 +243,13 @@ func TestParseHexColor(t *testing.T) {
 		{
 			name: "With alpha",
 			attr: xml.Attr{
-				Value: "#ffffffff",
+				Value: "#aabbccdd",
 			},
 			color: color.RGBA{
-				R: 255,
-				G: 255,
-				B: 255,
-				A: 255,
+				R: 187,
+				G: 204,
+				B: 221,
+				A: 170,
 			},
 		},
 		{
@@ -324,12 +324,12 @@ func TestFormatHexColor(t *testing.T) {
 		{
 			name:  "transparent black",
 			color: NewHexColor(255, 255, 255, 0),
-			hex:   "#ffffff00",
+			hex:   "#00ffffff",
 		},
 		{
 			name:  "50% transparency",
 			color: NewHexColor(255, 255, 255, 128),
-			hex:   "#ffffff80",
+			hex:   "#80ffffff",
 		},
 		{
 			name:  "values encoded with 2 numbers",
