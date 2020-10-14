@@ -90,3 +90,27 @@ func (l *Loader) LoadFromFile(fileName string) (*Map, error) {
 
 	return l.LoadFromReader(dir, f)
 }
+
+func LoadTilesetFromReader(baseDir string, r io.Reader) (*Tileset, error) {
+	d := xml.NewDecoder(r)
+
+	m := &Tileset{
+		baseDir:      baseDir,
+		SourceLoaded: true,
+	}
+	if err := d.Decode(m); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
+func SaveTilesetToWriter(tileset *Tileset, w io.Writer) error {
+	encoder := xml.NewEncoder(w)
+	encoder.Indent("", " ")
+	return encoder.Encode(tileset)
+}
+
+func b(v bool) *bool {
+	return &v
+}

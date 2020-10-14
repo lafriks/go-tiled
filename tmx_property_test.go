@@ -31,25 +31,27 @@ import (
 func TestGetProperty(t *testing.T) {
 
 	props := Properties{
-		{
-			Name:  "string-name",
-			Type:  "string",
-			Value: "string-value",
-		},
-		{
-			Name:  "int-name",
-			Type:  "int",
-			Value: "123",
-		},
-		{
-			Name:  "float-name",
-			Type:  "float",
-			Value: "1.23",
-		},
-		{
-			Name:  "bool-name",
-			Type:  "boolean",
-			Value: "true",
+		Property: []*Property{
+			{
+				Name:  "string-name",
+				Type:  "string",
+				Value: "string-value",
+			},
+			{
+				Name:  "int-name",
+				Type:  "int",
+				Value: "123",
+			},
+			{
+				Name:  "float-name",
+				Type:  "float",
+				Value: "1.23",
+			},
+			{
+				Name:  "bool-name",
+				Type:  "boolean",
+				Value: "true",
+			},
 		},
 	}
 
@@ -57,4 +59,5 @@ func TestGetProperty(t *testing.T) {
 	assert.Equal(t, 123, props.GetInt("int-name"))
 	assert.Equal(t, 1.23, props.GetFloat("float-name"))
 	assert.Equal(t, true, props.GetBool("bool-name"))
+
 }

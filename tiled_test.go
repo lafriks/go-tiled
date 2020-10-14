@@ -184,7 +184,7 @@ func TestFont(t *testing.T) {
 				assert.Equal(t, false, text.Italic)
 				assert.Equal(t, false, text.Underline)
 				assert.Equal(t, false, text.Strikethrough)
-				assert.Equal(t, true, text.Kerning)
+				assert.Equal(t, true, *text.Kerning)
 				assert.Equal(t, "left", text.HAlign)
 				assert.Equal(t, "top", text.VAlign)
 			}

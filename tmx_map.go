@@ -79,7 +79,7 @@ type Map struct {
 	// Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed. (since 0.11)
 	NextObjectID uint32 `xml:"nextobjectid,attr"`
 	// Custom properties
-	Properties *Properties `xml:"properties>property"`
+	Properties *Properties `xml:"properties"`
 	// Map tilesets
 	Tilesets []*Tileset `xml:"tileset"`
 	// Map layers
