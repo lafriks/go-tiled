@@ -74,7 +74,9 @@ func (color *HexColor) UnmarshalXMLAttr(attr xml.Attr) error {
 // MarshalXMLAttr implements xml.MarshalerAttr
 func (color *HexColor) MarshalXMLAttr(name xml.Name) (attr xml.Attr, err error) {
 	attr.Name = name
-	attr.Value = color.String()
+	if color != nil {
+		attr.Value = color.String()
+	}
 	return
 }
 
