@@ -195,6 +195,7 @@ func (t *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		Kerning:    true,
 		HAlign:     "left",
 		VAlign:     "top",
+		Color:      &HexColor{},
 	}
 
 	if err := d.DecodeElement(&item, &start); err != nil {
