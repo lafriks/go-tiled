@@ -167,7 +167,7 @@ type Text struct {
 	Size int `xml:"pixelsize,attr"`
 	// Whether word wrapping is enabled (1) or disabled (0). Defaults to 0.
 	Wrap bool `xml:"wrap,attr"`
-	// Color of the text (default: #000000)
+	// Color of the text in #AARRGGBB or #RRGGBB format (default: #000000)
 	Color *HexColor `xml:"color,attr"`
 	// Whether the font is bold (1) or not (0). Defaults to 0.
 	Bold bool `xml:"bold,attr"`
