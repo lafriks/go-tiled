@@ -91,6 +91,7 @@ func (l *Loader) LoadFromFile(fileName string) (*Map, error) {
 	return l.LoadFromReader(dir, f)
 }
 
+// LoadTilesetFromReader loads a .tsx file into a Tileset structure
 func LoadTilesetFromReader(baseDir string, r io.Reader) (*Tileset, error) {
 	d := xml.NewDecoder(r)
 
@@ -105,6 +106,7 @@ func LoadTilesetFromReader(baseDir string, r io.Reader) (*Tileset, error) {
 	return m, nil
 }
 
+// SaveTilesetToWriter saves a Tileset structure into a given writer
 func SaveTilesetToWriter(tileset *Tileset, w io.Writer) error {
 	encoder := xml.NewEncoder(w)
 	encoder.Indent("", " ")
