@@ -24,6 +24,8 @@ package tiled
 
 import (
 	"bytes"
+	"encoding/xml"
+	"image/color"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -177,7 +179,7 @@ func TestFont(t *testing.T) {
 				assert.Equal(t, "sans-serif", text.FontFamily)
 				assert.Equal(t, 16, text.Size)
 				assert.Equal(t, true, text.Wrap)
-				assert.Equal(t, "#000000", text.Color)
+				assert.Equal(t, &HexColor{}, text.Color)
 				assert.Equal(t, false, text.Bold)
 				assert.Equal(t, false, text.Italic)
 				assert.Equal(t, false, text.Underline)
@@ -217,6 +219,137 @@ func TestLoader(t *testing.T) {
 	assert.Nil(t, m)
 
 	assert.Equal(t, []string{mapFile, filepath.Join(GetAssetsDirectory(), "..", "README.md")}, fs.AttemptedOpen)
+}
+
+func TestParseHexColor(t *testing.T) {
+	type test struct {
+		name  string
+		attr  xml.Attr
+		color color.RGBA
+	}
+	cases := []test{
+		{
+			name: "Wihout alpha",
+			attr: xml.Attr{
+				Value: "#aabbcc",
+			},
+			color: color.RGBA{
+				R: 170,
+				G: 187,
+				B: 204,
+				A: 255,
+			},
+		},
+		{
+			name: "With alpha",
+			attr: xml.Attr{
+				Value: "#aabbccdd",
+			},
+			color: color.RGBA{
+				R: 187,
+				G: 204,
+				B: 221,
+				A: 170,
+			},
+		},
+		{
+			name: "Simplified",
+			attr: xml.Attr{
+				Value: "#fff",
+			},
+			color: color.RGBA{
+				R: 255,
+				G: 255,
+				B: 255,
+				A: 255,
+			},
+		},
+		{
+			name: "Simplified with alpha",
+			attr: xml.Attr{
+				Value: "#ffff",
+			},
+			color: color.RGBA{
+				R: 255,
+				G: 255,
+				B: 255,
+				A: 255,
+			},
+		},
+		{
+			name: "Different values",
+			attr: xml.Attr{
+				Value: "#010203",
+			},
+			color: color.RGBA{
+				R: 1,
+				G: 2,
+				B: 3,
+				A: 255,
+			},
+		},
+		{
+			name: "uppercase",
+			attr: xml.Attr{
+				Value: "#ABCDEF",
+			},
+			color: color.RGBA{
+				R: 171,
+				G: 205,
+				B: 239,
+				A: 255,
+			},
+		},
+	}
+
+	for _, c := range cases {
+		color := &HexColor{}
+		color.UnmarshalXMLAttr(c.attr)
+		assert.Equal(t, c.color, color.c, c.name)
+	}
+}
+
+func TestFormatHexColor(t *testing.T) {
+	type test struct {
+		name  string
+		color HexColor
+		hex   string
+	}
+	cases := []test{
+		{
+			name:  "alpha ignored at 255",
+			color: NewHexColor(255, 255, 255, 255),
+			hex:   "#ffffff",
+		},
+		{
+			name:  "transparent black",
+			color: NewHexColor(255, 255, 255, 0),
+			hex:   "#00ffffff",
+		},
+		{
+			name:  "50% transparency",
+			color: NewHexColor(255, 255, 255, 128),
+			hex:   "#80ffffff",
+		},
+		{
+			name:  "values encoded with 2 numbers",
+			color: NewHexColor(16, 32, 48, 255),
+			hex:   "#102030",
+		},
+		{
+			name:  "values encoded with 1 numbers",
+			color: NewHexColor(1, 2, 3, 255),
+			hex:   "#010203",
+		},
+		{
+			name:  "zero",
+			color: NewHexColor(0, 0, 0, 0),
+			hex:   "#00000000",
+		},
+	}
+	for _, c := range cases {
+		assert.Equal(t, c.hex, c.color.String(), c.name)
+	}
 }
 
 func TestVersions(t *testing.T) {
