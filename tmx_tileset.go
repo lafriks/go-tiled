@@ -103,26 +103,26 @@ type AnimationFrame struct {
 }
 
 // GetTileRect returns a rectangle that contains the tile in the tileset.Image
-func (tileset *Tileset) GetTileRect(tileID uint32) image.Rectangle {
-	tilesetTileCount := tileset.TileCount
-	tilesetColumns := tileset.Columns
+func (ts *Tileset) GetTileRect(tileID uint32) image.Rectangle {
+	tilesetTileCount := ts.TileCount
+	tilesetColumns := ts.Columns
 
 	if tilesetColumns == 0 {
-		tilesetColumns = tileset.Image.Width / (tileset.TileWidth + tileset.Spacing)
+		tilesetColumns = ts.Image.Width / (ts.TileWidth + ts.Spacing)
 	}
 
 	if tilesetTileCount == 0 {
-		tilesetTileCount = (tileset.Image.Height / (tileset.TileHeight + tileset.Spacing)) * tilesetColumns
+		tilesetTileCount = (ts.Image.Height / (ts.TileHeight + ts.Spacing)) * tilesetColumns
 	}
 
 	x := int(tileID) % tilesetColumns
 	y := int(tileID) / tilesetColumns
 
-	xOffset := int(x)*tileset.Spacing + tileset.Margin
-	yOffset := int(y)*tileset.Spacing + tileset.Margin
+	xOffset := int(x)*ts.Spacing + ts.Margin
+	yOffset := int(y)*ts.Spacing + ts.Margin
 
-	return image.Rect(x*tileset.TileWidth+xOffset,
-		y*tileset.TileHeight+yOffset,
-		(x+1)*tileset.TileWidth+xOffset,
-		(y+1)*tileset.TileHeight+yOffset)
+	return image.Rect(x*ts.TileWidth+xOffset,
+		y*ts.TileHeight+yOffset,
+		(x+1)*ts.TileWidth+xOffset,
+		(y+1)*ts.TileHeight+yOffset)
 }
