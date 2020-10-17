@@ -65,6 +65,7 @@ type TilesetTileOffset struct {
 	Y int `xml:"y,attr"`
 }
 
+// TerrainTypes represent a list of Terrains
 type TerrainTypes struct {
 	Terrain []*Terrain
 }
@@ -101,6 +102,7 @@ type TilesetTile struct {
 	Animation *Animation `xml:"animation,omitempty"`
 }
 
+// Animation represents a list of AnimationFrames
 type Animation struct {
 	Frame []*AnimationFrame `xml:"frame"`
 }
