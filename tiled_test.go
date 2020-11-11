@@ -83,6 +83,11 @@ func TestLoadFromFile(t *testing.T) {
 
 	assert.Len(t, m.ObjectGroups, 1)
 	assert.Equal(t, uint32(2), m.ObjectGroups[0].ID)
+
+	// Test Object.Visible defaults to true
+	assert.Len(t, m.ObjectGroups[0].Objects, 1)
+	assert.Equal(t, uint32(2), m.ObjectGroups[0].Objects[0].ID)
+	assert.Equal(t, true, m.ObjectGroups[0].Objects[0].Visible)
 }
 
 func TestLoadFromFileError(t *testing.T) {
