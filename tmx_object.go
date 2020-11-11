@@ -95,6 +95,23 @@ type Object struct {
 	Text *Text `xml:"text"`
 }
 
+// UnmarshalXML decodes a single XML element beginning with the given start element.
+func (o *Object) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	type Alias Object
+
+	item := Alias{
+		Visible: true,
+	}
+
+	if err := d.DecodeElement(&item, &start); err != nil {
+		return err
+	}
+
+	*o = (Object)(item)
+
+	return nil
+}
+
 // Ellipse is used to mark an object as an ellipse.
 type Ellipse struct {
 }
