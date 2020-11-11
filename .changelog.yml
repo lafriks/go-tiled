@@ -1,0 +1,21 @@
+repo: lafriks/go-tiled
+
+service: github
+
+groups:
+  - 
+    name: BREAKING
+    labels:
+      - breaking
+  - 
+    name: ENHANCEMENTS
+    labels:
+      - enhancement
+  -
+    name: BUGFIXES
+    labels:
+      - bug
+  - 
+    name: TESTING
+    labels:
+      - testing
