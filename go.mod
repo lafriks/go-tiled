@@ -1,4 +1,4 @@
-module github.com/Qwarkster/go-tiled
+module github.com/lafriks/go-tiled
 
 go 1.11
 
