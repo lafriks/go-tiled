@@ -56,12 +56,8 @@ type Group struct {
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (g *Group) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type Alias Group
-
-	item := Alias{
-		Opacity: 1,
-		Visible: true,
-	}
+	item := aliasGroup{}
+	item.SetDefaults()
 
 	if err := d.DecodeElement(&item, &start); err != nil {
 		return err

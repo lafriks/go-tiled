@@ -207,25 +207,14 @@ func (l *Layer) DecodeLayer(m *Map) error {
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (l *Layer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type InternalAlias Layer
-
-	type Alias struct {
-		InternalAlias
-		// Layer data in raw format
-		Data *Data `xml:"data"`
-	}
-
-	item := Alias{InternalAlias: InternalAlias{
-		Opacity: 1,
-		Visible: true,
-	}}
+	item := aliasLayer{}
+	item.SetDefaults()
 
 	if err := d.DecodeElement(&item, &start); err != nil {
 		return err
 	}
 
-	*l = (Layer)(item.InternalAlias)
-
+	*l = (Layer)(item.internalLayer)
 	l.data = item.Data
 
 	return nil

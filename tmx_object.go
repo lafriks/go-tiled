@@ -97,11 +97,8 @@ type Object struct {
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (o *Object) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type Alias Object
-
-	item := Alias{
-		Visible: true,
-	}
+	item := aliasObject{}
+	item.SetDefaults()
 
 	if err := d.DecodeElement(&item, &start); err != nil {
 		return err
@@ -204,16 +201,8 @@ type Text struct {
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (t *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type Alias Text
-
-	item := Alias{
-		FontFamily: "sans-serif",
-		Size:       16,
-		Kerning:    true,
-		HAlign:     "left",
-		VAlign:     "top",
-		Color:      &HexColor{},
-	}
+	item := aliasText{}
+	item.SetDefaults()
 
 	if err := d.DecodeElement(&item, &start); err != nil {
 		return err
