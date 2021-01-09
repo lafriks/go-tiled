@@ -162,10 +162,10 @@ func TestGroup(t *testing.T) {
 	assert.Len(t, b.Layers, 1)
 	assert.Len(t, b.Groups, 1)
 
-	b_l := b.Layers[0]
-	assert.Equal(t, uint32(3), b_l.ID)
-	assert.Equal(t, b_l.Name, "Tile Layer 2")
-	assert.Len(t, b_l.Tiles, 400)
+	bL := b.Layers[0]
+	assert.Equal(t, uint32(3), bL.ID)
+	assert.Equal(t, bL.Name, "Tile Layer 2")
+	assert.Len(t, bL.Tiles, 400)
 
 	c := b.Groups[0]
 	assert.Equal(t, uint32(8), c.ID)
