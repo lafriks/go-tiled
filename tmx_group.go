@@ -71,3 +71,23 @@ func (g *Group) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	return nil
 }
+
+// DecodeGroup decodes Group data. This includes all subgroups and the Layer 
+// data for each.
+func (g *Group) DecodeGroup(m *Map) error {
+	for i := 0; i < len(g.Groups); i++ {
+		g := g.Groups[i]
+		if err := g.DecodeGroup(m); err != nil {
+			return err
+		}
+	}
+
+	for i := 0; i < len(g.Layers); i++ {
+		l := g.Layers[i]
+		if err := l.DecodeLayer(m); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

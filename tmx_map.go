@@ -167,6 +167,14 @@ func (m *Map) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return err
 	}
 
+	// Decode Groups data
+	for i := 0; i < len(item.Groups); i++ {
+		g := item.Groups[i]
+		if err := g.DecodeGroup((*Map)(&item)); err != nil {
+			return err
+		}
+	}
+
 	// Decode layers data
 	for i := 0; i < len(item.Layers); i++ {
 		l := item.Layers[i]
