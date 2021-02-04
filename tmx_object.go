@@ -60,6 +60,18 @@ type ObjectGroup struct {
 	Objects []*Object `xml:"object"`
 }
 
+// DecodeObjectGroup decodes object group data
+func (g *ObjectGroup) DecodeObjectGroup(m *Map) {
+	for _, object := range g.Objects {
+		if object.GID > 0 {
+			// Initialize all tilesets that are referenced by tile objects. Otherwise,
+			// if a tileset is used by an object tile but not used by any layer it
+			// won't be loaded.
+			m.TileGIDToTile(object.GID)
+		}
+	}
+}
+
 // Object is used to add custom information to your tile map, such as spawn points, warps, exits, etc.
 type Object struct {
 	// Unique ID of the object. Each object that is placed on a map gets a unique id. Even if an object was deleted, no object gets the same ID.

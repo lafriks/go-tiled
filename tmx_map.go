@@ -183,6 +183,11 @@ func (m *Map) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		}
 	}
 
+	// Decode object groups.
+	for _, g := range item.ObjectGroups {
+		g.DecodeObjectGroup((*Map)(&item))
+	}
+
 	*m = (Map)(item)
 	return nil
 }
