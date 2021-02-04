@@ -235,7 +235,7 @@ func (l *Layer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 func (l *Layer) GetTilePosition(tileID int) (int, int) {
 	x := tileID % l._map.Width
 	y := tileID / l._map.Width
-	return l.OffsetX + x*l._map.TileHeight, l.OffsetY + y*l._map.TileWidth
+	return l.OffsetX + x*l._map.TileWidth, l.OffsetY + y*l._map.TileHeight
 }
 
 // GetTileRect returns the rectangle that contains the Tile in the original Tileset.Image
