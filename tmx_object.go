@@ -72,6 +72,24 @@ func (g *ObjectGroup) DecodeObjectGroup(m *Map) {
 	}
 }
 
+// UnmarshalXML decodes a single XML element beginning with the given start element.
+func (g *ObjectGroup) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	type Alias ObjectGroup
+
+	item := Alias{
+		Opacity: 1,
+		Visible: true,
+	}
+
+	if err := d.DecodeElement(&item, &start); err != nil {
+		return err
+	}
+
+	*g = (ObjectGroup)(item)
+
+	return nil
+}
+
 // Object is used to add custom information to your tile map, such as spawn points, warps, exits, etc.
 type Object struct {
 	// Unique ID of the object. Each object that is placed on a map gets a unique id. Even if an object was deleted, no object gets the same ID.
