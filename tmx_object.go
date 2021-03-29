@@ -25,6 +25,7 @@ package tiled
 import (
 	"encoding/xml"
 	"errors"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -69,7 +70,28 @@ func (g *ObjectGroup) DecodeObjectGroup(m *Map) {
 			// won't be loaded.
 			m.TileGIDToTile(object.GID)
 		}
+		if object.TemplateSource != "" {
+			object.initTemplate(m)
+		}
 	}
+}
+
+// UnmarshalXML decodes a single XML element beginning with the given start element.
+func (g *ObjectGroup) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	type Alias ObjectGroup
+
+	item := Alias{
+		Opacity: 1,
+		Visible: true,
+	}
+
+	if err := d.DecodeElement(&item, &start); err != nil {
+		return err
+	}
+
+	*g = (ObjectGroup)(item)
+
+	return nil
 }
 
 // Object is used to add custom information to your tile map, such as spawn points, warps, exits, etc.
@@ -105,6 +127,41 @@ type Object struct {
 	PolyLines []*PolyLine `xml:"polyline"`
 	// Text
 	Text *Text `xml:"text"`
+	// Template
+	TemplateSource string `xml:"template,attr"`
+	TemplateLoaded bool   `xml:"-"`
+	Template       *Template
+}
+
+func (o *Object) initTemplate(m *Map) error {
+	if o.TemplateLoaded {
+		return nil
+	}
+	if len(o.TemplateSource) == 0 {
+		o.TemplateLoaded = true
+		return nil
+	}
+	sourcePath := m.GetFileFullPath(o.TemplateSource)
+	f, err := m.loader.open(sourcePath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	d := xml.NewDecoder(f)
+	if err := d.Decode(&o.Template); err != nil {
+		return err
+	}
+	o.TemplateLoaded = true
+
+	if o.Template == nil || o.Template.Tileset == nil || o.Template.Object == nil {
+		return nil
+	}
+	if src := o.Template.Tileset.Source; src != "" {
+		// The tileset source may be relative from the template location.
+		o.Template.Tileset.Source = filepath.Join(filepath.Dir(o.TemplateSource), src)
+	}
+	return m.initTileset(o.Template.Tileset)
 }
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
