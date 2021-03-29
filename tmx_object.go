@@ -78,12 +78,8 @@ func (g *ObjectGroup) DecodeObjectGroup(m *Map) {
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (g *ObjectGroup) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type Alias ObjectGroup
-
-	item := Alias{
-		Opacity: 1,
-		Visible: true,
-	}
+	item := aliasObjectGroup{}
+	item.SetDefaults()
 
 	if err := d.DecodeElement(&item, &start); err != nil {
 		return err
