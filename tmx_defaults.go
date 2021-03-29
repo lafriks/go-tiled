@@ -29,6 +29,7 @@ type aliasLayer struct {
 }
 type aliasMap Map
 type aliasObject Object
+type aliasObjectGroup ObjectGroup
 type aliasText Text
 
 // SetDefaults provides default values for Group.
@@ -57,6 +58,12 @@ func (a *aliasMap) SetDefaults() {
 // SetDefaults provides default values for Object.
 func (a *aliasObject) SetDefaults() {
 	a.Visible = true
+}
+
+// SetDefaults provides default values for ObjectGroup.
+func (a *aliasObjectGroup) SetDefaults() {
+	a.Visible = true
+	a.Opacity = 1
 }
 
 // SetDefaults provides default values for Text.
