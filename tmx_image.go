@@ -54,12 +54,8 @@ type ImageLayer struct {
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (l *ImageLayer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type Alias ImageLayer
-
-	item := Alias{
-		Opacity: 1,
-		Visible: true,
-	}
+	item := aliasImageLayer{}
+	item.SetDefaults()
 
 	if err := d.DecodeElement(&item, &start); err != nil {
 		return err
