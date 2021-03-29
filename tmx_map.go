@@ -155,9 +155,10 @@ func (m *Map) GetFileFullPath(fileName string) string {
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (m *Map) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	item := aliasMap{}
-	item.loader = m.loader
-	item.baseDir = m.baseDir
+	item := aliasMap{
+		loader:  m.loader,
+		baseDir: m.baseDir,
+	}
 	item.SetDefaults()
 
 	if err := d.DecodeElement(&item, &start); err != nil {
