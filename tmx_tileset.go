@@ -49,6 +49,9 @@ type Tileset struct {
 	TerrainTypes []*Terrain `xml:"terraintypes>terrain"`
 	// Tiles in tileset
 	Tiles []*TilesetTile `xml:"tile"`
+
+	// WangSets
+	WangSets WangSets `xml:"wangsets>wangset"`
 }
 
 // GetFileFullPath returns path to file relative to tileset file
