@@ -20,5 +20,9 @@ func main() {
 		os.Exit(2)
 	}
 
+	wangColors, err := tiledMap.Tilesets[0].WangSets[0].GetWangColors(16)
+
+	fmt.Print(wangColors)
+
 	fmt.Print(tiledMap.Tilesets[0].WangSets)
 }
