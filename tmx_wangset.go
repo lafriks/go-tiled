@@ -46,7 +46,7 @@ type WangTile struct {
 // if corner type is not used it will return an array of len 8 in the following order.
 // top, top right, right, bottom right, bottom, bottom left, left, top left
 // if there is no wangcolor assigned to a part of the tile it will return an nil pointer instead for that index
-func (w *WangSet) GetWangColors(tileId uint32) ([]*WangColor, error) {
+func (w *WangSet) GetWangColors(tileID uint32) ([]*WangColor, error) {
 
 	if w.WangColors == nil {
 		return nil, errors.New("no wangcolors found on this wangset")
@@ -54,7 +54,7 @@ func (w *WangSet) GetWangColors(tileId uint32) ([]*WangColor, error) {
 
 	var tile *WangTile
 	for _, t := range w.WangTiles {
-		if t.TileId == tileId {
+		if t.TileId == tileID {
 			tile = t
 			break
 		}
