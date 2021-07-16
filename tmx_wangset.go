@@ -46,7 +46,7 @@ type WangTile struct {
 // if corner type is not used it will return an array of len 8 in the following order.
 // top, top right, right, bottom right, bottom, bottom left, left, top left
 // if there is no wangcolor assigned to a part of the tile it will return an nil pointer instead for that index
-func (w *WangSet) GetWangColors(tileID uint32) ([]*WangColor, error) {
+func (w *WangSet) GetWangColors(tileID uint32) (map[string]*WangColor, error) {
 
 	if w.WangColors == nil {
 		return nil, errors.New("no wangcolors found on this wangset")
@@ -81,44 +81,19 @@ func (w *WangSet) GetWangColors(tileID uint32) ([]*WangColor, error) {
 		wangIds = append(wangIds, id)
 	}
 
-	var wangColors []*WangColor
+	// Wang Color mapping to position
+	var wangPositions = [8]string{"top", "topRight", "right", "bottomRight", "bottom", "bottomLeft", "left", "topLeft"}
 
-	if w.Type == "corner" { // missing top, right, bottom and left..
+	var wangColors = make(map[string]*WangColor)
 
-		if len(w.WangColors) < len(wangIds)/2 {
-			return nil, errors.New("too few wangcolors found")
-		}
+	for i, id := range wangIds {
 
-		for i, id := range wangIds {
-			if i%2 == 0 { // skip even indices
-				continue
-			}
-
-			if id == 0 { // no color assigned if id is 0, set to nil
-				wangColors = append(wangColors, nil)
-			} else {
-
-				wangColors = append(wangColors, w.WangColors[id-1]) // minus 1 because there is no 0 id, since 0 means unassigned
-			}
-		}
-
-	} else { // type != corner
-
-		if len(w.WangColors) < len(wangIds) {
-			return nil, errors.New("too few wangcolors found")
-		}
-
-		for _, id := range wangIds {
-
-			if id == 0 { // no color assigned if id is 0, set to nil
-				wangColors = append(wangColors, nil)
-			} else {
-
-				wangColors = append(wangColors, w.WangColors[id-1]) // minus 1 because there is no 0 id, since 0 means unassigned
-			}
+		if id == 0 { // no color assigned if id is 0, set to nil
+			wangColors[wangPositions[i]] = nil
+		} else {
+			wangColors[wangPositions[i]] = w.WangColors[id-1]
 		}
 	}
 
 	return wangColors, nil
-
 }

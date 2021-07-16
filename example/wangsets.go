@@ -25,4 +25,5 @@ func main() {
 	fmt.Print(wangColors)
 
 	fmt.Print(tiledMap.Tilesets[0].WangSets)
+
 }
