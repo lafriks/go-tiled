@@ -16,7 +16,7 @@ func main() {
 	var err error
 	tiledMap, err = tiled.LoadFromFile(tmxPath)
 	if err != nil {
-		fmt.Printf("error parsing gameMap: %s", err.Error())
+		fmt.Printf("error parsing tiledMap: %s", err.Error())
 		os.Exit(2)
 	}
 
