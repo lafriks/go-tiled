@@ -6,13 +6,12 @@ import (
 	"strings"
 )
 
+// WangSets contains the list of Wang sets defined for this tileset.
 // https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#wangsets
-
-// Contains the list of Wang sets defined for this tileset.
 // Can contain any number: <wangset>
 type WangSets []*WangSet
 
-// Defines a list of corner colors and a list of edge colors, and any number of Wang tiles using these colors.
+// WangSet defines a list of corner colors and a list of edge colors, and any number of Wang tiles using these colors.
 type WangSet struct {
 	Name       string       `xml:"name,attr"` // The name of the Wang set.
 	Type       string       `xml:"type,attr"` // ex. corner
@@ -21,27 +20,27 @@ type WangSet struct {
 	WangTiles  []*WangTile  `xml:"wangtile"`
 }
 
-//A color that can be used to define the corner and/or edge of a Wang tile.
+// Wangcolor that can be used to define the corner and/or edge of a Wang tile.
 type WangColor struct {
 	Name        string  `xml:"name,attr"`        //  The name of this color.
 	Color       string  `xml:"color,attr"`       // The color in #RRGGBB format (example: #c17d11).
-	TileId      uint32  `xml:"tile,attr"`        // The tile ID of the tile representing this color.
+	TileID      uint32  `xml:"tile,attr"`        // The tile ID of the tile representing this color.
 	Probability float32 `xml:"probability,attr"` // The relative probability that this color is chosen over others in case of multiple options. (defaults to 0)
 }
 
-//Defines a Wang tile, by referring to a tile in the tileset and associating it with a certain Wang ID.
+// Wangtile, by referring to a tile in the tileset and associating it with a certain Wang ID.
 type WangTile struct {
-	TileId uint32 `xml:"tileid,attr"` // The tile ID.
+	TileID uint32 `xml:"tileid,attr"` // The tile ID.
 
-	// The Wang ID, given by a comma-separated list of indexes (starting from 1, because 0 means _unset_)
+	// WangID, given by a comma-separated list of indexes (starting from 1, because 0 means _unset_)
 	// referring to the Wang colors in the Wang set in the following order:
 	// top, top right, right, bottom right, bottom, bottom left, left, top left (since Tiled 1.5).
 	// Before Tiled 1.5, the Wang ID was saved as a 32-bit unsigned integer stored in the format
 	// 0xCECECECE (where each C is a corner color and each E is an edge color, in reverse order).
-	WangId string `xml:"wangid,attr"` //
+	WangID string `xml:"wangid,attr"` //
 }
 
-// getWangColors returns the wangcolors for the tileId. If corner type is used it will return an array of len 4
+// GetWangColors returns the wangcolors for the tileId. If corner type is used it will return an array of len 4
 // topRight, bottomRight, bottom left, top left
 // if corner type is not used it will return an array of len 8 in the following order.
 // top, top right, right, bottom right, bottom, bottom left, left, top left
@@ -54,7 +53,7 @@ func (w *WangSet) GetWangColors(tileID uint32) (map[string]*WangColor, error) {
 
 	var tile *WangTile
 	for _, t := range w.WangTiles {
-		if t.TileId == tileID {
+		if t.TileID == tileID {
 			tile = t
 			break
 		}
@@ -64,7 +63,7 @@ func (w *WangSet) GetWangColors(tileID uint32) (map[string]*WangColor, error) {
 	}
 
 	// convert from CSV to array of strings
-	wangIdsString := strings.Split(tile.WangId, ",")
+	wangIdsString := strings.Split(tile.WangID, ",")
 
 	// convert from array of strings to slice of uint32
 	var wangIds []uint32 // will contain a slice of the wangIds

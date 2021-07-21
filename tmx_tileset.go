@@ -137,6 +137,7 @@ func (ts *Tileset) GetTileRect(tileID uint32) image.Rectangle {
 		(y+1)*ts.TileHeight+yOffset)
 }
 
+// GetTilesetTile returns TilesetTile by tileID
 func (ts *Tileset) GetTilesetTile(tileID uint32) (*TilesetTile, error) {
 
 	var tile *TilesetTile

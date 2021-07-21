@@ -47,18 +47,9 @@ func TestLoadFromFileWangSet(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, m)
 
-	assert.Len(t, m.Layers, 1)
-	assert.Equal(t, uint32(1), m.Layers[0].ID)
-
-	// Test ObjectGroups.Visible defaults to true
-	assert.Len(t, m.ObjectGroups, 1)
-	assert.Equal(t, uint32(2), m.ObjectGroups[0].ID)
-	assert.Equal(t, true, m.ObjectGroups[0].Visible)
-
-	// Test Object.Visible defaults to true
-	assert.Len(t, m.ObjectGroups[0].Objects, 1)
-	assert.Equal(t, uint32(2), m.ObjectGroups[0].Objects[0].ID)
-	assert.Equal(t, true, m.ObjectGroups[0].Objects[0].Visible)
+	// Test WangSets
+	assert.NotNil(t, m.Tilesets[0].WangSets)
+	assert.NotNil(t, m.Tilesets[0].WangSets[0].WangColors)
 }
 
 func TestLoadReader(t *testing.T) {

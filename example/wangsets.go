@@ -8,13 +8,13 @@ import (
 )
 
 const (
-	tmxPath = "../go-tiled/assets/test_wangsets_map.tmx"
+	wangTmxPath = "../go-tiled/assets/test_wangsets_map.tmx"
 )
 
 func main() {
 	var tiledMap *tiled.Map
 	var err error
-	tiledMap, err = tiled.LoadFromFile(tmxPath)
+	tiledMap, err = tiled.LoadFromFile(wangTmxPath)
 	if err != nil {
 		fmt.Printf("error parsing gameMap: %s", err.Error())
 		os.Exit(2)
