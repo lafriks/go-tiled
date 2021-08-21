@@ -18,7 +18,7 @@ steps:
     image: golang:1.13
     pull: always
     commands:
-      - go tool vet -all -shadowstrict .
+      - go vet -all .
       - go get -u github.com/mgechev/revive
       - revive -config .revive.toml -exclude=./vendor/... ./...
 
