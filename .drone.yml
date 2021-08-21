@@ -1,5 +1,6 @@
 ---
 kind: pipeline
+type: docker
 name: testing
 
 clone:
@@ -14,7 +15,7 @@ trigger:
 
 steps:
   - name: lint
-    image: golang:1.11
+    image: golang:1.13
     pull: always
     commands:
       - go tool vet -all -shadowstrict .
@@ -22,7 +23,7 @@ steps:
       - revive -config .revive.toml -exclude=./vendor/... ./...
 
   - name: test
-    image: golang:1.11
+    image: golang:1.13
     pull: always
     commands:
       - go test -v .
