@@ -24,9 +24,10 @@ package tiled
 
 import (
 	"bytes"
+	"embed"
 	"encoding/xml"
 	"image/color"
-	"net/http"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -208,7 +209,7 @@ type testFileSystem struct {
 	AttemptedOpen []string
 }
 
-func (t *testFileSystem) Open(filename string) (http.File, error) {
+func (t *testFileSystem) Open(filename string) (fs.File, error) {
 	t.AttemptedOpen = append(t.AttemptedOpen, filename)
 	if filepath.Base(filename) == "loader.tmx" {
 		return os.Open(filepath.Join(GetAssetsDirectory(), "loader.tmx"))
@@ -231,6 +232,51 @@ func TestLoader(t *testing.T) {
 	assert.Nil(t, m)
 
 	assert.Equal(t, []string{mapFile, filepath.Join(GetAssetsDirectory(), "..", "README.md")}, fs.AttemptedOpen)
+}
+
+//go:embed assets/**
+var assetsFS embed.FS
+
+func TestEmbeddedLoader(t *testing.T) {
+	loader := &Loader{
+		FileSystem: assetsFS,
+	}
+	tcs := []struct {
+		name string
+		load func() (*Map, error)
+	}{
+		{
+			name: "LoadFromReader",
+			load: func() (*Map, error) {
+				file, err := assetsFS.Open("assets/test2.tmx")
+				if err != nil {
+					return nil, err
+				}
+				return loader.LoadFromReader("assets", file)
+			},
+		},
+		{
+			name: "LoadFromFile",
+			load: func() (*Map, error) {
+				return loader.LoadFromFile("assets/test2.tmx")
+			},
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			m, err := tc.load()
+			assert.NoError(t, err)
+
+			assert.Equal(t, m.Version, "1.2")
+			assert.Equal(t, m.TiledVersion, "1.2.3")
+
+			assert.Len(t, m.Tilesets, 1)
+			tileset := m.Tilesets[0]
+			assert.Equal(t, tileset.Version, "1.2")
+			assert.Equal(t, tileset.TiledVersion, "1.2.3")
+		})
+	}
 }
 
 func TestParseHexColor(t *testing.T) {

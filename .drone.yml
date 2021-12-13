@@ -15,7 +15,7 @@ trigger:
 
 steps:
   - name: lint
-    image: golang:1.13
+    image: golang:1.16
     pull: always
     commands:
       - go vet -all .
@@ -23,7 +23,7 @@ steps:
       - revive -config .revive.toml -exclude=./vendor/... ./...
 
   - name: test
-    image: golang:1.13
+    image: golang:1.16
     pull: always
     commands:
       - go test -v .
