@@ -238,9 +238,6 @@ func TestLoader(t *testing.T) {
 var assetsFS embed.FS
 
 func TestEmbeddedLoader(t *testing.T) {
-	loader := &Loader{
-		FileSystem: assetsFS,
-	}
 	tcs := []struct {
 		name string
 		load func() (*Map, error)
@@ -252,13 +249,13 @@ func TestEmbeddedLoader(t *testing.T) {
 				if err != nil {
 					return nil, err
 				}
-				return loader.LoadFromReader("assets", file)
+				return LoadFromReader("assets", file)
 			},
 		},
 		{
 			name: "LoadFromFile",
 			load: func() (*Map, error) {
-				return loader.LoadFromFile("assets/test2.tmx")
+				return LoadFromFile("assets/test2.tmx", WithFileSystem(assetsFS))
 			},
 		},
 	}
@@ -276,6 +273,13 @@ func TestEmbeddedLoader(t *testing.T) {
 			assert.Equal(t, tileset.Version, "1.2")
 			assert.Equal(t, tileset.TiledVersion, "1.2.3")
 		})
+	}
+}
+
+func TestLoadFromFileMissingFile(t *testing.T) {
+	_, err := LoadFromFile("missing-file.tmx")
+	if err == nil {
+		t.Fatal("expected LoadFromFile to return err, but no error was returned")
 	}
 }
 
