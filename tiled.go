@@ -32,13 +32,13 @@ import (
 
 // LoadFromReader function loads tiled map in TMX format from io.Reader
 // baseDir is used for loading additional tile data, current directory is used if empty
-func LoadFromReader(baseDir string, r io.Reader, options ...loaderOption) (*Map, error) {
+func LoadFromReader(baseDir string, r io.Reader, options ...LoaderOption) (*Map, error) {
 	l := newLoader(options...)
 	return l.LoadFromReader(baseDir, r)
 }
 
 // LoadFromFile function loads tiled map in TMX format from file
-func LoadFromFile(fileName string, options ...loaderOption) (*Map, error) {
+func LoadFromFile(fileName string, options ...LoaderOption) (*Map, error) {
 	l := newLoader(options...)
 	return l.LoadFromFile(fileName)
 }
@@ -52,9 +52,10 @@ type Loader struct {
 	FileSystem fs.FS
 }
 
-type loaderOption func(*Loader)
+// LoaderOption is used with LoadFromReader and LoadFromFile functions to pass additional options
+type LoaderOption func(*Loader)
 
-func newLoader(options ...loaderOption) *Loader {
+func newLoader(options ...LoaderOption) *Loader {
 	l := &Loader{}
 	for _, opt := range options {
 		opt(l)
@@ -72,7 +73,7 @@ func (l *Loader) open(name string) (fs.File, error) {
 }
 
 // WithFileSystem returns an option to load level from a passed filesystem
-func WithFileSystem(fileSystem fs.FS) loaderOption {
+func WithFileSystem(fileSystem fs.FS) LoaderOption {
 	return func(l *Loader) {
 		l.FileSystem = fileSystem
 	}
