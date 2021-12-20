@@ -249,7 +249,7 @@ func TestEmbeddedLoader(t *testing.T) {
 				if err != nil {
 					return nil, err
 				}
-				return LoadReader("assets", file)
+				return LoadReader("assets", file, WithFileSystem(assetsFS))
 			},
 		},
 		{
