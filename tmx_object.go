@@ -25,6 +25,7 @@ package tiled
 import (
 	"encoding/xml"
 	"errors"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -60,6 +61,35 @@ type ObjectGroup struct {
 	Objects []*Object `xml:"object,omitempty"`
 }
 
+// DecodeObjectGroup decodes object group data
+func (g *ObjectGroup) DecodeObjectGroup(m *Map) {
+	for _, object := range g.Objects {
+		if object.GID > 0 {
+			// Initialize all tilesets that are referenced by tile objects. Otherwise,
+			// if a tileset is used by an object tile but not used by any layer it
+			// won't be loaded.
+			m.TileGIDToTile(object.GID)
+		}
+		if len(object.TemplateSource) > 0 {
+			object.initTemplate(m)
+		}
+	}
+}
+
+// UnmarshalXML decodes a single XML element beginning with the given start element.
+func (g *ObjectGroup) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	item := aliasObjectGroup{}
+	item.SetDefaults()
+
+	if err := d.DecodeElement(&item, &start); err != nil {
+		return err
+	}
+
+	*g = (ObjectGroup)(item)
+
+	return nil
+}
+
 // Object is used to add custom information to your tile map, such as spawn points, warps, exits, etc.
 type Object struct {
 	// Unique ID of the object. Each object that is placed on a map gets a unique id. Even if an object was deleted, no object gets the same ID.
@@ -93,6 +123,55 @@ type Object struct {
 	PolyLines []*PolyLine `xml:"polyline,omitempty"`
 	// Text
 	Text *Text `xml:"text,omitempty"`
+	// Template
+	TemplateSource string `xml:"template,attr,omitempty"`
+	TemplateLoaded bool   `xml:"-"`
+	Template       *Template
+}
+
+func (o *Object) initTemplate(m *Map) error {
+	if o.TemplateLoaded {
+		return nil
+	}
+	if len(o.TemplateSource) == 0 {
+		o.TemplateLoaded = true
+		return nil
+	}
+	sourcePath := m.GetFileFullPath(o.TemplateSource)
+	f, err := m.loader.open(sourcePath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	d := xml.NewDecoder(f)
+	if err := d.Decode(&o.Template); err != nil {
+		return err
+	}
+	o.TemplateLoaded = true
+
+	if o.Template == nil || o.Template.Tileset == nil || o.Template.Object == nil {
+		return nil
+	}
+	if src := o.Template.Tileset.Source; len(src) > 0 {
+		// The tileset source may be relative from the template location.
+		o.Template.Tileset.Source = filepath.Join(filepath.Dir(o.TemplateSource), src)
+	}
+	return m.initTileset(o.Template.Tileset)
+}
+
+// UnmarshalXML decodes a single XML element beginning with the given start element.
+func (o *Object) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	item := aliasObject{}
+	item.SetDefaults()
+
+	if err := d.DecodeElement(&item, &start); err != nil {
+		return err
+	}
+
+	*o = (Object)(item)
+
+	return nil
 }
 
 // Ellipse is used to mark an object as an ellipse.
@@ -187,16 +266,9 @@ type Text struct {
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (t *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type Alias Text
 
-	item := Alias{
-		FontFamily: "sans-serif",
-		Size:       16,
-		Kerning:    b(true),
-		HAlign:     "left",
-		VAlign:     "top",
-		Color:      &HexColor{},
-	}
+	item := aliasText{}
+	item.SetDefaults()
 
 	if err := d.DecodeElement(&item, &start); err != nil {
 		return err

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="128" tileheight="128" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" source="tilesets/kenny-racing/kenny-racing-tileset-grass.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="10" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYWBgYEHCjEDMhCaGDbMBMTsOOVxmoIvjMgOXODXcRipGtxOXG9DtJNcNADh3AZE=
+  </data>
+ </layer>
+</map>

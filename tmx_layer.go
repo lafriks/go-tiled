@@ -207,25 +207,14 @@ func (l *Layer) DecodeLayer(m *Map) error {
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (l *Layer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type InternalAlias Layer
-
-	type Alias struct {
-		InternalAlias
-		// Layer data in raw format
-		Data *Data `xml:"data"`
-	}
-
-	item := Alias{InternalAlias: InternalAlias{
-		Opacity: 1,
-		Visible: true,
-	}}
+	item := aliasLayer{}
+	item.SetDefaults()
 
 	if err := d.DecodeElement(&item, &start); err != nil {
 		return err
 	}
 
-	*l = (Layer)(item.InternalAlias)
-
+	*l = (Layer)(item.internalLayer)
 	l.data = item.Data
 
 	return nil
@@ -235,7 +224,7 @@ func (l *Layer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 func (l *Layer) GetTilePosition(tileID int) (int, int) {
 	x := tileID % l._map.Width
 	y := tileID / l._map.Width
-	return l.OffsetX + x*l._map.TileHeight, l.OffsetY + y*l._map.TileWidth
+	return l.OffsetX + x*l._map.TileWidth, l.OffsetY + y*l._map.TileHeight
 }
 
 // GetTileRect returns the rectangle that contains the Tile in the original Tileset.Image

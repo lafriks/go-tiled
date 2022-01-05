@@ -1,8 +1,8 @@
 module github.com/lafriks/go-tiled
 
-go 1.11
+go 1.16
 
 require (
-	github.com/disintegration/imaging v1.6.0
-	github.com/stretchr/testify v1.3.0
+	github.com/disintegration/imaging v1.6.2
+	github.com/stretchr/testify v1.7.0
 )

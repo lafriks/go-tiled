@@ -155,16 +155,22 @@ func (m *Map) GetFileFullPath(fileName string) string {
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (m *Map) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type Alias Map
-
-	item := Alias{
-		loader:      m.loader,
-		baseDir:     m.baseDir,
-		RenderOrder: "right-down",
+	item := aliasMap{
+		loader:  m.loader,
+		baseDir: m.baseDir,
 	}
+	item.SetDefaults()
 
 	if err := d.DecodeElement(&item, &start); err != nil {
 		return err
+	}
+
+	// Decode Groups data
+	for i := 0; i < len(item.Groups); i++ {
+		g := item.Groups[i]
+		if err := g.DecodeGroup((*Map)(&item)); err != nil {
+			return err
+		}
 	}
 
 	// Decode layers data
@@ -173,6 +179,11 @@ func (m *Map) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		if err := l.DecodeLayer((*Map)(&item)); err != nil {
 			return err
 		}
+	}
+
+	// Decode object groups.
+	for _, g := range item.ObjectGroups {
+		g.DecodeObjectGroup((*Map)(&item))
 	}
 
 	*m = (Map)(item)

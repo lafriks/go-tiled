@@ -91,7 +91,7 @@ type TilesetTile struct {
 	// Leaving out a value means that corner has no terrain. (optional) (since 0.9)
 	Terrain string `xml:"terrain,attr,omitempty"`
 	// A percentage indicating the probability that this tile is chosen when it competes with others while editing with the terrain tool. (optional) (since 0.9)
-	Probability int `xml:"probability,attr,omitempty"`
+	Probability float32 `xml:"probability,attr,omitempty"`
 	// Custom properties
 	Properties *Properties `xml:"properties,omitempty"`
 	// Embedded image

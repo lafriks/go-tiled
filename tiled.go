@@ -25,7 +25,7 @@ package tiled
 import (
 	"encoding/xml"
 	"io"
-	"net/http"
+	"io/fs"
 	"os"
 	"path/filepath"
 )
@@ -47,12 +47,12 @@ type Loader struct {
 	// resources it may reference.
 	//
 	// A nil FileSystem uses the local file system.
-	FileSystem http.FileSystem
+	FileSystem fs.FS
 }
 
 // open opens the given file using the Loader's FileSystem, or uses os.Open
 // if l or l.FileSystem is nil.
-func (l *Loader) open(name string) (http.File, error) {
+func (l *Loader) open(name string) (fs.File, error) {
 	if l == nil || l.FileSystem == nil {
 		return os.Open(name)
 	}
@@ -83,11 +83,7 @@ func (l *Loader) LoadFromFile(fileName string) (*Map, error) {
 	}
 	defer f.Close()
 
-	dir, err := filepath.Abs(filepath.Dir(fileName))
-	if err != nil {
-		return nil, err
-	}
-
+	dir := filepath.Dir(fileName)
 	return l.LoadFromReader(dir, f)
 }
 

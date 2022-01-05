@@ -62,10 +62,6 @@ type Renderer struct {
 	engine    RendererEngine
 }
 
-type subImager interface {
-	SubImage(r image.Rectangle) image.Image
-}
-
 // NewRenderer creates new rendering engine instance.
 func NewRenderer(m *tiled.Map) (*Renderer, error) {
 	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image)}
@@ -118,7 +114,7 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 			rect := tile.Tileset.GetTileRect(i)
 			r.tileCache[i+tile.Tileset.FirstGID] = imaging.Crop(img, rect)
 			if tile.ID == i {
-				timg = r.tileCache[i]
+				timg = r.tileCache[i+tile.Tileset.FirstGID]
 			}
 		}
 	}
