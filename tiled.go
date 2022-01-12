@@ -52,7 +52,7 @@ type loader struct {
 	FileSystem fs.FS
 }
 
-// LoaderOption is used with LoadFromReader and LoadFromFile functions to pass additional options
+// LoaderOption is used with LoadReader and LoadFile functions to pass additional options
 type LoaderOption func(*loader)
 
 func newLoader(options ...LoaderOption) *loader {
