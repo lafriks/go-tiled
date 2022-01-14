@@ -30,7 +30,7 @@ const mapPath = "maps/map.tmx" // Path to your Tiled Map.
 
 func main() {
     // Parse .tmx file.
-    gameMap, err := tiled.LoadFromFile(mapPath)
+    gameMap, err := tiled.LoadFile(mapPath)
     if err != nil {
         fmt.Printf("error parsing map: %s", err.Error()
         os.Exit(2)

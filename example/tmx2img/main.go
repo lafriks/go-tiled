@@ -18,7 +18,7 @@ func main() {
 		img = "map.png"
 	}
 
-	m, err := tiled.LoadFromFile(filename)
+	m, err := tiled.LoadFile(filename)
 	if err != nil {
 		fmt.Println(err)
 		return

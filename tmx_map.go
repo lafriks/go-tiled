@@ -47,7 +47,7 @@ var (
 // layers are rendered by Tiled
 type Map struct {
 	// Loader for loading additional data
-	loader *Loader
+	loader *loader
 	// Base directory for loading additional data
 	baseDir string
 
