@@ -40,25 +40,25 @@ type ObjectGroup struct {
 	// Unique ID of the layer.
 	// Each layer that added to a map gets a unique id. Even if a layer is deleted,
 	// no layer ever gets the same ID. Can not be changed in Tiled. (since Tiled 1.2)
-	ID uint32 `xml:"id,attr"`
+	ID uint32 `xml:"id,attr,omitempty"`
 	// The name of the object group.
-	Name string `xml:"name,attr"`
+	Name string `xml:"name,attr,omitempty"`
 	// The color used to display the objects in this group.
-	Color *HexColor `xml:"color,attr"`
+	Color *HexColor `xml:"color,attr,omitempty"`
 	// The opacity of the layer as a value from 0 to 1. Defaults to 1.
-	Opacity float32 `xml:"opacity,attr"`
+	Opacity float32 `xml:"opacity,attr,omitempty"`
 	// Whether the layer is shown (1) or hidden (0). Defaults to 1.
-	Visible bool `xml:"visible,attr"`
+	Visible *bool `xml:"visible,attr"`
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
-	OffsetX int `xml:"offsetx,attr"`
+	OffsetX int `xml:"offsetx,attr,omitempty"`
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
-	OffsetY int `xml:"offsety,attr"`
+	OffsetY int `xml:"offsety,attr,omitempty"`
 	// Whether the objects are drawn according to the order of appearance ("index") or sorted by their y-coordinate ("topdown"). Defaults to "topdown".
-	DrawOrder string `xml:"draworder,attr"`
+	DrawOrder string `xml:"draworder,attr,omitempty"`
 	// Custom properties
-	Properties Properties `xml:"properties>property"`
+	Properties *Properties `xml:"properties,omitempty"`
 	// Group objects
-	Objects []*Object `xml:"object"`
+	Objects []*Object `xml:"object,omitempty"`
 }
 
 // DecodeObjectGroup decodes object group data
@@ -94,37 +94,37 @@ func (g *ObjectGroup) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 type Object struct {
 	// Unique ID of the object. Each object that is placed on a map gets a unique id. Even if an object was deleted, no object gets the same ID.
 	// Can not be changed in Tiled Qt. (since Tiled 0.11)
-	ID uint32 `xml:"id,attr"`
+	ID uint32 `xml:"id,attr,omitempty"`
 	// The name of the object. An arbitrary string.
-	Name string `xml:"name,attr"`
+	Name string `xml:"name,attr,omitempty"`
 	// The type of the object. An arbitrary string.
-	Type string `xml:"type,attr"`
+	Type string `xml:"type,attr,omitempty"`
 	// The x coordinate of the object.
-	X float64 `xml:"x,attr"`
+	X float64 `xml:"x,attr,omitempty"`
 	// The y coordinate of the object.
-	Y float64 `xml:"y,attr"`
+	Y float64 `xml:"y,attr,omitempty"`
 	// The width of the object (defaults to 0).
-	Width float64 `xml:"width,attr"`
+	Width float64 `xml:"width,attr,omitempty"`
 	// The height of the object (defaults to 0).
-	Height float64 `xml:"height,attr"`
+	Height float64 `xml:"height,attr,omitempty"`
 	// The rotation of the object in degrees clockwise (defaults to 0). (since 0.10)
-	Rotation float64 `xml:"rotation,attr"`
+	Rotation float64 `xml:"rotation,attr,omitempty"`
 	// An reference to a tile (optional).
-	GID uint32 `xml:"gid,attr"`
+	GID uint32 `xml:"gid,attr,omitempty"`
 	// Whether the object is shown (1) or hidden (0). Defaults to 1. (since 0.9)
-	Visible bool `xml:"visible,attr"`
+	Visible *bool `xml:"visible,attr"`
 	// Custom properties
-	Properties Properties `xml:"properties>property"`
+	Properties *Properties `xml:"properties,omitempty"`
 	// Used to mark an object as an ellipse. The existing x, y, width and height attributes are used to determine the size of the ellipse.
-	Ellipses []*Ellipse `xml:"ellipse"`
+	Ellipses []*Ellipse `xml:"ellipse,omitempty"`
 	// Polygons
-	Polygons []*Polygon `xml:"polygon"`
+	Polygons []*Polygon `xml:"polygon,omitempty"`
 	// Poly lines
-	PolyLines []*PolyLine `xml:"polyline"`
+	PolyLines []*PolyLine `xml:"polyline,omitempty"`
 	// Text
-	Text *Text `xml:"text"`
+	Text *Text `xml:"text,omitempty"`
 	// Template
-	TemplateSource string `xml:"template,attr"`
+	TemplateSource string `xml:"template,attr,omitempty"`
 	TemplateLoaded bool   `xml:"-"`
 	Template       *Template
 }
@@ -241,31 +241,32 @@ type Text struct {
 	// The actual text
 	Text string `xml:",chardata"`
 	// The font family used (default: "sans-serif")
-	FontFamily string `xml:"fontfamily,attr"`
+	FontFamily string `xml:"fontfamily,attr,omitempty"`
 	// The size of the font in pixels (not using points, because other sizes in the TMX format are also using pixels) (default: 16)
-	Size int `xml:"pixelsize,attr"`
+	Size int `xml:"pixelsize,attr,omitempty"`
 	// Whether word wrapping is enabled (1) or disabled (0). Defaults to 0.
-	Wrap bool `xml:"wrap,attr"`
+	Wrap bool `xml:"wrap,attr,omitempty"`
 	// Color of the text in #AARRGGBB or #RRGGBB format (default: #000000)
-	Color *HexColor `xml:"color,attr"`
+	Color *HexColor `xml:"color,attr,omitempty"`
 	// Whether the font is bold (1) or not (0). Defaults to 0.
-	Bold bool `xml:"bold,attr"`
+	Bold bool `xml:"bold,attr,omitempty"`
 	// Whether the font is italic (1) or not (0). Defaults to 0.
-	Italic bool `xml:"italic,attr"`
+	Italic bool `xml:"italic,attr,omitempty"`
 	// Whether a line should be drawn below the text (1) or not (0). Defaults to 0.
-	Underline bool `xml:"underline,attr"`
+	Underline bool `xml:"underline,attr,omitempty"`
 	// Whether a line should be drawn through the text (1) or not (0). Defaults to 0.
-	Strikethrough bool `xml:"strikeout,attr"`
+	Strikethrough bool `xml:"strikeout,attr,omitempty"`
 	// Whether kerning should be used while rendering the text (1) or not (0). Default to 1.
-	Kerning bool `xml:"kerning,attr"`
+	Kerning *bool `xml:"kerning,attr,omitempty"`
 	// Horizontal alignment of the text within the object (left (default), center, right or justify (since Tiled 1.2.1))
-	HAlign string `xml:"halign,attr"`
+	HAlign string `xml:"halign,attr,omitempty"`
 	// Vertical alignment of the text within the object (top (default), center or bottom)
-	VAlign string `xml:"valign,attr"`
+	VAlign string `xml:"valign,attr,omitempty"`
 }
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (t *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+
 	item := aliasText{}
 	item.SetDefaults()
 

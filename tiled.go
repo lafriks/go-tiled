@@ -106,3 +106,29 @@ func (l *loader) LoadFile(fileName string) (*Map, error) {
 	dir := filepath.Dir(fileName)
 	return l.LoadReader(dir, f)
 }
+
+// LoadTilesetFromReader loads a .tsx file into a Tileset structure
+func LoadTilesetFromReader(baseDir string, r io.Reader) (*Tileset, error) {
+	d := xml.NewDecoder(r)
+
+	m := &Tileset{
+		baseDir:      baseDir,
+		SourceLoaded: true,
+	}
+	if err := d.Decode(m); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
+// SaveTilesetToWriter saves a Tileset structure into a given writer
+func SaveTilesetToWriter(tileset *Tileset, w io.Writer) error {
+	encoder := xml.NewEncoder(w)
+	encoder.Indent("", " ")
+	return encoder.Encode(tileset)
+}
+
+func b(v bool) *bool {
+	return &v
+}

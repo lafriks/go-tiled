@@ -43,7 +43,7 @@ type Group struct {
 	// Whether the layer is shown (1) or hidden (0). Defaults to 1.
 	Visible bool `xml:"visible,attr"`
 	// Custom properties
-	Properties Properties `xml:"properties>property"`
+	Properties *Properties `xml:"properties"`
 	// Map layers
 	Layers []*Layer `xml:"layer"`
 	// Map object groups

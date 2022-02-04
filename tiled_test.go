@@ -85,12 +85,12 @@ func TestLoadFile(t *testing.T) {
 	// Test ObjectGroups.Visible defaults to true
 	assert.Len(t, m.ObjectGroups, 1)
 	assert.Equal(t, uint32(2), m.ObjectGroups[0].ID)
-	assert.Equal(t, true, m.ObjectGroups[0].Visible)
+	assert.Equal(t, true, *m.ObjectGroups[0].Visible)
 
 	// Test Object.Visible defaults to true
 	assert.Len(t, m.ObjectGroups[0].Objects, 1)
 	assert.Equal(t, uint32(2), m.ObjectGroups[0].Objects[0].ID)
-	assert.Equal(t, true, m.ObjectGroups[0].Objects[0].Visible)
+	assert.Equal(t, true, *m.ObjectGroups[0].Objects[0].Visible)
 }
 
 func TestLoadFileError(t *testing.T) {
@@ -197,7 +197,7 @@ func TestFont(t *testing.T) {
 				assert.Equal(t, false, text.Italic)
 				assert.Equal(t, false, text.Underline)
 				assert.Equal(t, false, text.Strikethrough)
-				assert.Equal(t, true, text.Kerning)
+				assert.Equal(t, true, *text.Kerning)
 				assert.Equal(t, "left", text.HAlign)
 				assert.Equal(t, "top", text.VAlign)
 			}

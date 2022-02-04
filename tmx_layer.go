@@ -79,7 +79,7 @@ type Layer struct {
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
 	OffsetY int `xml:"offsety,attr"`
 	// Custom properties
-	Properties Properties `xml:"properties>property"`
+	Properties *Properties `xml:"properties"`
 	// This is the attribute you'd like to use, not Data. Tile entry at (x,y) is obtained using l.DecodedTiles[y*map.Width+x].
 	Tiles []*LayerTile
 	// Data
