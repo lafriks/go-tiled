@@ -43,6 +43,8 @@ type ObjectGroup struct {
 	ID uint32 `xml:"id,attr"`
 	// The name of the object group.
 	Name string `xml:"name,attr"`
+	// The class of the object group (since 1.9, defaults to "").
+	Class string `xml:"class,attr"`
 	// The color used to display the objects in this group.
 	Color *HexColor `xml:"color,attr"`
 	// The opacity of the layer as a value from 0 to 1. Defaults to 1.
@@ -97,8 +99,10 @@ type Object struct {
 	ID uint32 `xml:"id,attr"`
 	// The name of the object. An arbitrary string.
 	Name string `xml:"name,attr"`
-	// The type of the object. An arbitrary string.
+	// The type of the object. An arbitrary string. (until 1.8)
 	Type string `xml:"type,attr"`
+	// The class of the object. An arbitrary string. (defaults to "", renamed from 'type' since 1.9)
+	Class string `xml:"class,attr"`
 	// The x coordinate of the object.
 	X float64 `xml:"x,attr"`
 	// The y coordinate of the object.
