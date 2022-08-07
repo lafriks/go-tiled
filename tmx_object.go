@@ -100,6 +100,8 @@ type Object struct {
 	// The name of the object. An arbitrary string.
 	Name string `xml:"name,attr"`
 	// The type of the object. An arbitrary string. (until 1.8)
+	//
+	// Deprecated: replaced by Class since 1.9
 	Type string `xml:"type,attr"`
 	// The class of the object. An arbitrary string. (defaults to "", renamed from 'type' since 1.9)
 	Class string `xml:"class,attr"`
