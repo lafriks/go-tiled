@@ -1,3 +1,4 @@
+// Tool to convert a TMX file to an image.
 package main
 
 import (
@@ -34,7 +35,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	//rend.RenderLayer(1)
+	// rend.RenderLayer(1)
 
 	w, err := os.Create(img)
 	if err != nil {

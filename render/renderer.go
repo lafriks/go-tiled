@@ -27,13 +27,11 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"image/gif"
+	"image/jpeg"
 	"image/png"
 	"io"
 	"os"
-
-	"image/jpeg"
-
-	"image/gif"
 
 	"github.com/disintegration/imaging"
 	"github.com/lafriks/go-tiled"
