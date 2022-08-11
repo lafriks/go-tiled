@@ -19,7 +19,7 @@ steps:
     pull: always
     commands:
       - go vet -all .
-      - go get -u github.com/mgechev/revive
+      - go install github.com/mgechev/revive@latest
       - revive -config .revive.toml -exclude=./vendor/... ./...
 
   - name: test
