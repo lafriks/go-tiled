@@ -55,6 +55,8 @@ type Map struct {
 	Version string `xml:"version,attr"`
 	// The Tiled version used to generate this file
 	TiledVersion string `xml:"tiledversion,attr"`
+	// The class of this map (since 1.9, defaults to "").
+	Class string `xml:"class,attr"`
 	// Map orientation. Tiled supports "orthogonal", "isometric", "staggered" (since 0.9) and "hexagonal" (since 0.11).
 	Orientation string `xml:"orientation,attr"`
 	// The order in which tiles on tile layers are rendered. Valid values are right-down (the default), right-up, left-down and left-up.

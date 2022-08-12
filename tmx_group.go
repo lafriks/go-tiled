@@ -34,6 +34,8 @@ type Group struct {
 	ID uint32 `xml:"id,attr"`
 	// The name of the group layer.
 	Name string `xml:"name,attr"`
+	// The class of the group layer (since 1.9, defaults to "").
+	Class string `xml:"class,attr"`
 	// Rendering offset of the image layer in pixels. Defaults to 0. (since 0.15)
 	OffsetX int `xml:"offsetx,attr"`
 	// Rendering offset of the image layer in pixels. Defaults to 0. (since 0.15)

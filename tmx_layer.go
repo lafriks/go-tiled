@@ -70,6 +70,8 @@ type Layer struct {
 	ID uint32 `xml:"id,attr"`
 	// The name of the layer.
 	Name string `xml:"name,attr"`
+	// The class of this layer (since 1.9, defaults to "").
+	Class string `xml:"class,attr"`
 	// The opacity of the layer as a value from 0 to 1. Defaults to 1.
 	Opacity float32 `xml:"opacity,attr"`
 	// Whether the layer is shown (1) or hidden (0). Defaults to 1.

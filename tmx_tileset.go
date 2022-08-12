@@ -25,6 +25,8 @@ type Tileset struct {
 	SourceLoaded bool `xml:"-"`
 	// The name of this tileset.
 	Name string `xml:"name,attr"`
+	// The class of this tileset (since 1.9, defaults to "").
+	Class string `xml:"class,attr"`
 	// The (maximum) width of the tiles in this tileset.
 	TileWidth int `xml:"tilewidth,attr"`
 	// The (maximum) height of the tiles in this tileset.
@@ -76,8 +78,12 @@ type Terrain struct {
 type TilesetTile struct {
 	// The local tile ID within its tileset.
 	ID uint32 `xml:"id,attr"`
-	// The type of the tile. Refers to an object type and is used by tile objects. (optional) (since 1.0)
+	// The type of the tile. Refers to an object type and is used by tile objects. (optional) (since 1.0, until 1.8)
+	//
+	// Deprecated: replaced by Class since 1.9
 	Type string `xml:"type,attr"`
+	// The type of the tile. Refers to an object type and is used by tile objects. (optional) (renamed from 'type' since 1.9)
+	Class string `xml:"class,attr"`
 	// Defines the terrain type of each corner of the tile, given as comma-separated indexes in the terrain types
 	// array in the order top-left, top-right, bottom-left, bottom-right.
 	// Leaving out a value means that corner has no terrain. (optional) (since 0.9)
