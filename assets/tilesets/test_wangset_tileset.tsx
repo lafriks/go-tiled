@@ -149,6 +149,9 @@
    <wangtile tileid="177" wangid="0,1,0,1,0,1,0,4"/>
    <wangtile tileid="178" wangid="0,1,0,4,0,1,0,4"/>
    <wangtile tileid="179" wangid="0,4,0,1,0,4,0,1"/>
-  </wangset>
- </wangsets>
+ </wangset>
+ <wangset name="New" type="corner" tile="-1">
+   <wangcolor name="Rock" color="#ff0000" tile="-1" probability="1"/>
+ </wangset>
+</wangsets>
 </tileset>
