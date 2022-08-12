@@ -1,19 +1,17 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": "Launch (tmx2img)",
-        "type": "go",
-        "request": "launch",
-        "mode": "debug",
-        "buildFlags": "",
-        "port": 2345,
-        "host": "127.0.0.1",
-        "cwd": "${workspaceRoot}",
-        "program": "${workspaceRoot}/cmd/tmx2img/main.go",
-        "env": {},
-        "args": ["assets/racing.tmx"],
-        "showLog": true
-      }
-    ]
-  }
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch (tmx2img)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "buildFlags": "",
+      "cwd": "${workspaceRoot}",
+      "program": "${workspaceRoot}/cmd/tmx2img/main.go",
+      "env": {},
+      "args": ["assets/test_wangsets_w_properties_map.tmx"],
+      "showLog": true
+    }
+  ]
+}
