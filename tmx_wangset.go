@@ -13,45 +13,68 @@ type WangSets []*WangSet
 
 // WangSet defines a list of corner colors and a list of edge colors, and any number of Wang tiles using these colors.
 type WangSet struct {
-	Name       string       `xml:"name,attr"` // The name of the Wang set.
-	Type       string       `xml:"type,attr"` // ex. corner
-	TileId     uint32       `xml:"tile,attr"` // The tile ID of the tile representing this Wang set.
+	// The name of the Wang set.
+	Name string `xml:"name,attr"`
+	// The class of the Wang set. (renamed from 'type' since 1.9)
+	Class string `xml:"class,attr"`
+	// WangSet type.
+	//
+	// Deprecated: replaced by Class since 1.9
+	Type string `xml:"type,attr"`
+	// The tile ID of the tile representing this Wang set.
+	TileID uint32 `xml:"tile,attr"`
+	// The list of corner and/or edge colors.
 	WangColors []*WangColor `xml:"wangcolor"`
-	WangTiles  []*WangTile  `xml:"wangtile"`
+	// The list of wang tiles.
+	WangTiles []*WangTile `xml:"wangtile"`
 }
 
-// Wangcolor that can be used to define the corner and/or edge of a Wang tile.
+// WangColor that can be used to define the corner and/or edge of a Wang tile.
 type WangColor struct {
-	Name        string  `xml:"name,attr"`        //  The name of this color.
-	Color       string  `xml:"color,attr"`       // The color in #RRGGBB format (example: #c17d11).
-	TileID      uint32  `xml:"tile,attr"`        // The tile ID of the tile representing this color.
-	Probability float32 `xml:"probability,attr"` // The relative probability that this color is chosen over others in case of multiple options. (defaults to 0)
+	// The name of this color.
+	Name string `xml:"name,attr"`
+	// The class of this color. (since 1.9)
+	Class string `xml:"class,attr"`
+	// The color in #RRGGBB format (example: #c17d11).
+	Color string `xml:"color,attr"`
+	// The tile ID of the tile representing this color.
+	TileID uint32 `xml:"tile,attr"`
+	// The relative probability that this color is chosen over others in case of multiple options. (defaults to 0)
+	Probability float32 `xml:"probability,attr"`
 }
 
-// Wangtile, by referring to a tile in the tileset and associating it with a certain Wang ID.
+// WangTile by referring to a tile in the tileset and associating it with a certain Wang ID.
 type WangTile struct {
-	TileID uint32 `xml:"tileid,attr"` // The tile ID.
-
+	// The tile ID.
+	TileID uint32 `xml:"tileid,attr"`
 	// WangID, given by a comma-separated list of indexes (starting from 1, because 0 means _unset_)
 	// referring to the Wang colors in the Wang set in the following order:
 	// top, top right, right, bottom right, bottom, bottom left, left, top left (since Tiled 1.5).
 	// Before Tiled 1.5, the Wang ID was saved as a 32-bit unsigned integer stored in the format
 	// 0xCECECECE (where each C is a corner color and each E is an edge color, in reverse order).
-	WangID string `xml:"wangid,attr"` //
+	WangID string `xml:"wangid,attr"`
 }
 
 // WangPosition Wang Color mapping to position
 type WangPosition int
 
 const (
+	// Top represents the top part of the tile
 	Top WangPosition = iota
+	// TopRight represents the top right part of the tile
 	TopRight
+	// Right represents the right part of the tile
 	Right
+	// BottomRight represents the bottom right part of the tile
 	BottomRight
+	// Bottom represents the bottom part of the tile
 	Bottom
+	// BottomLeft represents the bottom left part of the tile
 	BottomLeft
+	// Left represents the left part of the tile
 	Left
-	TopLef
+	// TopLeft represents the top left part of the tile
+	TopLeft
 )
 
 // GetWangColors returns the wangcolors for the tileId. If corner type is used it will return an array of len 4
@@ -60,7 +83,6 @@ const (
 // top, top right, right, bottom right, bottom, bottom left, left, top left
 // if there is no wangcolor assigned to a part of the tile it will return an nil pointer instead for that index
 func (w *WangSet) GetWangColors(tileID uint32) (map[WangPosition]*WangColor, error) {
-
 	if w.WangColors == nil {
 		return nil, errors.New("no wangcolors found on this wangset")
 	}
@@ -83,7 +105,6 @@ func (w *WangSet) GetWangColors(tileID uint32) (map[WangPosition]*WangColor, err
 	var wangIds []uint32 // will contain a slice of the wangIds
 	for _, v := range wangIdsString {
 		id64, err := strconv.ParseUint(v, 10, 32)
-
 		if err != nil {
 			return nil, errors.New("internal error")
 		}
@@ -94,10 +115,9 @@ func (w *WangSet) GetWangColors(tileID uint32) (map[WangPosition]*WangColor, err
 		wangIds = append(wangIds, id)
 	}
 
-	var wangColors = make(map[WangPosition]*WangColor)
+	wangColors := make(map[WangPosition]*WangColor)
 
 	for i, id := range wangIds {
-
 		if id == 0 { // no color assigned if id is 0, set to nil
 			wangColors[WangPosition(i)] = nil
 		} else {

@@ -50,8 +50,7 @@ type Tileset struct {
 	TerrainTypes []*Terrain `xml:"terraintypes>terrain"`
 	// Tiles in tileset
 	Tiles []*TilesetTile `xml:"tile"`
-
-	// WangSets
+	// Contains the list of Wang sets defined for this tileset.
 	WangSets WangSets `xml:"wangsets>wangset"`
 }
 
@@ -139,7 +138,6 @@ func (ts *Tileset) GetTileRect(tileID uint32) image.Rectangle {
 
 // GetTilesetTile returns TilesetTile by tileID
 func (ts *Tileset) GetTilesetTile(tileID uint32) (*TilesetTile, error) {
-
 	var tile *TilesetTile
 	for _, t := range ts.Tiles {
 		if t.ID == tileID {

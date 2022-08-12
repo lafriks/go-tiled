@@ -24,6 +24,6 @@ _testmain.go
 *.prof
 
 debug
-tmx2img
+/tmx2img
 vendor/
 map.png
