@@ -1,6 +1,7 @@
 package tiled
 
 import (
+	"errors"
 	"image"
 	"path/filepath"
 )
@@ -49,6 +50,8 @@ type Tileset struct {
 	TerrainTypes []*Terrain `xml:"terraintypes>terrain"`
 	// Tiles in tileset
 	Tiles []*TilesetTile `xml:"tile"`
+	// Contains the list of Wang sets defined for this tileset.
+	WangSets WangSets `xml:"wangsets>wangset"`
 }
 
 // GetFileFullPath returns path to file relative to tileset file
@@ -131,4 +134,21 @@ func (ts *Tileset) GetTileRect(tileID uint32) image.Rectangle {
 		y*ts.TileHeight+yOffset,
 		(x+1)*ts.TileWidth+xOffset,
 		(y+1)*ts.TileHeight+yOffset)
+}
+
+// GetTilesetTile returns TilesetTile by tileID
+func (ts *Tileset) GetTilesetTile(tileID uint32) (*TilesetTile, error) {
+	var tile *TilesetTile
+	for _, t := range ts.Tiles {
+		if t.ID == tileID {
+			tile = t
+			break
+		}
+	}
+
+	if tile == nil {
+		return nil, errors.New("no tilesetTile matches the given Id")
+	}
+
+	return tile, nil
 }

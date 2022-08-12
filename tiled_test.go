@@ -41,6 +41,17 @@ func GetAssetsDirectory() string {
 	return filepath.Join(filepath.Dir(filename), "assets")
 }
 
+func TestLoadFromFileWangSet(t *testing.T) {
+	m, err := LoadFile(filepath.Join(GetAssetsDirectory(), "test_wangsets_map.tmx"))
+
+	assert.NoError(t, err)
+	assert.NotNil(t, m)
+
+	// Test WangSets
+	assert.NotNil(t, m.Tilesets[0].WangSets)
+	assert.NotNil(t, m.Tilesets[0].WangSets[0].WangColors)
+}
+
 func TestLoadReader(t *testing.T) {
 	r := bytes.NewBufferString(`<?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="4" height="4" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="2">

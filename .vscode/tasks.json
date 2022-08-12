@@ -16,16 +16,15 @@
           "panel": "shared"
         },
         "linux": {
-          "args": [ "build", "-o", "tmx2img", "${workspaceRoot}/example/tmx2img/main.go" ]
+          "args": [ "build", "-o", "tmx2img", "${workspaceRoot}/cmd/tmx2img/main.go" ]
         },
         "osx": {
-          "args": [ "build", "-o", "tmx2img", "${workspaceRoot}/example/tmx2img/main.go" ]
+          "args": [ "build", "-o", "tmx2img", "${workspaceRoot}/cmd/tmx2img/main.go" ]
         },
         "windows": {
-          "args": [ "build", "-o", "tmx2img.exe", "\"${workspaceRoot}\\example\\tmx2img\\main.go\""]
+          "args": [ "build", "-o", "tmx2img.exe", "\"${workspaceRoot}\\cmd\\tmx2img\\main.go\""]
         },
         "problemMatcher": ["$go"]
       }
     ]
   }
-  
