@@ -22,7 +22,7 @@ type WangSet struct {
 	// Deprecated: replaced by Class since 1.9
 	Type string `xml:"type,attr"`
 	// The tile ID of the tile representing this Wang set.
-	TileID uint32 `xml:"tile,attr"`
+	TileID int64 `xml:"tile,attr"`
 	// The list of corner and/or edge colors.
 	WangColors []*WangColor `xml:"wangcolor"`
 	// The list of wang tiles.
@@ -38,7 +38,7 @@ type WangColor struct {
 	// The color in #RRGGBB format (example: #c17d11).
 	Color string `xml:"color,attr"`
 	// The tile ID of the tile representing this color.
-	TileID uint32 `xml:"tile,attr"`
+	TileID int64 `xml:"tile,attr"`
 	// The relative probability that this color is chosen over others in case of multiple options. (defaults to 0)
 	Probability float32 `xml:"probability,attr"`
 }
