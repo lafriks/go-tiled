@@ -60,7 +60,9 @@ func (ts *Tileset) BaseDir() string {
 }
 
 // SetBaseDir sets the base directory.
-func (ts *Tileset) SetBaseDir(baseDir string) { ts.baseDir = baseDir }
+func (ts *Tileset) SetBaseDir(baseDir string) {
+	ts.baseDir = baseDir
+}
 
 // GetFileFullPath returns path to file relative to tileset file
 func (ts *Tileset) GetFileFullPath(fileName string) string {
