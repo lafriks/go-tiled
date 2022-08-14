@@ -54,6 +54,16 @@ type Tileset struct {
 	WangSets WangSets `xml:"wangsets>wangset"`
 }
 
+// BaseDir returns the base directory.
+func (ts *Tileset) BaseDir() string {
+	return ts.baseDir
+}
+
+// SetBaseDir sets the base directory.
+func (ts *Tileset) SetBaseDir(baseDir string) {
+	ts.baseDir = baseDir
+}
+
 // GetFileFullPath returns path to file relative to tileset file
 func (ts *Tileset) GetFileFullPath(fileName string) string {
 	return filepath.Join(ts.baseDir, fileName)
