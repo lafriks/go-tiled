@@ -55,7 +55,9 @@ type Tileset struct {
 }
 
 // BaseDir returns the base directory.
-func (ts *Tileset) BaseDir() string { return ts.baseDir }
+func (ts *Tileset) BaseDir() string {
+	return ts.baseDir
+}
 
 // SetBaseDir sets the base directory.
 func (ts *Tileset) SetBaseDir(baseDir string) { ts.baseDir = baseDir }
