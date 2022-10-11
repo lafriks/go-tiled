@@ -64,10 +64,10 @@ type Renderer struct {
 
 // NewRenderer creates new rendering engine instance.
 func NewRenderer(m *tiled.Map) (*Renderer, error) {
-	return NewRendererWithFS(m, nil)
+	return NewRendererWithFileSystem(m, nil)
 }
 
-func NewRendererWithFS(m *tiled.Map, fs fs.FS) (*Renderer, error) {
+func NewRendererWithFileSystem(m *tiled.Map, fs fs.FS) (*Renderer, error) {
 	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image), fs: fs}
 	if r.m.Orientation == "orthogonal" {
 		r.engine = &OrthogonalRendererEngine{}
