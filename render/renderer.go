@@ -67,6 +67,7 @@ func NewRenderer(m *tiled.Map) (*Renderer, error) {
 	return NewRendererWithFileSystem(m, nil)
 }
 
+// NewRendererWithFileSystem creates new rendering engine instance with a custom file system.
 func NewRendererWithFileSystem(m *tiled.Map, fs fs.FS) (*Renderer, error) {
 	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image), fs: fs}
 	if r.m.Orientation == "orthogonal" {
