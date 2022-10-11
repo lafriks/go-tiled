@@ -68,7 +68,7 @@ func NewRenderer(m *tiled.Map) (*Renderer, error) {
 }
 
 func NewRendererWithFS(m *tiled.Map, fs fs.FS) (*Renderer, error) {
-	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image)}
+	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image), fs: fs}
 	if r.m.Orientation == "orthogonal" {
 		r.engine = &OrthogonalRendererEngine{}
 	} else {
