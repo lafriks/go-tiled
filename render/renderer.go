@@ -31,6 +31,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
+	"io/fs"
 	"os"
 
 	"github.com/disintegration/imaging"
@@ -58,11 +59,17 @@ type Renderer struct {
 	Result    *image.NRGBA // The image result after rendering using the Render functions.
 	tileCache map[uint32]image.Image
 	engine    RendererEngine
+	fs        fs.FS
 }
 
 // NewRenderer creates new rendering engine instance.
 func NewRenderer(m *tiled.Map) (*Renderer, error) {
-	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image)}
+	return NewRendererWithFileSystem(m, nil)
+}
+
+// NewRendererWithFileSystem creates new rendering engine instance with a custom file system.
+func NewRendererWithFileSystem(m *tiled.Map, fs fs.FS) (*Renderer, error) {
+	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image), fs: fs}
 	if r.m.Orientation == "orthogonal" {
 		r.engine = &OrthogonalRendererEngine{}
 	} else {
@@ -75,6 +82,13 @@ func NewRenderer(m *tiled.Map) (*Renderer, error) {
 	return r, nil
 }
 
+func (r *Renderer) open(f string) (io.ReadCloser, error) {
+	if r.fs != nil {
+		return r.fs.Open(f)
+	}
+	return os.Open(f)
+}
+
 func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 	timg, ok := r.tileCache[tile.Tileset.FirstGID+tile.ID]
 	if ok {
@@ -84,7 +98,7 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 	if tile.Tileset.Image == nil {
 		for i := 0; i < len(tile.Tileset.Tiles); i++ {
 			if tile.Tileset.Tiles[i].ID == tile.ID {
-				sf, err := os.Open(tile.Tileset.GetFileFullPath(tile.Tileset.Tiles[i].Image.Source))
+				sf, err := r.open(tile.Tileset.GetFileFullPath(tile.Tileset.Tiles[i].Image.Source))
 				if err != nil {
 					return nil, err
 				}
@@ -97,7 +111,7 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 			}
 		}
 	} else {
-		sf, err := os.Open(tile.Tileset.GetFileFullPath(tile.Tileset.Image.Source))
+		sf, err := r.open(tile.Tileset.GetFileFullPath(tile.Tileset.Image.Source))
 		if err != nil {
 			return nil, err
 		}
