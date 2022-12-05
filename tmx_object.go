@@ -30,10 +30,8 @@ import (
 	"strings"
 )
 
-var (
-	// ErrInvalidObjectPoint error is returned if there is error parsing object points
-	ErrInvalidObjectPoint = errors.New("tiled: invalid object point")
-)
+// ErrInvalidObjectPoint error is returned if there is error parsing object points
+var ErrInvalidObjectPoint = errors.New("tiled: invalid object point")
 
 // ObjectGroup is in fact a map layer, and is hence called "object layer" in Tiled Qt
 type ObjectGroup struct {
@@ -64,18 +62,23 @@ type ObjectGroup struct {
 }
 
 // DecodeObjectGroup decodes object group data
-func (g *ObjectGroup) DecodeObjectGroup(m *Map) {
+func (g *ObjectGroup) DecodeObjectGroup(m *Map) error {
 	for _, object := range g.Objects {
 		if object.GID > 0 {
 			// Initialize all tilesets that are referenced by tile objects. Otherwise,
 			// if a tileset is used by an object tile but not used by any layer it
 			// won't be loaded.
-			m.TileGIDToTile(object.GID)
+			if _, err := m.TileGIDToTile(object.GID); err != nil {
+				return err
+			}
 		}
 		if len(object.TemplateSource) > 0 {
-			object.initTemplate(m)
+			if err := object.initTemplate(m); err != nil {
+				return err
+			}
 		}
 	}
+	return nil
 }
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
@@ -181,8 +184,7 @@ func (o *Object) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 }
 
 // Ellipse is used to mark an object as an ellipse.
-type Ellipse struct {
-}
+type Ellipse struct{}
 
 // Polygon object is made up of a space-delimited list of x,y coordinates. The origin for these coordinates is the location of the parent object.
 // By default, the first point is created as 0,0 denoting that the point will originate exactly where the object is placed.

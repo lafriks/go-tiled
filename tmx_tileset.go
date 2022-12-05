@@ -123,15 +123,10 @@ type AnimationFrame struct {
 
 // GetTileRect returns a rectangle that contains the tile in the tileset.Image
 func (ts *Tileset) GetTileRect(tileID uint32) image.Rectangle {
-	tilesetTileCount := ts.TileCount
 	tilesetColumns := ts.Columns
 
 	if tilesetColumns == 0 {
 		tilesetColumns = ts.Image.Width / (ts.TileWidth + ts.Spacing)
-	}
-
-	if tilesetTileCount == 0 {
-		tilesetTileCount = (ts.Image.Height / (ts.TileHeight + ts.Spacing)) * tilesetColumns
 	}
 
 	x := int(tileID) % tilesetColumns

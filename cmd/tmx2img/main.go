@@ -43,5 +43,8 @@ func main() {
 		return
 	}
 	defer w.Close()
-	rend.SaveAsPng(w)
+	if err := rend.SaveAsPng(w); err != nil {
+		fmt.Println(err)
+		return
+	}
 }

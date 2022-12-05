@@ -377,7 +377,7 @@ func TestParseHexColor(t *testing.T) {
 
 	for _, c := range cases {
 		color := &HexColor{}
-		color.UnmarshalXMLAttr(c.attr)
+		assert.NoError(t, color.UnmarshalXMLAttr(c.attr))
 		assert.Equal(t, c.color, color.c, c.name)
 	}
 }
