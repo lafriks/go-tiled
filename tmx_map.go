@@ -36,9 +36,27 @@ const (
 	tileGIDMask            = 0x0fffffff
 )
 
-var (
-	// ErrInvalidTileGID error is returned when tile GID is not found
-	ErrInvalidTileGID = errors.New("tiled: invalid tile GID")
+// ErrInvalidTileGID error is returned when tile GID is not found
+var ErrInvalidTileGID = errors.New("tiled: invalid tile GID")
+
+// Axis
+type Axis string
+
+const (
+	// AxisX is X axis
+	AxisX Axis = "x"
+	// AxisY is Y axis
+	AxisY Axis = "y"
+)
+
+// StaggerAxis is stagger axis index type
+type StaggerIndexType string
+
+const (
+	// StaggerIndexOdd is odd stagger index
+	StaggerIndexOdd StaggerIndexType = "odd"
+	// StaggerIndexEven is even stagger index
+	StaggerIndexEven StaggerIndexType = "even"
 )
 
 // Map contains three different kinds of layers.
@@ -73,9 +91,9 @@ type Map struct {
 	// Only for hexagonal maps. Determines the width or height (depending on the staggered axis) of the tile's edge, in pixels.
 	HexSideLength int `xml:"hexsidelength,attr"`
 	// For staggered and hexagonal maps, determines which axis ("x" or "y") is staggered. (since 0.11)
-	StaggerAxis int `xml:"staggeraxis,attr"`
+	StaggerAxis Axis `xml:"staggeraxis,attr"`
 	// For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted. (since 0.11)
-	StaggerIndex int `xml:"staggerindex,attr"`
+	StaggerIndex StaggerIndexType `xml:"staggerindex,attr"`
 	// The background color of the map. (since 0.9, optional, may include alpha value since 0.15 in the form #AARRGGBB)
 	BackgroundColor *HexColor `xml:"backgroundcolor,attr"`
 	// Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed. (since 0.11)
