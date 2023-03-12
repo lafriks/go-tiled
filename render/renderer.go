@@ -134,9 +134,7 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 	return r.engine.RotateTileImage(tile, timg), nil
 }
 
-// RenderLayer renders single map layer.
-func (r *Renderer) RenderLayer(index int) error {
-	layer := r.m.Layers[index]
+func (r *Renderer) _renderLayer(layer *tiled.Layer) error {
 
 	var xs, xe, xi, ys, ye, yi int
 	if r.m.RenderOrder == "" || r.m.RenderOrder == "right-down" {
@@ -178,6 +176,19 @@ func (r *Renderer) RenderLayer(index int) error {
 	}
 
 	return nil
+}
+
+// RenderGroupLayer renders single map layer in a certain group.
+func (r *Renderer) RenderGroupLayer(groupIdx, layerIdx int) error {
+	group := r.m.Groups[groupIdx]
+	layer := group.Layers[layerIdx]
+	return r._renderLayer(layer)
+}
+
+// RenderLayer renders single map layer.
+func (r *Renderer) RenderLayer(index int) error {
+	layer := r.m.Layers[index]
+	return r._renderLayer(layer)
 }
 
 // RenderVisibleLayers renders all visible map layers.
