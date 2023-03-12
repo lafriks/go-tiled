@@ -11,31 +11,42 @@ import (
 
 // RenderVisibleGroups renders all visible groups
 func (r *Renderer) RenderVisibleGroups() error {
-	for groupIdx, group := range r.m.Groups {
+	for _, group := range r.m.Groups {
 		if !group.Visible {
 			continue
 		}
+		r._renderGroup(group)
+	}
+	return nil
+}
 
-		for layerIdx := range group.Layers {
-			if !group.Layers[layerIdx].Visible {
-				continue
-			}
-			err := r.RenderGroupLayer(groupIdx, layerIdx)
-			if err != nil {
-				return err
-			}
+// RenderGroup renders single group.
+func (r *Renderer) RenderGroup(groupIdx int) error {
+	group := r.m.Groups[groupIdx]
+	return r._renderGroup(group)
+}
+
+func (r *Renderer) _renderGroup(group *tiled.Group) error {
+	for _, layer := range group.Layers {
+		if !layer.Visible {
+			continue
 		}
-
-		for objectGroupIdx := range group.ObjectGroups {
-			if !group.ObjectGroups[objectGroupIdx].Visible {
-				continue
-			}
-			err := r.RenderGroupObjectGroup(groupIdx, objectGroupIdx)
-			if err != nil {
-				return err
-			}
+		err := r._renderLayer(layer)
+		if err != nil {
+			return err
 		}
 	}
+
+	for _, objectGroup := range group.ObjectGroups {
+		if !objectGroup.Visible {
+			continue
+		}
+		err := r._renderObjectGroup(objectGroup)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
