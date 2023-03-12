@@ -134,7 +134,7 @@ func (r *Renderer) renderOneObject(layer *tiled.ObjectGroup, o *tiled.Object) er
 	}
 
 	bounds = img.Bounds()
-	pos := bounds.Add(image.Pt(int(o.X), int(o.Y)))
+	pos := bounds.Add(image.Pt(int(o.X), int(o.Y-o.Height)))
 
 	if layer.Opacity < 1 {
 		mask := image.NewUniform(color.Alpha{uint8(layer.Opacity * 255)})
