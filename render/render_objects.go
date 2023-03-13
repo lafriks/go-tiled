@@ -3,10 +3,11 @@ package render
 import (
 	"github.com/disintegration/imaging"
 	"github.com/lafriks/go-tiled"
+	"github.com/lafriks/go-tiled/utils"
 	"image"
 	"image/color"
 	"image/draw"
-	"sort"
+	"math"
 )
 
 // RenderVisibleGroups renders all visible groups
@@ -82,7 +83,7 @@ func (r *Renderer) RenderObjectGroup(i int) error {
 
 func (r *Renderer) _renderObjectGroup(objectGroup *tiled.ObjectGroup) error {
 	objs := objectGroup.Objects
-	objs = SortAny(objs, sortObjs)
+	objs = utils.SortAny(objs, utils.SortObjectsLess)
 	for _, obj := range objs {
 		if err := r.renderOneObject(objectGroup, obj); err != nil {
 			return err
@@ -126,12 +127,12 @@ func (r *Renderer) renderOneObject(layer *tiled.ObjectGroup, o *tiled.Object) er
 		img = imaging.Resize(img, dstSize.X, dstSize.Y, imaging.NearestNeighbor)
 	}
 
-	if o.Rotation != 0 {
-		img = imaging.Rotate(img, -o.Rotation, color.RGBA{})
-	}
+	var originPoint image.Point
+
+	img, originPoint = r._rotateObjectImage(img, -o.Rotation)
 
 	bounds = img.Bounds()
-	pos := bounds.Add(image.Pt(int(o.X), int(o.Y-o.Height)))
+	pos := bounds.Add(image.Pt(int(o.X), int(o.Y)).Sub(originPoint))
 
 	if layer.Opacity < 1 {
 		mask := image.NewUniform(color.Alpha{uint8(layer.Opacity * 255)})
@@ -144,38 +145,39 @@ func (r *Renderer) renderOneObject(layer *tiled.ObjectGroup, o *tiled.Object) er
 	return nil
 }
 
-func sortObjs(a, b *tiled.Object) bool {
-	if a.Y != b.Y {
-		return a.Y < b.Y
+func (r *Renderer) _rotateObjectImage(img image.Image, rotation float64) (newImage image.Image, originPoint image.Point) {
+	bounds := img.Bounds()
+	w := bounds.Dx()
+	h := bounds.Dy()
+	points := []image.Point{
+		image.Pt(0, 0),
+		image.Pt(w-1, 0),
+		image.Pt(w-1, h-1),
+		image.Pt(0, h-1),
 	}
 
-	return a.X < b.X
-}
+	sin, cos := math.Sincos(-math.Pi * rotation / 180)
 
-func SortAny[T any](data []T, lessMethod func(a, b T) bool) []T {
-	s := &Sortable[T]{
-		Data:       data,
-		LessMethod: lessMethod,
+	rotatedPointsX := []float64{}
+	rotatedPointsY := []float64{}
+
+	for _, p := range points {
+		x := float64(p.X)
+		y := float64(p.Y)
+
+		rotatedPointsX = append(rotatedPointsX, x*cos-y*sin)
+		rotatedPointsY = append(rotatedPointsY, x*sin+y*cos)
 	}
-	sort.Sort(s)
-	return s.Data
-}
 
-type Sortable[T any] struct {
-	Data       []T
-	LessMethod func(a, b T) bool
-}
+	rotatedMinX := rotatedPointsX[0]
+	rotatedMinY := rotatedPointsY[0]
 
-func (s *Sortable[T]) Swap(i, j int) {
-	tmp := (s.Data)[i]
-	(s.Data)[i] = (s.Data)[j]
-	(s.Data)[j] = tmp
-}
+	for i := 1; i < 4; i++ {
+		rotatedMinX = math.Min(rotatedMinX, rotatedPointsX[i])
+		rotatedMinY = math.Min(rotatedMinY, rotatedPointsY[i])
+	}
 
-func (s *Sortable[T]) Less(i, j int) bool {
-	return s.LessMethod(s.Data[i], s.Data[j])
-}
+	originPoint = image.Pt(int(rotatedPointsX[3]-rotatedMinX), int(rotatedPointsY[3]-rotatedMinY))
 
-func (s *Sortable[T]) Len() int {
-	return len(s.Data)
+	return imaging.Rotate(img, rotation, color.RGBA{}), originPoint
 }
