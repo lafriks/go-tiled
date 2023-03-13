@@ -55,8 +55,7 @@ func (r *Renderer) _renderGroup(group *tiled.Group) error {
 func (r *Renderer) RenderVisibleLayersAndObjectGroups() error {
 	// TODO: The order maybe incorrect
 
-	err := r.RenderVisibleLayers()
-	if err != nil {
+	if err := r.RenderVisibleLayers(); err != nil {
 		return err
 	}
 	return r.RenderVisibleObjectGroups()
