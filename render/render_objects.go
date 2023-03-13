@@ -84,8 +84,7 @@ func (r *Renderer) _renderObjectGroup(objectGroup *tiled.ObjectGroup) error {
 	objs := objectGroup.Objects
 	objs = SortAny(objs, sortObjs)
 	for _, obj := range objs {
-		err := r.renderOneObject(objectGroup, obj)
-		if err != nil {
+		if err := r.renderOneObject(objectGroup, obj); err != nil {
 			return err
 		}
 	}
