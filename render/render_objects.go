@@ -64,11 +64,11 @@ func (r *Renderer) RenderVisibleLayersAndObjectGroups() error {
 // RenderVisibleObjectGroups renders all visible object groups
 func (r *Renderer) RenderVisibleObjectGroups() error {
 	for i, layer := range r.m.ObjectGroups {
-		if layer.Visible {
-			err := r.RenderObjectGroup(i)
-			if err != nil {
-				return err
-			}
+		if !layer.Visible {
+			continue
+		}
+		if err := r.RenderObjectGroup(i); err != nil {
+			return err
 		}
 	}
 	return nil
