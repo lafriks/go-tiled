@@ -31,8 +31,7 @@ func (r *Renderer) _renderGroup(group *tiled.Group) error {
 		if !layer.Visible {
 			continue
 		}
-		err := r._renderLayer(layer)
-		if err != nil {
+		if err := r._renderLayer(layer); err != nil {
 			return err
 		}
 	}
