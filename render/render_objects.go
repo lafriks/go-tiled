@@ -129,7 +129,7 @@ func (r *Renderer) renderOneObject(layer *tiled.ObjectGroup, o *tiled.Object) er
 
 	var originPoint image.Point
 
-	img, originPoint = r._rotateObjectImage(img, -o.Rotation)
+	img, originPoint = r._rotateObjectImage(img, o.Rotation)
 
 	bounds = img.Bounds()
 	pos := bounds.Add(image.Pt(int(o.X), int(o.Y)).Sub(originPoint))
@@ -156,7 +156,7 @@ func (r *Renderer) _rotateObjectImage(img image.Image, rotation float64) (newIma
 		image.Pt(0, h-1),
 	}
 
-	sin, cos := math.Sincos(-math.Pi * rotation / 180)
+	sin, cos := math.Sincos(math.Pi * rotation / 180)
 
 	rotatedPointsX := []float64{}
 	rotatedPointsY := []float64{}
@@ -179,5 +179,5 @@ func (r *Renderer) _rotateObjectImage(img image.Image, rotation float64) (newIma
 
 	originPoint = image.Pt(int(rotatedPointsX[3]-rotatedMinX), int(rotatedPointsY[3]-rotatedMinY))
 
-	return imaging.Rotate(img, rotation, color.RGBA{}), originPoint
+	return imaging.Rotate(img, -rotation, color.RGBA{}), originPoint
 }
