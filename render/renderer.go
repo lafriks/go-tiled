@@ -43,6 +43,9 @@ var (
 	ErrUnsupportedOrientation = errors.New("tiled/render: unsupported orientation")
 	// ErrUnsupportedRenderOrder represents an error in the unsupported order for rendering.
 	ErrUnsupportedRenderOrder = errors.New("tiled/render: unsupported render order")
+
+	// ErrOutOfBounds represents an error that the index is out of bounds
+	ErrOutOfBounds = errors.New("tiled/render: index out of bounds")
 )
 
 // RendererEngine is the interface implemented by objects that provide rendering engine for Tiled maps.
@@ -180,7 +183,16 @@ func (r *Renderer) _renderLayer(layer *tiled.Layer) error {
 
 // RenderGroupLayer renders single map layer in a certain group.
 func (r *Renderer) RenderGroupLayer(groupIdx, layerIdx int) error {
+	if groupIdx >= len(r.m.Groups) {
+		return ErrOutOfBounds
+	}
+
 	group := r.m.Groups[groupIdx]
+
+	if layerIdx >= len(group.Layers) {
+		return ErrOutOfBounds
+	}
+
 	layer := group.Layers[layerIdx]
 	return r._renderLayer(layer)
 }

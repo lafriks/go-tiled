@@ -16,13 +16,19 @@ func (r *Renderer) RenderVisibleGroups() error {
 		if !group.Visible {
 			continue
 		}
-		r._renderGroup(group)
+		if err := r._renderGroup(group); err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
 // RenderGroup renders single group.
 func (r *Renderer) RenderGroup(groupIdx int) error {
+	if groupIdx >= len(r.m.Groups) {
+		return ErrOutOfBounds
+	}
+
 	group := r.m.Groups[groupIdx]
 	return r._renderGroup(group)
 }
@@ -76,6 +82,10 @@ func (r *Renderer) RenderVisibleObjectGroups() error {
 
 // RenderObjectGroup renders a single object group
 func (r *Renderer) RenderObjectGroup(i int) error {
+	if i >= len(r.m.ObjectGroups) {
+		return ErrOutOfBounds
+	}
+
 	layer := r.m.ObjectGroups[i]
 	return r._renderObjectGroup(layer)
 }
@@ -93,7 +103,16 @@ func (r *Renderer) _renderObjectGroup(objectGroup *tiled.ObjectGroup) error {
 
 // RenderGroupObjectGroup renders single object group in a certain group.
 func (r *Renderer) RenderGroupObjectGroup(groupIdx, objectGroupId int) error {
+	if groupIdx >= len(r.m.Groups) {
+		return ErrOutOfBounds
+	}
+
 	group := r.m.Groups[groupIdx]
+
+	if objectGroupId >= len(group.ObjectGroups) {
+		return ErrOutOfBounds
+	}
+
 	layer := group.ObjectGroups[objectGroupId]
 	return r._renderObjectGroup(layer)
 }
