@@ -3,7 +3,7 @@ package render
 import (
 	"github.com/disintegration/imaging"
 	"github.com/lafriks/go-tiled"
-	"github.com/lafriks/go-tiled/internal"
+	"github.com/lafriks/go-tiled/internal/utils"
 	"image"
 	"image/color"
 	"image/draw"
@@ -92,7 +92,7 @@ func (r *Renderer) RenderObjectGroup(i int) error {
 
 func (r *Renderer) _renderObjectGroup(objectGroup *tiled.ObjectGroup) error {
 	objs := objectGroup.Objects
-	objs = internal.SortAny(objs, internal.SortObjectsLess)
+	objs = utils.SortAny(objs, utils.SortObjectsLess)
 	for _, obj := range objs {
 		if err := r.renderOneObject(objectGroup, obj); err != nil {
 			return err
