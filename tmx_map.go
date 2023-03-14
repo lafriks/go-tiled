@@ -39,7 +39,7 @@ const (
 // ErrInvalidTileGID error is returned when tile GID is not found
 var ErrInvalidTileGID = errors.New("tiled: invalid tile GID")
 
-// Axis
+// Axis type
 type Axis string
 
 const (
@@ -49,7 +49,7 @@ const (
 	AxisY Axis = "y"
 )
 
-// StaggerAxis is stagger axis index type
+// StaggerIndexType is stagger axis index type
 type StaggerIndexType string
 
 const (
