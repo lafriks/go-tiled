@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"github.com/lafriks/go-tiled"
 	"sort"
+
+	"github.com/lafriks/go-tiled"
 )
 
 func SortObjectsLess(a, b *tiled.Object) bool {
