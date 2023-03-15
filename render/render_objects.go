@@ -23,13 +23,15 @@ SOFTWARE.
 package render
 
 import (
-	"github.com/disintegration/imaging"
-	"github.com/lafriks/go-tiled"
-	"github.com/lafriks/go-tiled/internal/utils"
 	"image"
 	"image/color"
 	"image/draw"
 	"math"
+
+	"github.com/lafriks/go-tiled"
+	"github.com/lafriks/go-tiled/internal/utils"
+
+	"github.com/disintegration/imaging"
 )
 
 // RenderVisibleGroups renders all visible groups

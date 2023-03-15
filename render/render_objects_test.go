@@ -20,9 +20,10 @@ SOFTWARE.
 package render
 
 import (
-	"github.com/lafriks/go-tiled"
 	"os"
 	"testing"
+
+	"github.com/lafriks/go-tiled"
 )
 
 func TestRenderer_RenderObjectGroup(t *testing.T) {
