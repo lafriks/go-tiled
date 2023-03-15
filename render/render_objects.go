@@ -114,7 +114,16 @@ func (r *Renderer) RenderObjectGroup(i int) error {
 
 func (r *Renderer) _renderObjectGroup(objectGroup *tiled.ObjectGroup) error {
 	objs := objectGroup.Objects
-	objs = utils.SortAny(objs, utils.SortObjectsLess)
+
+	// sort objects from left top to right down
+	objs = utils.SortAnySlice(objs, func(a, b *tiled.Object) bool {
+		if a.Y != b.Y {
+			return a.Y < b.Y
+		}
+
+		return a.X < b.X
+	})
+
 	for _, obj := range objs {
 		if err := r.renderOneObject(objectGroup, obj); err != nil {
 			return err
