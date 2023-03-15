@@ -135,7 +135,7 @@ func (r *Renderer) _renderObjectGroup(objectGroup *tiled.ObjectGroup) error {
 }
 
 // RenderGroupObjectGroup renders single object group in a certain group.
-func (r *Renderer) RenderGroupObjectGroup(groupIdx, objectGroupId int) error {
+func (r *Renderer) RenderGroupObjectGroup(groupIdx, objectGroupID int) error {
 	if groupIdx >= len(r.m.Groups) {
 		return ErrOutOfBounds
 	}
