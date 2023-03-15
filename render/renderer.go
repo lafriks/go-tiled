@@ -182,25 +182,24 @@ func (r *Renderer) _renderLayer(layer *tiled.Layer) error {
 }
 
 // RenderGroupLayer renders single map layer in a certain group.
-func (r *Renderer) RenderGroupLayer(groupIdx, layerIdx int) error {
-	if groupIdx >= len(r.m.Groups) {
+func (r *Renderer) RenderGroupLayer(groupID, layerID int) error {
+	if groupID >= len(r.m.Groups) {
 		return ErrOutOfBounds
 	}
+	group := r.m.Groups[groupID]
 
-	group := r.m.Groups[groupIdx]
-
-	if layerIdx >= len(group.Layers) {
+	if layerID >= len(group.Layers) {
 		return ErrOutOfBounds
 	}
-
-	layer := group.Layers[layerIdx]
-	return r._renderLayer(layer)
+	return r._renderLayer(group.Layers[layerID])
 }
 
 // RenderLayer renders single map layer.
-func (r *Renderer) RenderLayer(index int) error {
-	layer := r.m.Layers[index]
-	return r._renderLayer(layer)
+func (r *Renderer) RenderLayer(id int) error {
+	if id >= len(r.m.Layers) {
+		return ErrOutOfBounds
+	}
+	return r._renderLayer(r.m.Layers[id])
 }
 
 // RenderVisibleLayers renders all visible map layers.
