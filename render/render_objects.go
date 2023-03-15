@@ -48,12 +48,12 @@ func (r *Renderer) RenderVisibleGroups() error {
 }
 
 // RenderGroup renders single group.
-func (r *Renderer) RenderGroup(groupIdx int) error {
-	if groupIdx >= len(r.m.Groups) {
+func (r *Renderer) RenderGroup(groupID int) error {
+	if groupID >= len(r.m.Groups) {
 		return ErrOutOfBounds
 	}
 
-	group := r.m.Groups[groupIdx]
+	group := r.m.Groups[groupID]
 	return r._renderGroup(group)
 }
 
@@ -135,18 +135,18 @@ func (r *Renderer) _renderObjectGroup(objectGroup *tiled.ObjectGroup) error {
 }
 
 // RenderGroupObjectGroup renders single object group in a certain group.
-func (r *Renderer) RenderGroupObjectGroup(groupIdx, objectGroupID int) error {
-	if groupIdx >= len(r.m.Groups) {
+func (r *Renderer) RenderGroupObjectGroup(groupID, objectGroupID int) error {
+	if groupID >= len(r.m.Groups) {
 		return ErrOutOfBounds
 	}
 
-	group := r.m.Groups[groupIdx]
+	group := r.m.Groups[groupID]
 
-	if objectGroupId >= len(group.ObjectGroups) {
+	if objectGroupID >= len(group.ObjectGroups) {
 		return ErrOutOfBounds
 	}
 
-	layer := group.ObjectGroups[objectGroupId]
+	layer := group.ObjectGroups[objectGroupID]
 	return r._renderObjectGroup(layer)
 }
 
