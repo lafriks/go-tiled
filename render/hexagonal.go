@@ -41,7 +41,13 @@ func (e *HexagonalRendererEngine) Init(m *tiled.Map) {
 
 // GetFinalImageSize returns final image size based on map data.
 func (e *HexagonalRendererEngine) GetFinalImageSize() image.Rectangle {
-	return image.Rect(0, 0, e.m.Width*e.m.TileWidth, e.m.Height*e.m.TileHeight)
+	switch e.m.StaggerAxis {
+	case tiled.AxisX:
+		return image.Rect(0, 0, e.m.Width*e.m.TileWidth, e.m.Height*e.m.TileHeight+e.m.TileHeight/2)
+	case tiled.AxisY:
+		return image.Rect(0, 0, e.m.Width*e.m.TileWidth+e.m.TileWidth/2, (e.m.Height+1)*e.m.TileHeight*3/4)
+	}
+	return image.Rectangle{}
 }
 
 // RotateTileImage rotates provided tile layer.
@@ -62,14 +68,29 @@ func (e *HexagonalRendererEngine) RotateTileImage(tile *tiled.LayerTile, img ima
 
 // GetTilePosition returns tile position in image.
 func (e *HexagonalRendererEngine) GetTilePosition(x, y int) image.Rectangle {
-	oddColumn := (x % 2) == 1
-	offsetWidth := e.m.TileWidth * 3 / 4
-	yBump := 0
-	if oddColumn {
-		yBump = e.m.TileHeight / 2
+	switch e.m.StaggerAxis {
+	case tiled.AxisX:
+		oddColumn := (x % 2) == 1
+		offsetWidth := e.m.TileWidth * 3 / 4
+		yBump := 0
+		if oddColumn {
+			yBump = e.m.TileHeight / 2
+		}
+		return image.Rect(x*offsetWidth,
+			y*e.m.TileHeight+yBump,
+			x*offsetWidth+e.m.TileWidth,
+			(y+2)*e.m.TileHeight+yBump)
+	case tiled.AxisY:
+		oddRow := (y % 2) == 1
+		offsetHeight := e.m.TileHeight * 3 / 4
+		xBump := 0
+		if oddRow {
+			xBump = e.m.TileWidth / 2
+		}
+		return image.Rect(x*e.m.TileHeight+xBump,
+			y*offsetHeight,
+			(x+2)*e.m.TileWidth+xBump,
+			(y+1)*offsetHeight+e.m.TileHeight)
 	}
-	return image.Rect(x*offsetWidth,
-		y*e.m.TileHeight+yBump,
-		x*offsetWidth+e.m.TileWidth,
-		(y+2)*e.m.TileHeight+yBump)
+	return image.Rectangle{}
 }
