@@ -75,6 +75,8 @@ func NewRendererWithFileSystem(m *tiled.Map, fs fs.FS) (*Renderer, error) {
 	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image), fs: fs}
 	if r.m.Orientation == "orthogonal" {
 		r.engine = &OrthogonalRendererEngine{}
+	} else if r.m.Orientation == "hexagonal" {
+		r.engine = &HexagonalRendererEngine{}
 	} else {
 		return nil, ErrUnsupportedOrientation
 	}
