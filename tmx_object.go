@@ -55,6 +55,10 @@ type ObjectGroup struct {
 	OffsetY int `xml:"offsety,attr"`
 	// Whether the objects are drawn according to the order of appearance ("index") or sorted by their y-coordinate ("topdown"). Defaults to "topdown".
 	DrawOrder string `xml:"draworder,attr"`
+	// The parallax x factor of the layer 0 - 1.0
+	ParallaxX float32 `xml:"parallaxx,attr"`
+	// The parallax y factor of the layer 0 - 1.0
+	ParallaxY float32 `xml:"parallaxy,attr"`
 	// Custom properties
 	Properties Properties `xml:"properties>property"`
 	// Group objects

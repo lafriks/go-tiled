@@ -80,6 +80,10 @@ type Layer struct {
 	OffsetX int `xml:"offsetx,attr"`
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
 	OffsetY int `xml:"offsety,attr"`
+	// The parallax x factor of the layer 0 - 1.0
+	ParallaxX float32 `xml:"parallaxx,attr"`
+	// The parallax y factor of the layer 0 - 1.0
+	ParallaxY float32 `xml:"parallaxy,attr"`
 	// Custom properties
 	Properties Properties `xml:"properties>property"`
 	// This is the attribute you'd like to use, not Data. Tile entry at (x,y) is obtained using l.DecodedTiles[y*map.Width+x].
