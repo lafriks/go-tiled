@@ -22,7 +22,11 @@ SOFTWARE.
 
 package tiled
 
-import "strconv"
+import (
+	"encoding/hex"
+	"image/color"
+	"strconv"
+)
 
 // Properties wraps any number of custom properties
 type Properties []*Property
@@ -102,4 +106,25 @@ func (p Properties) GetFloat(name string) float64 {
 		}
 	}
 	return 0
+}
+
+func (p Properties) GetColor(name string) color.Color {
+	for _, property := range p {
+		if property.Name != name || property.Type != "color" {
+			continue
+		}
+		str := property.Value
+		if len(str) < 6 {
+			continue
+		}
+		if str[0] == '#' {
+			str = str[1:]
+		}
+		b, err := hex.DecodeString(str)
+		if err != nil {
+			continue
+		}
+		return &color.RGBA{b[1], b[2], b[3], b[0]}
+	}
+	return nil
 }
