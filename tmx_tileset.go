@@ -97,6 +97,14 @@ type TilesetTile struct {
 	Type string `xml:"type,attr"`
 	// The type of the tile. Refers to an object type and is used by tile objects. (optional) (renamed from 'type' since 1.9)
 	Class string `xml:"class,attr"`
+	// X is position of the sub-rectangle representing this tile (default: 0)
+	X int `xml:"x,attr"`
+	// Y is position of the sub-rectangle representing this tile (default: 0)
+	Y int `xml:"y,attr"`
+	// Width of the sub-rectangle representing this tile (defaults to the image width)
+	Width int `xml:"width,attr"`
+	// Height of the sub-rectangle representing this tile (defaults to the image height)
+	Height int `xml:"height,attr"`
 	// Defines the terrain type of each corner of the tile, given as comma-separated indexes in the terrain types
 	// array in the order top-left, top-right, bottom-left, bottom-right.
 	// Leaving out a value means that corner has no terrain. (optional) (since 0.9)
