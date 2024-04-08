@@ -32,7 +32,7 @@ func main() {
     // Parse .tmx file.
     gameMap, err := tiled.LoadFile(mapPath)
     if err != nil {
-        fmt.Printf("error parsing map: %s", err.Error()
+        fmt.Printf("error parsing map: %s", err.Error())
         os.Exit(2)
     }
 
@@ -42,14 +42,14 @@ func main() {
     // use with the default Renderer, or by making your own.
     renderer, err := render.NewRenderer(gameMap)
     if err != nil {
-        fmt.Printf("map unsupported for rendering: %s", err.Error()
+        fmt.Printf("map unsupported for rendering: %s", err.Error())
         os.Exit(2)
     }
 
     // Render just layer 0 to the Renderer.
     err = renderer.RenderLayer(0)
     if err != nil {
-        fmt.Printf("layer unsupported for rendering: %s", err.Error()
+        fmt.Printf("layer unsupported for rendering: %s", err.Error())
         os.Exit(2)
     }
 
