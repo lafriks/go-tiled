@@ -4,6 +4,7 @@
 [![Build Status](https://cloud.drone.io/api/badges/lafriks/go-tiled/status.svg?ref=refs/heads/master)](https://cloud.drone.io/lafriks/go-tiled)
 
 Go library to parse Tiled map editor file format (TMX) and render map to image. Currently supports only orthogonal rendering out-of-the-box.
+go-tiled supports orthogonal, finite maps only at the moment. Infinite maps are unavaliable for now.
 
 ## Installing
 
