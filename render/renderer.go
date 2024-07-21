@@ -33,6 +33,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path/filepath"
 
 	"github.com/disintegration/imaging"
 	"github.com/lafriks/go-tiled"
@@ -86,10 +87,10 @@ func NewRendererWithFileSystem(m *tiled.Map, fs fs.FS) (*Renderer, error) {
 }
 
 func (r *Renderer) open(f string) (io.ReadCloser, error) {
-	if r.fs != nil {
-		return r.fs.Open(f)
+	if r.fs == nil {
+		return os.Open(filepath.FromSlash(f))
 	}
-	return os.Open(f)
+	return r.fs.Open(filepath.ToSlash(f))
 }
 
 func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {

@@ -99,11 +99,11 @@ func (w *WangSet) GetWangColors(tileID uint32) (map[WangPosition]*WangColor, err
 	}
 
 	// convert from CSV to array of strings
-	wangIdsString := strings.Split(tile.WangID, ",")
+	wangIDsString := strings.Split(tile.WangID, ",")
 
 	// convert from array of strings to slice of uint32
-	var wangIds []uint32 // will contain a slice of the wangIds
-	for _, v := range wangIdsString {
+	var wangIDs []uint32 // will contain a slice of the wangIDs
+	for _, v := range wangIDsString {
 		id64, err := strconv.ParseUint(v, 10, 32)
 		if err != nil {
 			return nil, errors.New("internal error")
@@ -112,12 +112,12 @@ func (w *WangSet) GetWangColors(tileID uint32) (map[WangPosition]*WangColor, err
 		// uint64 to uint32
 		id := uint32(id64)
 
-		wangIds = append(wangIds, id)
+		wangIDs = append(wangIDs, id)
 	}
 
 	wangColors := make(map[WangPosition]*WangColor)
 
-	for i, id := range wangIds {
+	for i, id := range wangIDs {
 		if id == 0 { // no color assigned if id is 0, set to nil
 			wangColors[WangPosition(i)] = nil
 		} else {
