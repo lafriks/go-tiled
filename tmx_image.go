@@ -49,7 +49,7 @@ type ImageLayer struct {
 	// Whether the layer is shown (1) or hidden (0). Defaults to 1.
 	Visible bool `xml:"visible,attr"`
 	// Custom properties
-	Properties *Properties `xml:"properties"`
+	Properties Properties `xml:"properties>property"`
 	// The group image
 	Image *Image `xml:"image"`
 	// The parallax x factor of the layer 0 - 1.0
@@ -79,16 +79,16 @@ func (l *ImageLayer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 // Image source
 type Image struct {
 	// Used for embedded images, in combination with a data child element. Valid values are file extensions like png, gif, jpg, bmp, etc.
-	Format string `xml:"format,attr,omitempty"`
+	Format string `xml:"format,attr"`
 	// The reference to the tileset image file
 	Source string `xml:"source,attr"`
 	// Defines a specific color that is treated as transparent (example value: "#FF00FF" for magenta).
 	// Up until Tiled 0.12, this value is written out without a # but this is planned to change.
-	Trans *HexColor `xml:"trans,attr,omitempty"`
+	Trans *HexColor `xml:"trans,attr"`
 	// The image width in pixels (optional, used for tile index correction when the image changes)
-	Width int `xml:"width,attr,omitempty"`
+	Width int `xml:"width,attr"`
 	// The image height in pixels (optional)
-	Height int `xml:"height,attr,omitempty"`
+	Height int `xml:"height,attr"`
 	// Embedded image content
-	Data *Data `xml:"data,attr,omitempty"`
+	Data *Data `xml:"data,attr"`
 }

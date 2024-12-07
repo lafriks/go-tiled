@@ -121,23 +121,6 @@ func (l *loader) LoadFile(fileName string) (*Map, error) {
 	return l.LoadReader(dir, f)
 }
 
-// LoadTilesetFromReader loads a tileset in TSX format from an io.Reader.
-// baseDir is used to locate relative pats to additional tile data; default is
-// the current directory if empty.
-func (l *loader) LoadTilesetFromReader(baseDir string, r io.Reader) (*Tileset, error) {
-	d := xml.NewDecoder(r)
-
-	t := &Tileset{
-		baseDir: baseDir,
-	}
-	if err := d.Decode(t); err != nil {
-		return nil, err
-	}
-
-	t.SourceLoaded = true
-	return t, nil
-}
-
 // LoadTilesetFile loads a tileset in TSX format from a file.
 func (l *loader) LoadTilesetFile(fileName string) (*Tileset, error) {
 	f, err := l.open(fileName)
@@ -151,27 +134,16 @@ func (l *loader) LoadTilesetFile(fileName string) (*Tileset, error) {
 }
 
 // LoadTilesetFromReader loads a .tsx file into a Tileset structure
-func LoadTilesetFromReader(baseDir string, r io.Reader) (*Tileset, error) {
+func (l *loader) LoadTilesetFromReader(baseDir string, r io.Reader) (*Tileset, error) {
 	d := xml.NewDecoder(r)
 
-	m := &Tileset{
-		baseDir:      baseDir,
-		SourceLoaded: true,
+	t := &Tileset{
+		baseDir: baseDir,
 	}
-	if err := d.Decode(m); err != nil {
+	if err := d.Decode(t); err != nil {
 		return nil, err
 	}
 
-	return m, nil
-}
-
-// SaveTilesetToWriter saves a Tileset structure into a given writer
-func SaveTilesetToWriter(tileset *Tileset, w io.Writer) error {
-	encoder := xml.NewEncoder(w)
-	encoder.Indent("", " ")
-	return encoder.Encode(tileset)
-}
-
-func b(v bool) *bool {
-	return &v
+	t.SourceLoaded = true
+	return t, nil
 }

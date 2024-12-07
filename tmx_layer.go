@@ -85,7 +85,7 @@ type Layer struct {
 	// The parallax y factor of the layer 0 - 1.0
 	ParallaxY float32 `xml:"parallaxy,attr"`
 	// Custom properties
-	Properties *Properties `xml:"properties"`
+	Properties Properties `xml:"properties>property"`
 	// This is the attribute you'd like to use, not Data. Tile entry at (x,y) is obtained using l.DecodedTiles[y*map.Width+x].
 	Tiles []*LayerTile
 	// Data

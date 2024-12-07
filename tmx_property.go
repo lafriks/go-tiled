@@ -29,9 +29,7 @@ import (
 )
 
 // Properties wraps any number of custom properties
-type Properties struct {
-	Property []*Property `xml:"property"`
-}
+type Properties []*Property
 
 // Property is used for custom properties
 type Property struct {
@@ -49,7 +47,7 @@ type Property struct {
 // Get finds all properties by specified name
 func (p Properties) Get(name string) []string {
 	var values []string
-	for _, property := range p.Property {
+	for _, property := range p {
 		if property.Name == name {
 			values = append(values, property.Value)
 		}
@@ -60,7 +58,7 @@ func (p Properties) Get(name string) []string {
 // GetString finds first string property by specified name
 func (p Properties) GetString(name string) string {
 	var v string
-	for _, property := range p.Property {
+	for _, property := range p {
 		if property.Name == name {
 			if property.Type == "" {
 				return property.Value
@@ -74,7 +72,7 @@ func (p Properties) GetString(name string) string {
 
 // GetBool finds first bool property by specified name
 func (p Properties) GetBool(name string) bool {
-	for _, property := range p.Property {
+	for _, property := range p {
 		if property.Name == name && property.Type == "boolean" {
 			return property.Value == "true"
 		}
@@ -84,7 +82,7 @@ func (p Properties) GetBool(name string) bool {
 
 // GetInt finds first int property by specified name
 func (p Properties) GetInt(name string) int {
-	for _, property := range p.Property {
+	for _, property := range p {
 		if property.Name == name && property.Type == "int" {
 			v, err := strconv.Atoi(property.Value)
 			if err != nil {
@@ -98,7 +96,7 @@ func (p Properties) GetInt(name string) int {
 
 // GetFloat finds first float property by specified name
 func (p Properties) GetFloat(name string) float64 {
-	for _, property := range p.Property {
+	for _, property := range p {
 		if property.Name == name && property.Type == "float" {
 			v, err := strconv.ParseFloat(property.Value, 64)
 			if err != nil {

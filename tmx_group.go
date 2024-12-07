@@ -49,7 +49,7 @@ type Group struct {
 	// The parallax y factor of the layer 0 - 1.0
 	ParallaxY float32 `xml:"parallaxy,attr"`
 	// Custom properties
-	Properties *Properties `xml:"properties"`
+	Properties Properties `xml:"properties>property"`
 	// Map layers
 	Layers []*Layer `xml:"layer"`
 	// Map object groups

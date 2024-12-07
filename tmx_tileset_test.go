@@ -23,9 +23,7 @@ SOFTWARE.
 package tiled
 
 import (
-	"encoding/xml"
 	"image"
-	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -184,9 +182,14 @@ var testLoadTilesetFile = &Tileset{
 		Source: "ProjectUtumno_full.png",
 		Trans:  nil,
 	},
-	Margin:       0,
-	Name:         "ProjectUtumno_full",
-	Properties:   nil,
+	Margin: 0,
+	Name:   "ProjectUtumno_full",
+	Properties: Properties{
+		{
+			Name:  "testTilesetProperty",
+			Value: "valueOfTilesetProperty",
+		},
+	},
 	Source:       "",
 	SourceLoaded: true,
 	Spacing:      0,
@@ -204,8 +207,14 @@ var testLoadTilesetFile = &Tileset{
 			Image:        nil,
 			ObjectGroups: nil,
 			Probability:  0,
-			Properties:   nil,
-			Terrain:      "",
+			Properties: Properties{
+				{
+					Name:  "testTileProperty",
+					Type:  "int",
+					Value: "7",
+				},
+			},
+			Terrain: "",
 		},
 	},
 	Version: "1.2",
@@ -280,39 +289,4 @@ func TestLoadTile(t *testing.T) {
 
 	tile := tsx.Tiles[0]
 	assert.Equal(t, testLoadTilesetTileFile, tile)
-}
-
-func assertXMLEqual(t *testing.T, expected io.Reader, obtained io.Reader) {
-	var expec node
-	var obt node
-	var err error
-
-	err = xml.NewDecoder(expected).Decode(&expec)
-	assert.Nil(t, err)
-	err = xml.NewDecoder(obtained).Decode(&obt)
-	assert.Nil(t, err)
-
-	assert.Equal(t, expec, obt)
-}
-
-type node struct {
-	XMLName xml.Name
-	Attrs   []xml.Attr `xml:",any,attr"`
-	Content string     `xml:",innerxml"`
-	Nodes   []node     `xml:",any"`
-}
-
-func (n *node) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type inNode node
-
-	err := d.DecodeElement((*inNode)(n), &start)
-	if err != nil {
-		return err
-	}
-
-	//Discard content if there are child nodes
-	if len(n.Nodes) > 0 {
-		n.Content = ""
-	}
-	return nil
 }

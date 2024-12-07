@@ -57,12 +57,12 @@ func (a *aliasMap) SetDefaults() {
 
 // SetDefaults provides default values for Object.
 func (a *aliasObject) SetDefaults() {
-	a.Visible = b(true)
+	a.Visible = true
 }
 
 // SetDefaults provides default values for ObjectGroup.
 func (a *aliasObjectGroup) SetDefaults() {
-	a.Visible = b(true)
+	a.Visible = true
 	a.Opacity = 1
 }
 
@@ -70,7 +70,7 @@ func (a *aliasObjectGroup) SetDefaults() {
 func (a *aliasText) SetDefaults() {
 	a.FontFamily = "sans-serif"
 	a.Size = 16
-	a.Kerning = b(true)
+	a.Kerning = true
 	a.HAlign = "left"
 	a.VAlign = "top"
 	a.Color = &HexColor{}
