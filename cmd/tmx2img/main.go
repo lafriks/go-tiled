@@ -1,3 +1,4 @@
+// Tool to convert a TMX file to an image.
 package main
 
 import (
@@ -18,7 +19,7 @@ func main() {
 		img = "map.png"
 	}
 
-	m, err := tiled.LoadFromFile(filename)
+	m, err := tiled.LoadFile(filename)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -34,7 +35,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	//rend.RenderLayer(1)
+	// rend.RenderLayer(1)
 
 	w, err := os.Create(img)
 	if err != nil {
@@ -42,5 +43,8 @@ func main() {
 		return
 	}
 	defer w.Close()
-	rend.SaveAsPng(w)
+	if err := rend.SaveAsPng(w); err != nil {
+		fmt.Println(err)
+		return
+	}
 }

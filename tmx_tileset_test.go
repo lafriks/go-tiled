@@ -23,7 +23,6 @@ SOFTWARE.
 package tiled
 
 import (
-	"bytes"
 	"encoding/xml"
 	"image"
 	"io"
@@ -170,6 +169,7 @@ func TestGetTileRect(t *testing.T) {
 			}
 		})
 	}
+
 }
 
 var testLoadTilesetFile = &Tileset{
@@ -213,16 +213,14 @@ var testLoadTilesetFile = &Tileset{
 
 var testLoadTilesetTileFile = &TilesetTile{
 	ID: 464,
-	Animation: &Animation{
-		Frame: []*AnimationFrame{
-			{
-				Duration: 500,
-				TileID:   75,
-			},
-			{
-				Duration: 500,
-				TileID:   76,
-			},
+	Animation: []*AnimationFrame{
+		{
+			Duration: 500,
+			TileID:   75,
+		},
+		{
+			Duration: 500,
+			TileID:   76,
 		},
 	},
 	Image: nil,
@@ -245,7 +243,7 @@ var testLoadTilesetTileFile = &TilesetTile{
 					Rotation:   0,
 					Text:       nil,
 					Type:       "",
-					Visible:    b(true),
+					Visible:    true,
 					Width:      32.375,
 					X:          -0.25,
 					Y:          17.75,
@@ -255,7 +253,7 @@ var testLoadTilesetTileFile = &TilesetTile{
 			OffsetY:    0,
 			Opacity:    1,
 			Properties: nil,
-			Visible:    b(true),
+			Visible:    true,
 		},
 	},
 }
@@ -271,18 +269,6 @@ func TestLoadTileset(t *testing.T) {
 	assert.Equal(t, testLoadTilesetFile, tsx)
 }
 
-func TestSaveTileset(t *testing.T) {
-	tsxFile, err := os.Open(filepath.Join(GetAssetsDirectory(), "tilesets/testLoadTileset.tsx"))
-	assert.Nil(t, err)
-	defer tsxFile.Close()
-
-	buffer := &bytes.Buffer{}
-	err = SaveTilesetToWriter(testLoadTilesetFile, buffer)
-	assert.Nil(t, err)
-
-	assertXMLEqual(t, tsxFile, buffer)
-}
-
 func TestLoadTile(t *testing.T) {
 	tsxFile, err := os.Open(filepath.Join(GetAssetsDirectory(), "tilesets/testLoadTilesetTile.tsx"))
 	assert.Nil(t, err)
@@ -294,22 +280,6 @@ func TestLoadTile(t *testing.T) {
 
 	tile := tsx.Tiles[0]
 	assert.Equal(t, testLoadTilesetTileFile, tile)
-}
-
-func TestSaveTile(t *testing.T) {
-	tsxFile, err := os.Open(filepath.Join(GetAssetsDirectory(), "tilesets/testLoadTilesetTile.tsx"))
-	assert.Nil(t, err)
-	defer tsxFile.Close()
-
-	tsx, err := LoadTilesetFromReader(".", tsxFile)
-	assert.Nil(t, err)
-
-	buffer := &bytes.Buffer{}
-	xml.NewEncoder(buffer).Encode(tsx)
-
-	tsxFile.Seek(0, 0)
-	assertXMLEqual(t, tsxFile, buffer)
-
 }
 
 func assertXMLEqual(t *testing.T, expected io.Reader, obtained io.Reader) {

@@ -1,31 +1,30 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "label": "Build",
-        "type": "shell",
-        "command": "go",
-        "group": {
-            "kind": "build",
-            "isDefault": true
-        },
-        "presentation": {
-          "echo": true,
-          "reveal": "always",
-          "focus": true,
-          "panel": "shared"
-        },
-        "linux": {
-          "args": [ "build", "-o", "tmx2img", "${workspaceRoot}/example/tmx2img/main.go" ]
-        },
-        "osx": {
-          "args": [ "build", "-o", "tmx2img", "${workspaceRoot}/example/tmx2img/main.go" ]
-        },
-        "windows": {
-          "args": [ "build", "-o", "tmx2img.exe", "\"${workspaceRoot}\\example\\tmx2img\\main.go\""]
-        },
-        "problemMatcher": ["$go"]
-      }
-    ]
-  }
-  
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "go",
+      "group": {
+          "kind": "build",
+          "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "linux": {
+        "args": [ "build", "-o", "tmx2img", "${workspaceRoot}/cmd/tmx2img/main.go" ]
+      },
+      "osx": {
+        "args": [ "build", "-o", "tmx2img", "${workspaceRoot}/cmd/tmx2img/main.go" ]
+      },
+      "windows": {
+        "args": [ "build", "-o", "tmx2img.exe", "\"${workspaceRoot}\\cmd\\tmx2img\\main.go\""]
+      },
+      "problemMatcher": ["$go"]
+    }
+  ]
+}

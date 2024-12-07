@@ -34,6 +34,8 @@ type Group struct {
 	ID uint32 `xml:"id,attr"`
 	// The name of the group layer.
 	Name string `xml:"name,attr"`
+	// The class of the group layer (since 1.9, defaults to "").
+	Class string `xml:"class,attr"`
 	// Rendering offset of the image layer in pixels. Defaults to 0. (since 0.15)
 	OffsetX int `xml:"offsetx,attr"`
 	// Rendering offset of the image layer in pixels. Defaults to 0. (since 0.15)
@@ -42,6 +44,10 @@ type Group struct {
 	Opacity float32 `xml:"opacity,attr"`
 	// Whether the layer is shown (1) or hidden (0). Defaults to 1.
 	Visible bool `xml:"visible,attr"`
+	// The parallax x factor of the layer 0 - 1.0
+	ParallaxX float32 `xml:"parallaxx,attr"`
+	// The parallax y factor of the layer 0 - 1.0
+	ParallaxY float32 `xml:"parallaxy,attr"`
 	// Custom properties
 	Properties *Properties `xml:"properties"`
 	// Map layers
@@ -68,7 +74,7 @@ func (g *Group) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
-// DecodeGroup decodes Group data. This includes all subgroups and the Layer 
+// DecodeGroup decodes Group data. This includes all subgroups and the Layer
 // data for each.
 func (g *Group) DecodeGroup(m *Map) error {
 	for i := 0; i < len(g.Groups); i++ {

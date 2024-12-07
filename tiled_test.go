@@ -41,7 +41,18 @@ func GetAssetsDirectory() string {
 	return filepath.Join(filepath.Dir(filename), "assets")
 }
 
-func TestLoadFromReader(t *testing.T) {
+func TestLoadFromFileWangSet(t *testing.T) {
+	m, err := LoadFile(filepath.Join(GetAssetsDirectory(), "test_wangsets_map.tmx"))
+
+	assert.NoError(t, err)
+	assert.NotNil(t, m)
+
+	// Test WangSets
+	assert.NotNil(t, m.Tilesets[0].WangSets)
+	assert.NotNil(t, m.Tilesets[0].WangSets[0].WangColors)
+}
+
+func TestLoadReader(t *testing.T) {
 	r := bytes.NewBufferString(`<?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="4" height="4" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="2">
 <layer id="1" name="Tile Layer 1" width="4" height="4">
@@ -53,28 +64,28 @@ func TestLoadFromReader(t *testing.T) {
 </data>
 </layer>
 </map>`)
-	m, err := LoadFromReader(GetAssetsDirectory(), r)
+	m, err := LoadReader(GetAssetsDirectory(), r)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, m)
 	assert.Len(t, m.Layers, 1)
 }
 
-func TestLoadFromReaderError(t *testing.T) {
+func TestLoadReaderError(t *testing.T) {
 	r := bytes.NewBufferString(`<?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="4" height="4" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="2">
 <layer id="1" name="Tile Layer 1" width="4" height="4">
 <data encoding="csv">
 </layer>
 </map>`)
-	m, err := LoadFromReader(GetAssetsDirectory(), r)
+	m, err := LoadReader(GetAssetsDirectory(), r)
 
 	assert.Error(t, err)
 	assert.Nil(t, m)
 }
 
-func TestLoadFromFile(t *testing.T) {
-	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "test.tmx"))
+func TestLoadFile(t *testing.T) {
+	m, err := LoadFile(filepath.Join(GetAssetsDirectory(), "test.tmx"))
 
 	assert.NoError(t, err)
 	assert.NotNil(t, m)
@@ -93,15 +104,15 @@ func TestLoadFromFile(t *testing.T) {
 	assert.Equal(t, true, *m.ObjectGroups[0].Objects[0].Visible)
 }
 
-func TestLoadFromFileError(t *testing.T) {
-	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "invalid.tmx"))
+func TestLoadFileError(t *testing.T) {
+	m, err := LoadFile(filepath.Join(GetAssetsDirectory(), "invalid.tmx"))
 
 	assert.Error(t, err)
 	assert.Nil(t, m)
 }
 
 func TestExternalTilesetImageLoaded(t *testing.T) {
-	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "test2.tmx"))
+	m, err := LoadFile(filepath.Join(GetAssetsDirectory(), "test2.tmx"))
 
 	assert.NoError(t, err)
 	assert.NotNil(t, m)
@@ -123,7 +134,7 @@ func TestExternalTilesetImageLoaded(t *testing.T) {
 }
 
 func TestImageLayer(t *testing.T) {
-	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "imagelayer.tmx"))
+	m, err := LoadFile(filepath.Join(GetAssetsDirectory(), "imagelayer.tmx"))
 
 	assert.NoError(t, err)
 	assert.NotNil(t, m)
@@ -145,7 +156,7 @@ func TestImageLayer(t *testing.T) {
 }
 
 func TestGroup(t *testing.T) {
-	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "groups.tmx"))
+	m, err := LoadFile(filepath.Join(GetAssetsDirectory(), "groups.tmx"))
 
 	assert.NoError(t, err)
 	assert.NotNil(t, m)
@@ -178,7 +189,7 @@ func TestGroup(t *testing.T) {
 }
 
 func TestFont(t *testing.T) {
-	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "font.tmx"))
+	m, err := LoadFile(filepath.Join(GetAssetsDirectory(), "font.tmx"))
 
 	assert.NoError(t, err)
 	assert.NotNil(t, m)
@@ -219,12 +230,12 @@ func (t *testFileSystem) Open(filename string) (fs.File, error) {
 
 func TestLoader(t *testing.T) {
 	fs := &testFileSystem{}
-	loader := &Loader{
+	loader := &loader{
 		FileSystem: fs,
 	}
 
 	mapFile := filepath.Join(GetAssetsDirectory(), "loader.tmx")
-	m, err := loader.LoadFromFile(mapFile)
+	m, err := loader.LoadFile(mapFile)
 
 	if assert.Error(t, err) {
 		assert.True(t, os.IsNotExist(err), "expecting no exist error")
@@ -238,27 +249,24 @@ func TestLoader(t *testing.T) {
 var assetsFS embed.FS
 
 func TestEmbeddedLoader(t *testing.T) {
-	loader := &Loader{
-		FileSystem: assetsFS,
-	}
 	tcs := []struct {
 		name string
 		load func() (*Map, error)
 	}{
 		{
-			name: "LoadFromReader",
+			name: "LoadReader",
 			load: func() (*Map, error) {
 				file, err := assetsFS.Open("assets/test2.tmx")
 				if err != nil {
 					return nil, err
 				}
-				return loader.LoadFromReader("assets", file)
+				return LoadReader("assets", file, WithFileSystem(assetsFS))
 			},
 		},
 		{
-			name: "LoadFromFile",
+			name: "LoadFile",
 			load: func() (*Map, error) {
-				return loader.LoadFromFile("assets/test2.tmx")
+				return LoadFile("assets/test2.tmx", WithFileSystem(assetsFS))
 			},
 		},
 	}
@@ -276,6 +284,13 @@ func TestEmbeddedLoader(t *testing.T) {
 			assert.Equal(t, tileset.Version, "1.2")
 			assert.Equal(t, tileset.TiledVersion, "1.2.3")
 		})
+	}
+}
+
+func TestLoadFileMissingFile(t *testing.T) {
+	_, err := LoadFile("missing-file.tmx")
+	if err == nil {
+		t.Fatal("expected LoadFile to return err, but no error was returned")
 	}
 }
 
@@ -362,7 +377,7 @@ func TestParseHexColor(t *testing.T) {
 
 	for _, c := range cases {
 		color := &HexColor{}
-		color.UnmarshalXMLAttr(c.attr)
+		assert.NoError(t, color.UnmarshalXMLAttr(c.attr))
 		assert.Equal(t, c.color, color.c, c.name)
 	}
 }
@@ -411,7 +426,7 @@ func TestFormatHexColor(t *testing.T) {
 }
 
 func TestVersions(t *testing.T) {
-	m, err := LoadFromFile(filepath.Join(GetAssetsDirectory(), "test2.tmx"))
+	m, err := LoadFile(filepath.Join(GetAssetsDirectory(), "test2.tmx"))
 
 	assert.Nil(t, err)
 

@@ -70,6 +70,8 @@ type Layer struct {
 	ID uint32 `xml:"id,attr"`
 	// The name of the layer.
 	Name string `xml:"name,attr"`
+	// The class of this layer (since 1.9, defaults to "").
+	Class string `xml:"class,attr"`
 	// The opacity of the layer as a value from 0 to 1. Defaults to 1.
 	Opacity float32 `xml:"opacity,attr"`
 	// Whether the layer is shown (1) or hidden (0). Defaults to 1.
@@ -78,6 +80,10 @@ type Layer struct {
 	OffsetX int `xml:"offsetx,attr"`
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
 	OffsetY int `xml:"offsety,attr"`
+	// The parallax x factor of the layer 0 - 1.0
+	ParallaxX float32 `xml:"parallaxx,attr"`
+	// The parallax y factor of the layer 0 - 1.0
+	ParallaxY float32 `xml:"parallaxy,attr"`
 	// Custom properties
 	Properties *Properties `xml:"properties"`
 	// This is the attribute you'd like to use, not Data. Tile entry at (x,y) is obtained using l.DecodedTiles[y*map.Width+x].

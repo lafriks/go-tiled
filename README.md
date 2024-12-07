@@ -3,7 +3,7 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/lafriks/go-tiled)](https://pkg.go.dev/github.com/lafriks/go-tiled)
 [![Build Status](https://cloud.drone.io/api/badges/lafriks/go-tiled/status.svg?ref=refs/heads/master)](https://cloud.drone.io/lafriks/go-tiled)
 
-Go library to parse Tiled map editor file format (TMX) and render map to image. Currently supports only orthogonal rendering out-of-the-box.
+Go library to parse Tiled map editor file format (TMX) and render map to image. Currently supports only orthogonal finite maps rendering out-of-the-box.
 
 ## Installing
 
@@ -30,9 +30,9 @@ const mapPath = "maps/map.tmx" // Path to your Tiled Map.
 
 func main() {
     // Parse .tmx file.
-    gameMap, err := tiled.LoadFromFile(mapPath)
+    gameMap, err := tiled.LoadFile(mapPath)
     if err != nil {
-        fmt.Printf("error parsing map: %s", err.Error()
+        fmt.Printf("error parsing map: %s", err.Error())
         os.Exit(2)
     }
 
@@ -42,14 +42,14 @@ func main() {
     // use with the default Renderer, or by making your own.
     renderer, err := render.NewRenderer(gameMap)
     if err != nil {
-        fmt.Printf("map unsupported for rendering: %s", err.Error()
+        fmt.Printf("map unsupported for rendering: %s", err.Error())
         os.Exit(2)
     }
 
     // Render just layer 0 to the Renderer.
     err = renderer.RenderLayer(0)
     if err != nil {
-        fmt.Printf("layer unsupported for rendering: %s", err.Error()
+        fmt.Printf("layer unsupported for rendering: %s", err.Error())
         os.Exit(2)
     }
 

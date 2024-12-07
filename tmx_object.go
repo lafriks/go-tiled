@@ -30,50 +30,59 @@ import (
 	"strings"
 )
 
-var (
-	// ErrInvalidObjectPoint error is returned if there is error parsing object points
-	ErrInvalidObjectPoint = errors.New("tiled: invalid object point")
-)
+// ErrInvalidObjectPoint error is returned if there is error parsing object points
+var ErrInvalidObjectPoint = errors.New("tiled: invalid object point")
 
 // ObjectGroup is in fact a map layer, and is hence called "object layer" in Tiled Qt
 type ObjectGroup struct {
 	// Unique ID of the layer.
 	// Each layer that added to a map gets a unique id. Even if a layer is deleted,
 	// no layer ever gets the same ID. Can not be changed in Tiled. (since Tiled 1.2)
-	ID uint32 `xml:"id,attr,omitempty"`
+	ID uint32 `xml:"id,attr"`
 	// The name of the object group.
-	Name string `xml:"name,attr,omitempty"`
+	Name string `xml:"name,attr"`
+	// The class of the object group (since 1.9, defaults to "").
+	Class string `xml:"class,attr"`
 	// The color used to display the objects in this group.
-	Color *HexColor `xml:"color,attr,omitempty"`
+	Color *HexColor `xml:"color,attr"`
 	// The opacity of the layer as a value from 0 to 1. Defaults to 1.
-	Opacity float32 `xml:"opacity,attr,omitempty"`
+	Opacity float32 `xml:"opacity,attr"`
 	// Whether the layer is shown (1) or hidden (0). Defaults to 1.
-	Visible *bool `xml:"visible,attr"`
+	Visible bool `xml:"visible,attr"`
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
-	OffsetX int `xml:"offsetx,attr,omitempty"`
+	OffsetX int `xml:"offsetx,attr"`
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
-	OffsetY int `xml:"offsety,attr,omitempty"`
+	OffsetY int `xml:"offsety,attr"`
 	// Whether the objects are drawn according to the order of appearance ("index") or sorted by their y-coordinate ("topdown"). Defaults to "topdown".
-	DrawOrder string `xml:"draworder,attr,omitempty"`
+	DrawOrder string `xml:"draworder,attr"`
+	// The parallax x factor of the layer 0 - 1.0
+	ParallaxX float32 `xml:"parallaxx,attr"`
+	// The parallax y factor of the layer 0 - 1.0
+	ParallaxY float32 `xml:"parallaxy,attr"`
 	// Custom properties
-	Properties *Properties `xml:"properties,omitempty"`
+	Properties Properties `xml:"properties>property"`
 	// Group objects
-	Objects []*Object `xml:"object,omitempty"`
+	Objects []*Object `xml:"object"`
 }
 
 // DecodeObjectGroup decodes object group data
-func (g *ObjectGroup) DecodeObjectGroup(m *Map) {
+func (g *ObjectGroup) DecodeObjectGroup(m *Map) error {
 	for _, object := range g.Objects {
 		if object.GID > 0 {
 			// Initialize all tilesets that are referenced by tile objects. Otherwise,
 			// if a tileset is used by an object tile but not used by any layer it
 			// won't be loaded.
-			m.TileGIDToTile(object.GID)
+			if _, err := m.TileGIDToTile(object.GID); err != nil {
+				return err
+			}
 		}
 		if len(object.TemplateSource) > 0 {
-			object.initTemplate(m)
+			if err := object.initTemplate(m); err != nil {
+				return err
+			}
 		}
 	}
+	return nil
 }
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
@@ -94,37 +103,41 @@ func (g *ObjectGroup) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 type Object struct {
 	// Unique ID of the object. Each object that is placed on a map gets a unique id. Even if an object was deleted, no object gets the same ID.
 	// Can not be changed in Tiled Qt. (since Tiled 0.11)
-	ID uint32 `xml:"id,attr,omitempty"`
+	ID uint32 `xml:"id,attr"`
 	// The name of the object. An arbitrary string.
-	Name string `xml:"name,attr,omitempty"`
-	// The type of the object. An arbitrary string.
-	Type string `xml:"type,attr,omitempty"`
+	Name string `xml:"name,attr"`
+	// The type of the object. An arbitrary string. (until 1.8)
+	//
+	// Deprecated: replaced by Class since 1.9
+	Type string `xml:"type,attr"`
+	// The class of the object. An arbitrary string. (defaults to "", renamed from 'type' since 1.9)
+	Class string `xml:"class,attr"`
 	// The x coordinate of the object.
-	X float64 `xml:"x,attr,omitempty"`
+	X float64 `xml:"x,attr"`
 	// The y coordinate of the object.
-	Y float64 `xml:"y,attr,omitempty"`
+	Y float64 `xml:"y,attr"`
 	// The width of the object (defaults to 0).
-	Width float64 `xml:"width,attr,omitempty"`
+	Width float64 `xml:"width,attr"`
 	// The height of the object (defaults to 0).
-	Height float64 `xml:"height,attr,omitempty"`
+	Height float64 `xml:"height,attr"`
 	// The rotation of the object in degrees clockwise (defaults to 0). (since 0.10)
-	Rotation float64 `xml:"rotation,attr,omitempty"`
+	Rotation float64 `xml:"rotation,attr"`
 	// An reference to a tile (optional).
-	GID uint32 `xml:"gid,attr,omitempty"`
+	GID uint32 `xml:"gid,attr"`
 	// Whether the object is shown (1) or hidden (0). Defaults to 1. (since 0.9)
-	Visible *bool `xml:"visible,attr"`
+	Visible bool `xml:"visible,attr"`
 	// Custom properties
-	Properties *Properties `xml:"properties,omitempty"`
+	Properties Properties `xml:"properties>property"`
 	// Used to mark an object as an ellipse. The existing x, y, width and height attributes are used to determine the size of the ellipse.
-	Ellipses []*Ellipse `xml:"ellipse,omitempty"`
+	Ellipses []*Ellipse `xml:"ellipse"`
 	// Polygons
-	Polygons []*Polygon `xml:"polygon,omitempty"`
+	Polygons []*Polygon `xml:"polygon"`
 	// Poly lines
-	PolyLines []*PolyLine `xml:"polyline,omitempty"`
+	PolyLines []*PolyLine `xml:"polyline"`
 	// Text
-	Text *Text `xml:"text,omitempty"`
+	Text *Text `xml:"text"`
 	// Template
-	TemplateSource string `xml:"template,attr,omitempty"`
+	TemplateSource string `xml:"template,attr"`
 	TemplateLoaded bool   `xml:"-"`
 	Template       *Template
 }
@@ -175,8 +188,7 @@ func (o *Object) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 }
 
 // Ellipse is used to mark an object as an ellipse.
-type Ellipse struct {
-}
+type Ellipse struct{}
 
 // Polygon object is made up of a space-delimited list of x,y coordinates. The origin for these coordinates is the location of the parent object.
 // By default, the first point is created as 0,0 denoting that the point will originate exactly where the object is placed.
@@ -241,32 +253,31 @@ type Text struct {
 	// The actual text
 	Text string `xml:",chardata"`
 	// The font family used (default: "sans-serif")
-	FontFamily string `xml:"fontfamily,attr,omitempty"`
+	FontFamily string `xml:"fontfamily,attr"`
 	// The size of the font in pixels (not using points, because other sizes in the TMX format are also using pixels) (default: 16)
-	Size int `xml:"pixelsize,attr,omitempty"`
+	Size int `xml:"pixelsize,attr"`
 	// Whether word wrapping is enabled (1) or disabled (0). Defaults to 0.
-	Wrap bool `xml:"wrap,attr,omitempty"`
+	Wrap bool `xml:"wrap,attr"`
 	// Color of the text in #AARRGGBB or #RRGGBB format (default: #000000)
-	Color *HexColor `xml:"color,attr,omitempty"`
+	Color *HexColor `xml:"color,attr"`
 	// Whether the font is bold (1) or not (0). Defaults to 0.
-	Bold bool `xml:"bold,attr,omitempty"`
+	Bold bool `xml:"bold,attr"`
 	// Whether the font is italic (1) or not (0). Defaults to 0.
-	Italic bool `xml:"italic,attr,omitempty"`
+	Italic bool `xml:"italic,attr"`
 	// Whether a line should be drawn below the text (1) or not (0). Defaults to 0.
-	Underline bool `xml:"underline,attr,omitempty"`
+	Underline bool `xml:"underline,attr"`
 	// Whether a line should be drawn through the text (1) or not (0). Defaults to 0.
-	Strikethrough bool `xml:"strikeout,attr,omitempty"`
+	Strikethrough bool `xml:"strikeout,attr"`
 	// Whether kerning should be used while rendering the text (1) or not (0). Default to 1.
-	Kerning *bool `xml:"kerning,attr,omitempty"`
+	Kerning bool `xml:"kerning,attr"`
 	// Horizontal alignment of the text within the object (left (default), center, right or justify (since Tiled 1.2.1))
-	HAlign string `xml:"halign,attr,omitempty"`
+	HAlign string `xml:"halign,attr"`
 	// Vertical alignment of the text within the object (top (default), center or bottom)
-	VAlign string `xml:"valign,attr,omitempty"`
+	VAlign string `xml:"valign,attr"`
 }
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.
 func (t *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-
 	item := aliasText{}
 	item.SetDefaults()
 

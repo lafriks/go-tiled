@@ -27,13 +27,13 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"image/gif"
+	"image/jpeg"
 	"image/png"
 	"io"
+	"io/fs"
 	"os"
-
-	"image/jpeg"
-
-	"image/gif"
+	"path/filepath"
 
 	"github.com/disintegration/imaging"
 	"github.com/lafriks/go-tiled"
@@ -44,6 +44,9 @@ var (
 	ErrUnsupportedOrientation = errors.New("tiled/render: unsupported orientation")
 	// ErrUnsupportedRenderOrder represents an error in the unsupported order for rendering.
 	ErrUnsupportedRenderOrder = errors.New("tiled/render: unsupported render order")
+
+	// ErrOutOfBounds represents an error that the index is out of bounds
+	ErrOutOfBounds = errors.New("tiled/render: index out of bounds")
 )
 
 // RendererEngine is the interface implemented by objects that provide rendering engine for Tiled maps.
@@ -60,11 +63,17 @@ type Renderer struct {
 	Result    *image.NRGBA // The image result after rendering using the Render functions.
 	tileCache map[uint32]image.Image
 	engine    RendererEngine
+	fs        fs.FS
 }
 
 // NewRenderer creates new rendering engine instance.
 func NewRenderer(m *tiled.Map) (*Renderer, error) {
-	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image)}
+	return NewRendererWithFileSystem(m, nil)
+}
+
+// NewRendererWithFileSystem creates new rendering engine instance with a custom file system.
+func NewRendererWithFileSystem(m *tiled.Map, fs fs.FS) (*Renderer, error) {
+	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image), fs: fs}
 	if r.m.Orientation == "orthogonal" {
 		r.engine = &OrthogonalRendererEngine{}
 	} else {
@@ -77,6 +86,13 @@ func NewRenderer(m *tiled.Map) (*Renderer, error) {
 	return r, nil
 }
 
+func (r *Renderer) open(f string) (io.ReadCloser, error) {
+	if r.fs == nil {
+		return os.Open(filepath.FromSlash(f))
+	}
+	return r.fs.Open(filepath.ToSlash(f))
+}
+
 func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 	timg, ok := r.tileCache[tile.Tileset.FirstGID+tile.ID]
 	if ok {
@@ -86,7 +102,7 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 	if tile.Tileset.Image == nil {
 		for i := 0; i < len(tile.Tileset.Tiles); i++ {
 			if tile.Tileset.Tiles[i].ID == tile.ID {
-				sf, err := os.Open(tile.Tileset.GetFileFullPath(tile.Tileset.Tiles[i].Image.Source))
+				sf, err := r.open(tile.Tileset.GetFileFullPath(tile.Tileset.Tiles[i].Image.Source))
 				if err != nil {
 					return nil, err
 				}
@@ -99,7 +115,7 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 			}
 		}
 	} else {
-		sf, err := os.Open(tile.Tileset.GetFileFullPath(tile.Tileset.Image.Source))
+		sf, err := r.open(tile.Tileset.GetFileFullPath(tile.Tileset.Image.Source))
 		if err != nil {
 			return nil, err
 		}
@@ -122,9 +138,7 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 	return r.engine.RotateTileImage(tile, timg), nil
 }
 
-// RenderLayer renders single map layer.
-func (r *Renderer) RenderLayer(index int) error {
-	layer := r.m.Layers[index]
+func (r *Renderer) _renderLayer(layer *tiled.Layer) error {
 
 	var xs, xe, xi, ys, ye, yi int
 	if r.m.RenderOrder == "" || r.m.RenderOrder == "right-down" {
@@ -166,6 +180,27 @@ func (r *Renderer) RenderLayer(index int) error {
 	}
 
 	return nil
+}
+
+// RenderGroupLayer renders single map layer in a certain group.
+func (r *Renderer) RenderGroupLayer(groupID, layerID int) error {
+	if groupID >= len(r.m.Groups) {
+		return ErrOutOfBounds
+	}
+	group := r.m.Groups[groupID]
+
+	if layerID >= len(group.Layers) {
+		return ErrOutOfBounds
+	}
+	return r._renderLayer(group.Layers[layerID])
+}
+
+// RenderLayer renders single map layer.
+func (r *Renderer) RenderLayer(id int) error {
+	if id >= len(r.m.Layers) {
+		return ErrOutOfBounds
+	}
+	return r._renderLayer(r.m.Layers[id])
 }
 
 // RenderVisibleLayers renders all visible map layers.

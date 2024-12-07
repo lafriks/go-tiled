@@ -14,7 +14,7 @@ import (
 func TestLoadTilesetReferencedOnlyByObjectGroup(t *testing.T) {
 	const mapPath = "assets/test_tileobject.tmx"
 
-	m, err := tiled.LoadFromFile(mapPath)
+	m, err := tiled.LoadFile(mapPath)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -29,15 +29,12 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
-	"io/ioutil"
 	"strconv"
 	"strings"
 )
 
-var (
-	// ErrUnknownCompression error is returned when file contains invalid compression method
-	ErrUnknownCompression = errors.New("tiled: invalid compression method")
-)
+// ErrUnknownCompression error is returned when file contains invalid compression method
+var ErrUnknownCompression = errors.New("tiled: invalid compression method")
 
 // Data is raw data
 type Data struct {
@@ -82,7 +79,7 @@ func (d *Data) decodeBase64() (data []byte, err error) {
 		return
 	}
 
-	return ioutil.ReadAll(comr)
+	return io.ReadAll(comr)
 }
 
 func (d *Data) decodeCSV() ([]uint32, error) {
