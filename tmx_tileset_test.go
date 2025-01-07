@@ -30,7 +30,6 @@ import (
 )
 
 func TestGetTileRect(t *testing.T) {
-
 	type Case struct {
 		id   uint32
 		rect image.Rectangle
@@ -165,5 +164,4 @@ func TestGetTileRect(t *testing.T) {
 			}
 		})
 	}
-
 }

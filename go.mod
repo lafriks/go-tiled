@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/disintegration/imaging v1.6.2
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.10.0
 )
 
 require (

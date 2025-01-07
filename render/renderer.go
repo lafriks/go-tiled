@@ -139,7 +139,6 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 }
 
 func (r *Renderer) _renderLayer(layer *tiled.Layer) error {
-
 	var xs, xe, xi, ys, ye, yi int
 	if r.m.RenderOrder == "" || r.m.RenderOrder == "right-down" {
 		xs = 0

@@ -29,7 +29,6 @@ import (
 )
 
 func TestGetProperty(t *testing.T) {
-
 	props := Properties{
 		{
 			Name:  "string-name",
