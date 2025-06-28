@@ -64,6 +64,14 @@ func main() {
     // Renderer's Save functions.
 }
 ```
+### Embedded Filesystems
+To work with embedded file systems via the [embed package](https://pkg.go.dev/embed#FS), both the tilemap and renderer need to be initialized WithFileSystem.
+```go
+tm, err := tiled.LoadFile(mapPath, tiled.WithFileSystem(assets.Files))
+...
+r, err := render.NewRendererWithFileSystem(tm, assets.Files)
+
+```
 
 ## Documentation
 
