@@ -47,14 +47,14 @@ func (e *OrthogonalRendererEngine) GetFinalImageSize() image.Rectangle {
 // RotateTileImage rotates provided tile layer.
 func (e *OrthogonalRendererEngine) RotateTileImage(tile *tiled.LayerTile, img image.Image) image.Image {
 	timg := img
+	if tile.DiagonalFlip {
+		timg = imaging.FlipH(imaging.Rotate270(timg))
+	}
 	if tile.HorizontalFlip {
 		timg = imaging.FlipH(timg)
 	}
 	if tile.VerticalFlip {
 		timg = imaging.FlipV(timg)
-	}
-	if tile.DiagonalFlip {
-		timg = imaging.FlipH(imaging.Rotate90(timg))
 	}
 
 	return timg

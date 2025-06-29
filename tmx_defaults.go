@@ -19,18 +19,23 @@ SOFTWARE.
 
 package tiled
 
-type aliasGroup Group
-type aliasImageLayer ImageLayer
-type internalLayer Layer
-type aliasLayer struct {
-	internalLayer
-	// Layer data in raw format
-	Data *Data `xml:"data"`
-}
-type aliasMap Map
-type aliasObject Object
-type aliasObjectGroup ObjectGroup
-type aliasText Text
+type (
+	aliasGroup      Group
+	aliasImageLayer ImageLayer
+	internalLayer   Layer
+	aliasLayer      struct {
+		internalLayer
+		// Layer data in raw format
+		Data *Data `xml:"data"`
+	}
+)
+
+type (
+	aliasMap         Map
+	aliasObject      Object
+	aliasObjectGroup ObjectGroup
+	aliasText        Text
+)
 
 // SetDefaults provides default values for Group.
 func (a *aliasGroup) SetDefaults() {
