@@ -272,7 +272,7 @@ func TestLoadTileset(t *testing.T) {
 	assert.Nil(t, err)
 	defer tsxFile.Close()
 
-	tsx, err := LoadTilesetFromReader(".", tsxFile)
+	tsx, err := LoadTilesetReader(".", tsxFile)
 	assert.Nil(t, err)
 
 	assert.Equal(t, testLoadTilesetFile, tsx)
@@ -283,7 +283,7 @@ func TestLoadTile(t *testing.T) {
 	assert.Nil(t, err)
 	defer tsxFile.Close()
 
-	tsx, err := LoadTilesetFromReader(".", tsxFile)
+	tsx, err := LoadTilesetReader(".", tsxFile)
 	assert.Nil(t, err)
 	assert.Len(t, tsx.Tiles, 1)
 
