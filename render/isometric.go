@@ -16,7 +16,11 @@ func (e *IsometricRendererEngine) Init(m *tiled.Map) {
 }
 
 func (e *IsometricRendererEngine) GetFinalImageSize() image.Rectangle {
-	return image.Rect(0, 0, e.m.Width*e.m.TileWidth, e.m.Height*e.m.TileHeight)
+	side := e.m.Height + e.m.Width
+	hx := side * e.m.TileWidth/2
+	hy := side * e.m.TileHeight/2
+
+	return image.Rect(0, 0, hx, hy)
 }
 
 func (e *IsometricRendererEngine) RotateTileImage(tile *tiled.LayerTile, img image.Image) image.Image {
@@ -44,11 +48,10 @@ func (e *IsometricRendererEngine) GetTilePosition(x, y int) image.Rectangle {
 
 	actualSpriteHeight := th * ratio
 
-    offsetX := e.m.Width * stepX
-	offsetY := -th
+    offsetX := e.m.Height * e.m.TileWidth/2
 
     sx := (x - y) * stepX + offsetX - (tw / ratio)
-    sy := (x + y) * stepY + offsetY
+    sy := (x + y) * stepY - (th)
 
     return image.Rect(sx, sy, sx + tw, sy + actualSpriteHeight)
 }
