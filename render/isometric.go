@@ -38,20 +38,23 @@ func (e *IsometricRendererEngine) RotateTileImage(tile *tiled.LayerTile, img ima
 	return timg
 }
 
-func (e *IsometricRendererEngine) GetTilePosition(x, y int) image.Rectangle {
+func (e *IsometricRendererEngine) GetTilePosition(x, y int) image.Point {
     tw, th := e.m.TileWidth, e.m.TileHeight
 
-	ratio := tw / th
+	stepX := tw / 2
+	stepY := th / 2
 
-	stepX := tw / ratio
-	stepY := th / ratio
-
-	actualSpriteHeight := th * ratio
+	//actualSpriteHeight := th * 2
 
     offsetX := e.m.Height * e.m.TileWidth/2
 
-    sx := (x - y) * stepX + offsetX - (tw / ratio)
-    sy := (x + y) * stepY - (th)
+	offsetY := 0
+	if tw > th {
+		offsetY = -th
+	}
 
-    return image.Rect(sx, sy, sx + tw, sy + actualSpriteHeight)
+    sx := (x - y) * stepX + offsetX - stepX
+    sy := (x + y) * stepY + offsetY
+
+    return image.Pt(sx, sy)
 }

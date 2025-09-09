@@ -54,7 +54,7 @@ type RendererEngine interface {
 	Init(m *tiled.Map)
 	GetFinalImageSize() image.Rectangle
 	RotateTileImage(tile *tiled.LayerTile, img image.Image) image.Image
-	GetTilePosition(x, y int) image.Rectangle
+	GetTilePosition(x, y int) image.Point
 }
 
 // Renderer represents an rendering engine.
@@ -169,13 +169,14 @@ func (r *Renderer) _renderLayer(layer *tiled.Layer) error {
 			}
 
 			pos := r.engine.GetTilePosition(x, y)
+			renderRect := image.Rect(pos.X, pos.Y, pos.X + img.Bounds().Dx(), pos.Y + img.Bounds().Dy())
 
 			if layer.Opacity < 1 {
 				mask := image.NewUniform(color.Alpha{uint8(layer.Opacity * 255)})
 
-				draw.DrawMask(r.Result, pos, img, img.Bounds().Min, mask, mask.Bounds().Min, draw.Over)
+				draw.DrawMask(r.Result, renderRect, img, img.Bounds().Min, mask, mask.Bounds().Min, draw.Over)
 			} else {
-				draw.Draw(r.Result, pos, img, img.Bounds().Min, draw.Over)
+				draw.Draw(r.Result, renderRect, img, img.Bounds().Min, draw.Over)
 			}
 
 			i++
