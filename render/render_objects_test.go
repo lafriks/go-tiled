@@ -41,7 +41,7 @@ func TestRenderer_RenderObjectGroup(t *testing.T) {
 
 	renderer.RenderObjectGroup(0)
 
-	w, _ := os.Create("../assets/test_render_objects.png")
+	w, _ := os.Create("../assets/test_output/test_render_objects.png")
 	defer w.Close()
 
 	if err = renderer.SaveAsPng(w); err != nil {

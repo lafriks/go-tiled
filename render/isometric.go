@@ -44,17 +44,15 @@ func (e *IsometricRendererEngine) GetTilePosition(x, y int) image.Point {
 	stepX := tw / 2
 	stepY := th / 2
 
-	//actualSpriteHeight := th * 2
-
     offsetX := e.m.Height * e.m.TileWidth/2
 
 	offsetY := 0
 	if tw > th {
-		offsetY = -th
+	    offsetY = tw - th
 	}
 
     sx := (x - y) * stepX + offsetX - stepX
-    sy := (x + y) * stepY + offsetY
+    sy := (x + y) * stepY - offsetY
 
     return image.Pt(sx, sy)
 }

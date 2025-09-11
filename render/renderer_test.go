@@ -4,16 +4,27 @@ import (
 	"image"
 	"os"
 	"testing"
+	"path/filepath"
 
 	"github.com/lafriks/go-tiled"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+func TestMain(m *testing.M) {
+	dir := filepath.Join("..", "assets", "test_output")
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		os.Exit(1)
+	}
+
+	exitCode := m.Run()
+	os.Exit(exitCode)
+}
+
 func TestRenderer_RenderOrthogonalMap(t *testing.T) {
 	tiledMap, err := tiled.LoadFile("../assets/test_wangsets_map.tmx")
 
-		if err != nil {
+	if err != nil {
 		t.Error(err)
 		return
 	}
@@ -26,7 +37,7 @@ func TestRenderer_RenderOrthogonalMap(t *testing.T) {
 
 	renderer.RenderVisibleLayers()
 
-	w, _ := os.Create("../assets/test_orthogonal.png")
+	w, _ := os.Create("../assets/test_output/test_render_orthogonal.png")
 	defer w.Close()
 
 	if err = renderer.SaveAsPng(w); err != nil {
@@ -48,9 +59,8 @@ func TestRenderer_RenderIsometricMap(t *testing.T) {
 	}
 
 	renderer.RenderVisibleLayers()
-	//renderer.RenderLayer(0)'
 
-	outputPath := "../assets/test_render_isomap.png"
+	outputPath := "../assets/test_output/test_render_isomap.png"
 
 	w, _ := os.Create(outputPath)
 	defer w.Close()
