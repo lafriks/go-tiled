@@ -24,6 +24,7 @@ package tiled
 
 import (
 	"encoding/hex"
+	"encoding/xml"
 	"image/color"
 	"strconv"
 )
@@ -34,14 +35,41 @@ type Properties []*Property
 // Property is used for custom properties
 type Property struct {
 	// The name of the property.
-	Name string `xml:"name,attr"`
+	Name string
 	// The type of the property. Can be string (default), int, float, bool, color or file (since 0.16, with color and file added in 0.17).
-	Type string `xml:"type,attr"`
+	Type string
 	// The value of the property.
 	// Boolean properties have a value of either "true" or "false".
 	// Color properties are stored in the format #AARRGGBB.
 	// File properties are stored as paths relative from the location of the map file.
-	Value string `xml:"value,attr"`
+	Value string
+}
+
+// UnmarshalXML implements the xml.Unmarshaler interface for Property. Setting Value even if it's in the inner text.
+func (p *Property) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var valueFoundInAttr bool
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "name":
+			p.Name = attr.Value
+		case "type":
+			p.Type = attr.Value
+		case "value":
+			p.Value = attr.Value
+			valueFoundInAttr = true
+		}
+	}
+	if valueFoundInAttr {
+		return d.Skip()
+	}
+
+	var innerText string
+	if err := d.DecodeElement(&innerText, &start); err != nil {
+		return err
+	}
+	p.Value = innerText
+
+	return nil
 }
 
 // Get finds all properties by specified name
