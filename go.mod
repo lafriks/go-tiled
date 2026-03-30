@@ -1,6 +1,6 @@
 module github.com/lafriks/go-tiled
 
-go 1.19
+go 1.25.0
 
 require (
 	github.com/disintegration/imaging v1.6.2
@@ -10,6 +10,6 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/image v0.18.0 // indirect
+	golang.org/x/image v0.38.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
