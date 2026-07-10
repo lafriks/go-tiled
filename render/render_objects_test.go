@@ -21,6 +21,7 @@ package render
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/lafriks/go-tiled"
@@ -39,9 +40,16 @@ func TestRenderer_RenderObjectGroup(t *testing.T) {
 		return
 	}
 
-	renderer.RenderObjectGroup(0)
+	if err = renderer.RenderObjectGroup(0); err != nil {
+		t.Error(err)
+		return
+	}
 
-	w, _ := os.Create("../assets/test_render_objects.png")
+	w, err := os.Create(filepath.Join(t.TempDir(), "test_render_objects.png"))
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	defer w.Close()
 
 	if err = renderer.SaveAsPng(w); err != nil {

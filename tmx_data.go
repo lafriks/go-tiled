@@ -29,8 +29,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
+	"math"
 	"strconv"
-	"strings"
 )
 
 // ErrUnknownCompression error is returned when file contains invalid compression method
@@ -45,7 +45,7 @@ type Data struct {
 	// Raw data
 	RawData []byte `xml:",innerxml"`
 	// Only used when layer encoding is xml
-	DataTiles []*DataTile `xml:"tile"`
+	DataTiles []DataTile `xml:"tile"`
 }
 
 // DataTile defines the value of a single tile on a tile layer
@@ -54,7 +54,8 @@ type DataTile struct {
 	GID uint32 `xml:"gid,attr"`
 }
 
-func (d *Data) decodeBase64() (data []byte, err error) {
+// decodeBase64 decodes (and, if applicable, decompresses) the raw data.
+func (d *Data) decodeBase64(sizeHint int) (data []byte, err error) {
 	rawData := bytes.TrimSpace(d.RawData)
 	r := bytes.NewReader(rawData)
 
@@ -79,28 +80,39 @@ func (d *Data) decodeBase64() (data []byte, err error) {
 		return
 	}
 
-	return io.ReadAll(comr)
+	buf := bytes.NewBuffer(make([]byte, 0, sizeHint))
+	if _, err = buf.ReadFrom(comr); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }
 
 func (d *Data) decodeCSV() ([]uint32, error) {
-	cleaner := func(r rune) rune {
-		if (r >= '0' && r <= '9') || r == ',' {
-			return r
-		}
-		return -1
-	}
-	rawDataClean := strings.Map(cleaner, string(d.RawData))
+	raw := d.RawData
 
-	str := strings.Split(string(rawDataClean), ",")
+	// Estimate the tile count from the raw byte length
+	gids := make([]uint32, 0, len(raw)/2+1)
 
-	gids := make([]uint32, len(str))
-	for i, s := range str {
-		var id uint64
-		var err error
-		if id, err = strconv.ParseUint(s, 10, 32); err != nil {
-			return nil, err
+	var cur uint64
+	inNum := false
+	for _, c := range raw {
+		if c >= '0' && c <= '9' {
+			cur = cur*10 + uint64(c-'0')
+			if cur > math.MaxUint32 {
+				return nil, strconv.ErrRange
+			}
+			inNum = true
+			continue
 		}
-		gids[i] = uint32(id)
+		if inNum {
+			gids = append(gids, uint32(cur))
+			cur = 0
+			inNum = false
+		}
 	}
+	if inNum {
+		gids = append(gids, uint32(cur))
+	}
+
 	return gids, nil
 }

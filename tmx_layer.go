@@ -126,7 +126,7 @@ func (l *Layer) decodeLayerCSV() ([]uint32, error) {
 }
 
 func (l *Layer) decodeLayerBase64() ([]uint32, error) {
-	dataBytes, err := l.data.decodeBase64()
+	dataBytes, err := l.data.decodeBase64(l._map.Width * l._map.Height * 4)
 	if err != nil {
 		return []uint32{}, err
 	}
@@ -174,11 +174,30 @@ func (l *Layer) decodeTiles() error {
 	}
 
 	l.Tiles = make([]*LayerTile, len(gids))
-	for j := 0; j < len(l.Tiles); j++ {
-		l.Tiles[j], err = l._map.TileGIDToTile(gids[j])
-		if err != nil {
+
+	// Count non-empty tiles so the LayerTiles they need can be allocated
+	// as a single backing slice instead of one heap allocation per tile.
+	nonNil := 0
+	for _, gid := range gids {
+		if gid != 0 {
+			nonNil++
+		}
+	}
+	slab := make([]LayerTile, nonNil)
+
+	si := 0
+	for j, gid := range gids {
+		if gid == 0 {
+			l.Tiles[j] = NilLayerTile
+			continue
+		}
+
+		t := &slab[si]
+		si++
+		if err = l._map.fillTileGID(gid, t); err != nil {
 			return err
 		}
+		l.Tiles[j] = t
 	}
 
 	return nil

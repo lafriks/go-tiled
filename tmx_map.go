@@ -146,26 +146,34 @@ func (m *Map) TileGIDToTile(gid uint32) (*LayerTile, error) {
 		return NilLayerTile, nil
 	}
 
+	t := &LayerTile{}
+	if err := m.fillTileGID(gid, t); err != nil {
+		return nil, err
+	}
+	return t, nil
+}
+
+// fillTileGID looks up the tileset for gid and fills t in place.
+func (m *Map) fillTileGID(gid uint32, t *LayerTile) error {
 	gidBare := gid &^ tileFlip
 
 	for i := len(m.Tilesets) - 1; i >= 0; i-- {
 		if m.Tilesets[i].FirstGID <= gidBare {
 			ts := m.Tilesets[i]
 			if err := m.initTileset(ts); err != nil {
-				return nil, err
+				return err
 			}
-			return &LayerTile{
-				ID:             gidBare - ts.FirstGID,
-				Tileset:        ts,
-				HorizontalFlip: gid&tileHorizontalFlipMask != 0,
-				VerticalFlip:   gid&tileVerticalFlipMask != 0,
-				DiagonalFlip:   gid&tileDiagonalFlipMask != 0,
-				Nil:            false,
-			}, nil
+			t.ID = gidBare - ts.FirstGID
+			t.Tileset = ts
+			t.HorizontalFlip = gid&tileHorizontalFlipMask != 0
+			t.VerticalFlip = gid&tileVerticalFlipMask != 0
+			t.DiagonalFlip = gid&tileDiagonalFlipMask != 0
+			t.Nil = false
+			return nil
 		}
 	}
 
-	return nil, ErrInvalidTileGID
+	return ErrInvalidTileGID
 }
 
 // GetFileFullPath returns path to file relative to map file
