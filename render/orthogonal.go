@@ -61,9 +61,23 @@ func (e *OrthogonalRendererEngine) RotateTileImage(tile *tiled.LayerTile, img im
 }
 
 // GetTilePosition returns tile position in image.
-func (e *OrthogonalRendererEngine) GetTilePosition(x, y int) image.Rectangle {
-	return image.Rect(x*e.m.TileWidth,
-		y*e.m.TileHeight,
-		(x+1)*e.m.TileWidth,
-		(y+1)*e.m.TileHeight)
+//
+// Per the Tiled spec, a tile image larger than the map's grid cell "extends
+// at the top and right (anchored to the bottom left)", so the image's bottom
+// edge is aligned to the bottom of the grid cell rather than its top.
+func (e *OrthogonalRendererEngine) GetTilePosition(x, y int, imgSize image.Point) image.Point {
+	return image.Pt(x*e.m.TileWidth, (y+1)*e.m.TileHeight-imgSize.Y)
+}
+
+// PixelToScreenCoords returns screen coordinates for a raw object pixel position.
+// Orthogonal maps store object positions directly in screen pixel space already,
+// so this is the identity transform.
+func (e *OrthogonalRendererEngine) PixelToScreenCoords(x, y float64) (float64, float64) {
+	return x, y
+}
+
+// GetObjectAnchor returns the bottom-left point of a tile object's image, per the
+// Tiled spec's orthogonal alignment rule.
+func (e *OrthogonalRendererEngine) GetObjectAnchor(imgSize image.Point) image.Point {
+	return image.Pt(0, imgSize.Y-1)
 }

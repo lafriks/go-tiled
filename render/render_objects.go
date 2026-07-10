@@ -114,20 +114,33 @@ func (r *Renderer) RenderObjectGroup(i int) error {
 	return r._renderObjectGroup(layer)
 }
 
-func (r *Renderer) _renderObjectGroup(objectGroup *tiled.ObjectGroup) error {
-	objs := objectGroup.Objects
+// positionedObject pairs an object with its already-projected screen position,
+// so sorting and rendering both use one, orientation-correct, source of truth.
+type positionedObject struct {
+	obj    *tiled.Object
+	sx, sy float64
+}
 
-	// sort objects from left top to right down
-	objs = utils.SortAnySlice(objs, func(a, b *tiled.Object) bool {
-		if a.Y != b.Y {
-			return a.Y < b.Y
+func (r *Renderer) _renderObjectGroup(objectGroup *tiled.ObjectGroup) error {
+	objs := make([]positionedObject, len(objectGroup.Objects))
+	for i, obj := range objectGroup.Objects {
+		sx, sy := r.engine.PixelToScreenCoords(obj.X, obj.Y)
+		objs[i] = positionedObject{obj: obj, sx: sx, sy: sy}
+	}
+
+	// sort objects from screen top to screen bottom, so they draw back-to-front;
+	// raw object X/Y aren't screen order for orientations like isometric, where the
+	// grid is sheared, so this must sort by the projected position, not o.X/o.Y.
+	objs = utils.SortAnySlice(objs, func(a, b positionedObject) bool {
+		if a.sy != b.sy {
+			return a.sy < b.sy
 		}
 
-		return a.X < b.X
+		return a.sx < b.sx
 	})
 
 	for _, obj := range objs {
-		if err := r.renderOneObject(objectGroup, obj); err != nil {
+		if err := r.renderOneObject(objectGroup, obj.obj, obj.sx, obj.sy); err != nil {
 			return err
 		}
 	}
@@ -150,7 +163,7 @@ func (r *Renderer) RenderGroupObjectGroup(groupID, objectGroupID int) error {
 	return r._renderObjectGroup(layer)
 }
 
-func (r *Renderer) renderOneObject(layer *tiled.ObjectGroup, o *tiled.Object) error {
+func (r *Renderer) renderOneObject(layer *tiled.ObjectGroup, o *tiled.Object, screenX, screenY float64) error {
 	if !o.Visible {
 		return nil
 	}
@@ -178,12 +191,14 @@ func (r *Renderer) renderOneObject(layer *tiled.ObjectGroup, o *tiled.Object) er
 		img = imaging.Resize(img, dstSize.X, dstSize.Y, imaging.NearestNeighbor)
 	}
 
+	anchor := r.engine.GetObjectAnchor(img.Bounds().Size())
+
 	var originPoint image.Point
 
-	img, originPoint = r._rotateObjectImage(img, o.Rotation)
+	img, originPoint = r._rotateObjectImage(img, o.Rotation, anchor)
 
 	bounds = img.Bounds()
-	pos := bounds.Add(image.Pt(int(o.X), int(o.Y)).Sub(originPoint))
+	pos := bounds.Add(image.Pt(int(screenX), int(screenY)).Sub(originPoint))
 
 	if layer.Opacity < 1 {
 		mask := image.NewUniform(color.Alpha{uint8(layer.Opacity * 255)})
@@ -196,11 +211,15 @@ func (r *Renderer) renderOneObject(layer *tiled.ObjectGroup, o *tiled.Object) er
 	return nil
 }
 
-func (r *Renderer) _rotateObjectImage(img image.Image, rotation float64) (newImage image.Image, originPoint image.Point) {
+// _rotateObjectImage rotates img around anchor (given in img's own, unrotated
+// coordinate space) and returns the rotated image along with anchor's new
+// position within it, so the caller can re-align the rotated image to the
+// same screen point that anchor represented before rotation.
+func (r *Renderer) _rotateObjectImage(img image.Image, rotation float64, anchor image.Point) (newImage image.Image, originPoint image.Point) {
 	bounds := img.Bounds()
 	w := bounds.Dx()
 	h := bounds.Dy()
-	points := []image.Point{
+	corners := []image.Point{
 		image.Pt(0, 0),
 		image.Pt(w-1, 0),
 		image.Pt(w-1, h-1),
@@ -209,26 +228,23 @@ func (r *Renderer) _rotateObjectImage(img image.Image, rotation float64) (newIma
 
 	sin, cos := math.Sincos(math.Pi * rotation / 180)
 
-	rotatedPointsX := []float64{}
-	rotatedPointsY := []float64{}
-
-	for _, p := range points {
+	rotate := func(p image.Point) (float64, float64) {
 		x := float64(p.X)
 		y := float64(p.Y)
-
-		rotatedPointsX = append(rotatedPointsX, x*cos-y*sin)
-		rotatedPointsY = append(rotatedPointsY, x*sin+y*cos)
+		return x*cos - y*sin, x*sin + y*cos
 	}
 
-	rotatedMinX := rotatedPointsX[0]
-	rotatedMinY := rotatedPointsY[0]
+	rx0, ry0 := rotate(corners[0])
+	rotatedMinX, rotatedMinY := rx0, ry0
 
-	for i := 1; i < 4; i++ {
-		rotatedMinX = math.Min(rotatedMinX, rotatedPointsX[i])
-		rotatedMinY = math.Min(rotatedMinY, rotatedPointsY[i])
+	for _, c := range corners[1:] {
+		rx, ry := rotate(c)
+		rotatedMinX = math.Min(rotatedMinX, rx)
+		rotatedMinY = math.Min(rotatedMinY, ry)
 	}
 
-	originPoint = image.Pt(int(rotatedPointsX[3]-rotatedMinX), int(rotatedPointsY[3]-rotatedMinY))
+	anchorX, anchorY := rotate(anchor)
+	originPoint = image.Pt(int(anchorX-rotatedMinX), int(anchorY-rotatedMinY))
 
 	return imaging.Rotate(img, -rotation, color.RGBA{}), originPoint
 }

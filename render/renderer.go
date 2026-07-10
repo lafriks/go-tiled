@@ -54,7 +54,23 @@ type RendererEngine interface {
 	Init(m *tiled.Map)
 	GetFinalImageSize() image.Rectangle
 	RotateTileImage(tile *tiled.LayerTile, img image.Image) image.Image
-	GetTilePosition(x, y int) image.Rectangle
+	// GetTilePosition returns the top-left position at which a tile image of the given
+	// size should be drawn for grid cell (x, y). imgSize is passed through (rather than
+	// assumed to match the map's nominal tile width/height) because tile images commonly
+	// differ in size from the grid cell, e.g. tall isometric wall/structure tiles that
+	// must remain anchored to the bottom of their cell per the Tiled spec.
+	GetTilePosition(x, y int, imgSize image.Point) image.Point
+	// PixelToScreenCoords converts an object's raw x/y position, as stored in the TMX
+	// file, into final screen pixel coordinates. Per the Tiled spec, object positions
+	// are stored in the map's unprojected pixel space rather than already-projected
+	// screen space, so orientations that reshape the grid (e.g. isometric) must project
+	// them the same way tile positions are projected.
+	PixelToScreenCoords(x, y float64) (float64, float64)
+	// GetObjectAnchor returns the point within a tile object's (unrotated) image,
+	// sized imgSize, that should align to the object's projected screen position.
+	// Per the Tiled spec this is orientation-dependent: bottom-left for orthogonal
+	// maps, bottom-center for isometric maps.
+	GetObjectAnchor(imgSize image.Point) image.Point
 }
 
 // Renderer represents an rendering engine.
@@ -74,9 +90,12 @@ func NewRenderer(m *tiled.Map) (*Renderer, error) {
 // NewRendererWithFileSystem creates new rendering engine instance with a custom file system.
 func NewRendererWithFileSystem(m *tiled.Map, fs fs.FS) (*Renderer, error) {
 	r := &Renderer{m: m, tileCache: make(map[uint32]image.Image), fs: fs}
-	if r.m.Orientation == "orthogonal" {
+	switch r.m.Orientation {
+	case "orthogonal":
 		r.engine = &OrthogonalRendererEngine{}
-	} else {
+	case "isometric":
+		r.engine = &IsometricRendererEngine{}
+	default:
 		return nil, ErrUnsupportedOrientation
 	}
 
@@ -164,14 +183,15 @@ func (r *Renderer) _renderLayer(layer *tiled.Layer) error {
 				return err
 			}
 
-			pos := r.engine.GetTilePosition(x, y)
+			pos := r.engine.GetTilePosition(x, y, img.Bounds().Size())
+			rect := image.Rectangle{Min: pos, Max: pos.Add(img.Bounds().Size())}
 
 			if layer.Opacity < 1 {
 				mask := image.NewUniform(color.Alpha{uint8(layer.Opacity * 255)})
 
-				draw.DrawMask(r.Result, pos, img, img.Bounds().Min, mask, mask.Bounds().Min, draw.Over)
+				draw.DrawMask(r.Result, rect, img, img.Bounds().Min, mask, mask.Bounds().Min, draw.Over)
 			} else {
-				draw.Draw(r.Result, pos, img, img.Bounds().Min, draw.Over)
+				draw.Draw(r.Result, rect, img, img.Bounds().Min, draw.Over)
 			}
 
 			i++
