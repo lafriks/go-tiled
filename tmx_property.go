@@ -35,14 +35,27 @@ type Properties []*Property
 // Property is used for custom properties
 type Property struct {
 	// The name of the property.
-	Name string
-	// The type of the property. Can be string (default), int, float, bool, color or file (since 0.16, with color and file added in 0.17).
-	Type string
+	Name string `xml:"name,attr"`
+	// The type of the property. Can be string (default), int, float, bool, color,
+	// file (since 0.16, with color and file added in 0.17), class or object (since 1.8).
+	Type string `xml:"type,attr"`
+	// The name of the custom property type, when Type is "class" (since 1.8).
+	PropertyType string `xml:"propertytype,attr,omitempty"`
 	// The value of the property.
 	// Boolean properties have a value of either "true" or "false".
 	// Color properties are stored in the format #AARRGGBB.
 	// File properties are stored as paths relative from the location of the map file.
-	Value string
+	// Empty for class-typed properties; see Properties instead.
+	Value string `xml:"value,attr,omitempty"`
+	// Properties holds the explicitly-set member values of a class-typed property.
+	//
+	// Per the TMX spec, a class member left at its class-defined default is not
+	// serialized at all -- only overridden members appear here. Resolving a
+	// member's default value requires the class definition from Tiled's project
+	// file (commonly a .tiled-project JSON file), which is a wholly separate
+	// format this package does not read; there is no way to recover a class
+	// member's default value from a .tmx/.tsx file alone.
+	Properties Properties `xml:"properties>property,omitempty"`
 }
 
 // UnmarshalXML implements the xml.Unmarshaler interface for Property. Setting Value even if it's in the inner text.
@@ -54,26 +67,52 @@ func (p *Property) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			p.Name = attr.Value
 		case "type":
 			p.Type = attr.Value
+		case "propertytype":
+			p.PropertyType = attr.Value
 		case "value":
 			p.Value = attr.Value
 			valueFoundInAttr = true
 		}
 	}
-	if valueFoundInAttr {
-		return d.Skip()
-	}
 
-	var innerText string
-	if err := d.DecodeElement(&innerText, &start); err != nil {
+	// Class-typed properties store their (explicitly-set) member values in a
+	// nested <properties> element instead of a "value" attribute; plain
+	// properties without a "value" attribute instead use the element's chardata
+	// (older format / hand-written files). Decode both possibilities from the
+	// same element body rather than assuming chardata, which previously silently
+	// mangled nested <properties> into garbage whitespace text.
+	var body struct {
+		Properties Properties `xml:"properties>property"`
+		CharData   string     `xml:",chardata"`
+	}
+	if err := d.DecodeElement(&body, &start); err != nil {
 		return err
 	}
-	p.Value = innerText
+
+	switch {
+	case len(body.Properties) > 0:
+		p.Properties = body.Properties
+	case !valueFoundInAttr:
+		p.Value = body.CharData
+	}
 
 	return nil
 }
 
-// Get finds all properties by specified name
-func (p Properties) Get(name string) []string {
+// Get finds the first property with the specified name and returns it, or nil
+// if not found. Useful for reaching a class-typed property's nested
+// Properties, e.g. obj.Properties.Get("entity").Properties.GetBool("enabled").
+func (p Properties) Get(name string) *Property {
+	for _, property := range p {
+		if property.Name == name {
+			return property
+		}
+	}
+	return nil
+}
+
+// GetAll finds the values of all properties with the specified name
+func (p Properties) GetAll(name string) []string {
 	var values []string
 	for _, property := range p {
 		if property.Name == name {

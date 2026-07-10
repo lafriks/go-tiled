@@ -23,6 +23,7 @@ SOFTWARE.
 package tiled
 
 import (
+	"encoding/xml"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -56,4 +57,56 @@ func TestGetProperty(t *testing.T) {
 	assert.Equal(t, 123, props.GetInt("int-name"))
 	assert.Equal(t, 1.23, props.GetFloat("float-name"))
 	assert.Equal(t, true, props.GetBool("bool-name"))
+
+	assert.Equal(t, "int-name", props.Get("int-name").Name)
+	assert.Nil(t, props.Get("missing"))
+}
+
+// propertiesHolder mirrors how every element with custom properties (Layer,
+// Object, Tileset, ...) declares the field, so these tests exercise the same
+// decode path real callers hit.
+type propertiesHolder struct {
+	Properties Properties `xml:"properties>property"`
+}
+
+// TestProperty_UnmarshalXML_InnerText covers the #73 fix: a property with no
+// "value" attribute takes its value from the element's inner text.
+func TestProperty_UnmarshalXML_InnerText(t *testing.T) {
+	var h propertiesHolder
+	err := xml.Unmarshal([]byte(`<holder>
+		<properties>
+			<property name="description" type="string">hello world</property>
+		</properties>
+	</holder>`), &h)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "hello world", h.Properties.GetString("description"))
+}
+
+// TestProperty_UnmarshalXML_ClassType covers a Tiled "class" custom property
+// type: its explicitly-overridden members are stored in a nested <properties>
+// element rather than a "value" attribute. Previously this nested element was
+// misparsed as plain inner text, producing a garbage whitespace Value and
+// silently losing the overridden member entirely.
+func TestProperty_UnmarshalXML_ClassType(t *testing.T) {
+	var h propertiesHolder
+	err := xml.Unmarshal([]byte(`<holder>
+		<properties>
+			<property name="entity" type="class" propertytype="Entity">
+				<properties>
+					<property name="enabled" type="bool" value="false"/>
+				</properties>
+			</property>
+		</properties>
+	</holder>`), &h)
+
+	assert.NoError(t, err)
+
+	entity := h.Properties.Get("entity")
+	if assert.NotNil(t, entity) {
+		assert.Equal(t, "class", entity.Type)
+		assert.Equal(t, "Entity", entity.PropertyType)
+		assert.Equal(t, "", entity.Value)
+		assert.False(t, entity.Properties.GetBool("enabled"))
+	}
 }
