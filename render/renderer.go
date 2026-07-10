@@ -97,6 +97,8 @@ func NewRendererWithFileSystem(m *tiled.Map, fs fs.FS) (*Renderer, error) {
 		r.engine = &IsometricRendererEngine{}
 	case "hexagonal":
 		r.engine = &HexagonalRendererEngine{}
+	case "staggered":
+		r.engine = &StaggeredRendererEngine{}
 	default:
 		return nil, ErrUnsupportedOrientation
 	}

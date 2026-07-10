@@ -137,3 +137,44 @@ func TestRenderer_RenderHexagonalMap(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// TestRenderer_RenderStaggeredMap exercises the real, StaggerAxis "y" fixture;
+// TestStaggeredRendererEngine_GetTilePosition_StaggerX/_StaggerY cover the
+// tile-placement formula (including the StaggerAxis "x" case, which no
+// fixture asset exercises) with hand-verified pixel positions.
+func TestRenderer_RenderStaggeredMap(t *testing.T) {
+	tiledMap, err := tiled.LoadFile("../assets/staggered.tmx")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	renderer, err := NewRenderer(tiledMap)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if err = renderer.RenderVisibleLayers(); err != nil {
+		t.Error(err)
+		return
+	}
+
+	if got := renderer.Result.Bounds().Dx(); got != 336 {
+		t.Errorf("image width = %d, want 336", got)
+	}
+	if got := renderer.Result.Bounds().Dy(); got != 176 {
+		t.Errorf("image height = %d, want 176", got)
+	}
+
+	w, err := os.Create(filepath.Join(t.TempDir(), "test_render_staggered.png"))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer w.Close()
+
+	if err = renderer.SaveAsPng(w); err != nil {
+		t.Error(err)
+	}
+}

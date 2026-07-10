@@ -29,9 +29,12 @@ import (
 	"github.com/lafriks/go-tiled"
 )
 
-// HexagonalRendererEngine represents a hexagonal (staggered) rendering engine,
-// supporting both pointy-top (StaggerAxis "y") and flat-top (StaggerAxis "x")
-// variants, with an arbitrary HexSideLength and either StaggerIndex.
+// HexagonalRendererEngine represents a hexagonal rendering engine (Tiled's
+// "Hexagonal (Staggered)" map type, orientation="hexagonal"), supporting both
+// pointy-top (StaggerAxis "y") and flat-top (StaggerAxis "x") variants, with
+// an arbitrary HexSideLength and either StaggerIndex. See StaggeredRendererEngine
+// for orientation="staggered" (Tiled's "Isometric (Staggered)" map type),
+// which is not a hexagonal map but shares this same geometry engine.
 //
 // The geometry below mirrors Tiled's own HexagonalRenderer::RenderParams and
 // tileToScreenCoords/boundingRect exactly (see
