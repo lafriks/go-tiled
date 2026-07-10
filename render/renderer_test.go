@@ -96,3 +96,44 @@ func TestRenderer_RenderIsometricMap(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// TestRenderer_RenderHexagonalMap exercises the real, pointy-top (StaggerAxis
+// "y") fixture; TestHexagonalRendererEngine_GetTilePosition_FlatTop /
+// _PointyTop cover the tile-placement formula (including the flat-top axis,
+// which no fixture asset exercises) with hand-verified pixel positions.
+func TestRenderer_RenderHexagonalMap(t *testing.T) {
+	tiledMap, err := tiled.LoadFile("../assets/hex.tmx")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	renderer, err := NewRenderer(tiledMap)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if err = renderer.RenderVisibleLayers(); err != nil {
+		t.Error(err)
+		return
+	}
+
+	if got := renderer.Result.Bounds().Dx(); got != 336 {
+		t.Errorf("image width = %d, want 336", got)
+	}
+	if got := renderer.Result.Bounds().Dy(); got != 248 {
+		t.Errorf("image height = %d, want 248", got)
+	}
+
+	w, err := os.Create(filepath.Join(t.TempDir(), "test_render_hexagonal.png"))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer w.Close()
+
+	if err = renderer.SaveAsPng(w); err != nil {
+		t.Error(err)
+	}
+}
