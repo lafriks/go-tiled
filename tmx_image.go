@@ -60,6 +60,11 @@ type ImageLayer struct {
 	RepeatX bool `xml:"repeatx,attr"`
 	// The repeat y settings of the image.
 	RepeatY bool `xml:"repeaty,attr"`
+	// The compositing mode to use for this layer. Valid values are normal,
+	// multiply, multiply (legacy), screen, overlay, darken, lighten, color dodge,
+	// color burn, hard light, soft light, difference, exclusion, hue, saturation,
+	// color and luminosity. (since 1.12, defaults to normal)
+	Mode string `xml:"mode,attr"`
 }
 
 // UnmarshalXML decodes a single XML element beginning with the given start element.

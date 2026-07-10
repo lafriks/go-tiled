@@ -91,6 +91,11 @@ type Layer struct {
 	ParallaxX float32 `xml:"parallaxx,attr"`
 	// The parallax y factor of the layer 0 - 1.0
 	ParallaxY float32 `xml:"parallaxy,attr"`
+	// The compositing mode to use for this layer. Valid values are normal,
+	// multiply, multiply (legacy), screen, overlay, darken, lighten, color dodge,
+	// color burn, hard light, soft light, difference, exclusion, hue, saturation,
+	// color and luminosity. (since 1.12, defaults to normal)
+	Mode string `xml:"mode,attr"`
 	// Custom properties
 	Properties Properties `xml:"properties>property"`
 	// This is the attribute you'd like to use, not Data. Tile entry at (x,y) is obtained using l.DecodedTiles[y*map.Width+x].

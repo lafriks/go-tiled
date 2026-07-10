@@ -105,8 +105,16 @@ type Map struct {
 	// The compression level to use for tile layer data (defaults to -1, meaning algorithm-specific default level). (since 1.3)
 	CompressionLevel int `xml:"compressionlevel,attr"`
 	// Whether this map is infinite. An infinite map has no fixed size and grows in all directions;
-	// its layer data would be stored in <chunk> elements, which this package does not currently parse.
+	// its layer data would be stored in <chunk> elements.
+	//
+	// TODO: <chunk> elements are not parsed by this package yet. Loading an
+	// infinite map's tile layer data is likely to fail or produce incorrect
+	// results; only this flag itself is currently exposed.
 	Infinite bool `xml:"infinite,attr"`
+	// X coordinate of the parallax origin in pixels. (since 1.8, defaults to 0)
+	ParallaxOriginX float64 `xml:"parallaxoriginx,attr"`
+	// Y coordinate of the parallax origin in pixels. (since 1.8, defaults to 0)
+	ParallaxOriginY float64 `xml:"parallaxoriginy,attr"`
 	// Custom properties
 	Properties *Properties `xml:"properties>property"`
 	// Map tilesets

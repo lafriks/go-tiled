@@ -191,6 +191,9 @@ func (r *Renderer) renderOneObject(layer *tiled.ObjectGroup, o *tiled.Object, sc
 		img = imaging.Resize(img, dstSize.X, dstSize.Y, imaging.NearestNeighbor)
 	}
 
+	// TODO: tile.Tileset.ObjectAlignment isn't honored here -- alignment is
+	// always determined purely by the map's orientation (GetObjectAnchor),
+	// ignoring any per-tileset override (e.g. "topleft", "center", ...).
 	anchor := r.engine.GetObjectAnchor(img.Bounds().Size())
 
 	var originPoint image.Point

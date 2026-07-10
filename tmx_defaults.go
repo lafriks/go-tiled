@@ -43,6 +43,7 @@ func (a *aliasGroup) SetDefaults() {
 	a.Visible = true
 	a.ParallaxX = 1
 	a.ParallaxY = 1
+	a.Mode = "normal"
 }
 
 // SetDefaults provides default values for ImageLayer.
@@ -51,6 +52,7 @@ func (a *aliasImageLayer) SetDefaults() {
 	a.Visible = true
 	a.ParallaxX = 1
 	a.ParallaxY = 1
+	a.Mode = "normal"
 }
 
 // SetDefaults provides default values for Layer.
@@ -59,6 +61,7 @@ func (a *aliasLayer) SetDefaults() {
 	a.internalLayer.Visible = true
 	a.internalLayer.ParallaxX = 1
 	a.internalLayer.ParallaxY = 1
+	a.internalLayer.Mode = "normal"
 }
 
 // SetDefaults provides default values for Map.
@@ -80,6 +83,14 @@ func (a *aliasObjectGroup) SetDefaults() {
 	a.ParallaxX = 1
 	a.ParallaxY = 1
 	a.DrawOrder = "topdown"
+	a.Mode = "normal"
+}
+
+// SetDefaults provides default values for Tileset.
+func (a *aliasTileset) SetDefaults() {
+	a.ObjectAlignment = "unspecified"
+	a.TileRenderSize = "tile"
+	a.FillMode = "stretch"
 }
 
 // SetDefaults provides default values for Text.

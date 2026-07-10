@@ -116,6 +116,11 @@ func (r *Renderer) open(f string) (io.ReadCloser, error) {
 	return r.fs.Open(filepath.ToSlash(f))
 }
 
+// TODO: tile.Tileset.TileRenderSize/FillMode aren't honored -- tiles are
+// always drawn at their native cropped/source size ("tile" render size
+// behavior). A tileset with TileRenderSize "grid" should instead have its
+// tiles scaled to the map's grid cell size, using FillMode ("stretch" or
+// "preserve-aspect-fit") to decide how; that resizing isn't implemented.
 func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 	timg, ok := r.tileCache[tile.Tileset.FirstGID+tile.ID]
 	if ok {
@@ -162,6 +167,12 @@ func (r *Renderer) getTileImage(tile *tiled.LayerTile) (image.Image, error) {
 }
 
 func (r *Renderer) _renderLayer(layer *tiled.Layer) error {
+	// TODO: layer.ParallaxX/Y and Map.ParallaxOriginX/Y aren't applied here --
+	// every layer is drawn at the same 1:1 position regardless of its parallax
+	// factor. This renderer only produces a single static, full-map image with
+	// no notion of a scrolling viewport, so there's currently nothing for a
+	// parallax offset to be relative to; supporting it would need a
+	// viewport/camera position to be introduced first.
 	var xs, xe, xi, ys, ye, yi int
 	if r.m.RenderOrder == "" || r.m.RenderOrder == "right-down" {
 		xs = 0
@@ -190,6 +201,9 @@ func (r *Renderer) _renderLayer(layer *tiled.Layer) error {
 			pos := r.engine.GetTilePosition(x, y, img.Bounds().Size())
 			rect := image.Rectangle{Min: pos, Max: pos.Add(img.Bounds().Size())}
 
+			// TODO: layer.Mode (compositing/blend mode, e.g. "multiply",
+			// "screen", ...) isn't honored -- every layer is composited with
+			// plain draw.Over ("normal" mode), regardless of what Mode is set to.
 			if layer.Opacity < 1 {
 				mask := image.NewUniform(color.Alpha{uint8(layer.Opacity * 255)})
 

@@ -43,6 +43,23 @@ type Tileset struct {
 	Columns int `xml:"columns,attr"`
 	// Offset in pixels, to be applied when drawing a tile from the related tileset. When not present, no offset is applied.
 	TileOffset *TilesetTileOffset `xml:"tileoffset"`
+	// Controls the alignment for tile objects. Valid values are unspecified, topleft,
+	// top, topright, left, center, right, bottomleft, bottom and bottomright.
+	// (since 1.4, defaults to unspecified, for compatibility reasons)
+	ObjectAlignment string `xml:"objectalignment,attr"`
+	// The size to use when rendering tiles from this tileset on a tile layer.
+	// Valid values are tile (the default) and grid. (since 1.9)
+	TileRenderSize string `xml:"tilerendersize,attr"`
+	// The fill mode to use when rendering tiles from this tileset. Valid values
+	// are stretch (the default) and preserve-aspect-fit. (since 1.9)
+	FillMode string `xml:"fillmode,attr"`
+	// The grid used for the tiles in this tileset, only used in case of isometric
+	// orientation, and determines how tile overlays for terrain and collision
+	// information are rendered. (optional)
+	Grid *TilesetGrid `xml:"grid"`
+	// Describes which transformations can be applied to the tiles (e.g. to
+	// extend a Wang set by transforming existing tiles). (optional, since 1.5)
+	Transformations *TilesetTransformations `xml:"transformations"`
 	// Custom properties
 	Properties Properties `xml:"properties>property"`
 	// Embedded image
@@ -53,6 +70,63 @@ type Tileset struct {
 	Tiles []*TilesetTile `xml:"tile"`
 	// Contains the list of Wang sets defined for this tileset.
 	WangSets WangSets `xml:"wangsets>wangset"`
+}
+
+// aliasTileset avoids infinite recursion between Tileset's UnmarshalXML and
+// the default, struct-tag-driven decoding it delegates to.
+type aliasTileset Tileset
+
+// UnmarshalXML decodes a single XML element beginning with the given start element.
+func (ts *Tileset) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	// initTileset re-decodes an external TSX file into a Tileset that's
+	// already been partially populated (FirstGID, Source, baseDir) from the
+	// map's own <tileset> reference; those attributes aren't present in the
+	// external file itself (per spec: "these two attributes are kept in the
+	// TMX map, since they are map specific"), so start from the existing
+	// value rather than a fresh zero one to avoid losing them.
+	item := aliasTileset(*ts)
+	item.SetDefaults()
+
+	if err := d.DecodeElement(&item, &start); err != nil {
+		return err
+	}
+
+	*ts = (Tileset)(item)
+
+	// <grid>'s own orientation attribute defaults to "orthogonal" when the
+	// element is present but the attribute itself is omitted.
+	if ts.Grid != nil && ts.Grid.Orientation == "" {
+		ts.Grid.Orientation = "orthogonal"
+	}
+
+	return nil
+}
+
+// TilesetGrid specifies the grid used for the tiles in a tileset, only used
+// in case of isometric orientation.
+type TilesetGrid struct {
+	// Orientation of the grid for the tiles in this tileset (orthogonal or
+	// isometric, defaults to orthogonal)
+	Orientation string `xml:"orientation,attr"`
+	// Width of a grid cell
+	Width int `xml:"width,attr"`
+	// Height of a grid cell
+	Height int `xml:"height,attr"`
+}
+
+// TilesetTransformations describes which transformations can be applied to
+// the tiles in a tileset (e.g. to extend a Wang set by transforming existing
+// tiles).
+type TilesetTransformations struct {
+	// Whether the tiles in this set can be flipped horizontally (default 0)
+	HFlip bool `xml:"hflip,attr"`
+	// Whether the tiles in this set can be flipped vertically (default 0)
+	VFlip bool `xml:"vflip,attr"`
+	// Whether the tiles in this set can be rotated in 90 degree increments (default 0)
+	Rotate bool `xml:"rotate,attr"`
+	// Whether untransformed tiles remain preferred, otherwise transformed tiles
+	// are used to produce more variations (default 0)
+	PreferUntransformed bool `xml:"preferuntransformed,attr"`
 }
 
 // BaseDir returns the base directory.
