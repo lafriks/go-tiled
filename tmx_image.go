@@ -37,9 +37,9 @@ type ImageLayer struct {
 	// The class of the image layer (since 1.9, defaults to "").
 	Class string `xml:"class,attr"`
 	// Rendering offset of the image layer in pixels. Defaults to 0. (since 0.15)
-	OffsetX int `xml:"offsetx,attr"`
+	OffsetX float64 `xml:"offsetx,attr"`
 	// Rendering offset of the image layer in pixels. Defaults to 0. (since 0.15)
-	OffsetY int `xml:"offsety,attr"`
+	OffsetY float64 `xml:"offsety,attr"`
 	// The x position of the image layer in pixels. (deprecated since 0.15)
 	X int `xml:"x,attr"`
 	// The y position of the image layer in pixels. (deprecated since 0.15)

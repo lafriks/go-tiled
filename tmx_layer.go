@@ -77,9 +77,9 @@ type Layer struct {
 	// Whether the layer is shown (1) or hidden (0). Defaults to 1.
 	Visible bool `xml:"visible,attr"`
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
-	OffsetX int `xml:"offsetx,attr"`
+	OffsetX float64 `xml:"offsetx,attr"`
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
-	OffsetY int `xml:"offsety,attr"`
+	OffsetY float64 `xml:"offsety,attr"`
 	// The parallax x factor of the layer 0 - 1.0
 	ParallaxX float32 `xml:"parallaxx,attr"`
 	// The parallax y factor of the layer 0 - 1.0
@@ -245,11 +245,11 @@ func (l *Layer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
-// GetTilePosition returns the x,y position of the tileID on the current layer
+// GetTilePosition returns the x,y position of the tileID on the current layer.
 func (l *Layer) GetTilePosition(tileID int) (int, int) {
 	x := tileID % l._map.Width
 	y := tileID / l._map.Width
-	return l.OffsetX + x*l._map.TileWidth, l.OffsetY + y*l._map.TileHeight
+	return int(l.OffsetX) + x*l._map.TileWidth, int(l.OffsetY) + y*l._map.TileHeight
 }
 
 // GetTileRect returns the rectangle that contains the Tile in the original Tileset.Image

@@ -144,8 +144,8 @@ func TestImageLayer(t *testing.T) {
 	layer := m.ImageLayers[0]
 	assert.Equal(t, uint32(2), layer.ID)
 	assert.Equal(t, "Image Layer", layer.Name)
-	assert.Equal(t, 0, layer.OffsetX)
-	assert.Equal(t, 0, layer.OffsetY)
+	assert.Equal(t, 0.0, layer.OffsetX)
+	assert.Equal(t, 0.0, layer.OffsetY)
 	assert.Equal(t, float32(1.0), layer.Opacity)
 	assert.Equal(t, true, layer.Visible)
 

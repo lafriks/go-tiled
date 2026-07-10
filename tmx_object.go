@@ -50,9 +50,9 @@ type ObjectGroup struct {
 	// Whether the layer is shown (1) or hidden (0). Defaults to 1.
 	Visible bool `xml:"visible,attr"`
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
-	OffsetX int `xml:"offsetx,attr"`
+	OffsetX float64 `xml:"offsetx,attr"`
 	// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
-	OffsetY int `xml:"offsety,attr"`
+	OffsetY float64 `xml:"offsety,attr"`
 	// Whether the objects are drawn according to the order of appearance ("index") or sorted by their y-coordinate ("topdown"). Defaults to "topdown".
 	DrawOrder string `xml:"draworder,attr"`
 	// The parallax x factor of the layer 0 - 1.0
