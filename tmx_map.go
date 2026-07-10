@@ -29,11 +29,11 @@ import (
 )
 
 const (
-	tileHorizontalFlipMask = 0x80000000
-	tileVerticalFlipMask   = 0x40000000
-	tileDiagonalFlipMask   = 0x20000000
-	tileFlip               = tileHorizontalFlipMask | tileVerticalFlipMask | tileDiagonalFlipMask
-	tileGIDMask            = 0x0fffffff
+	tileHorizontalFlipMask      = 0x80000000
+	tileVerticalFlipMask        = 0x40000000
+	tileDiagonalFlipMask        = 0x20000000
+	tileRotatedHexagonal120Mask = 0x10000000
+	tileFlip                    = tileHorizontalFlipMask | tileVerticalFlipMask | tileDiagonalFlipMask | tileRotatedHexagonal120Mask
 )
 
 // ErrInvalidTileGID error is returned when tile GID is not found
@@ -168,6 +168,7 @@ func (m *Map) fillTileGID(gid uint32, t *LayerTile) error {
 			t.HorizontalFlip = gid&tileHorizontalFlipMask != 0
 			t.VerticalFlip = gid&tileVerticalFlipMask != 0
 			t.DiagonalFlip = gid&tileDiagonalFlipMask != 0
+			t.RotatedHexagonal120 = gid&tileRotatedHexagonal120Mask != 0
 			t.Nil = false
 			return nil
 		}

@@ -24,6 +24,7 @@ package render
 
 import (
 	"image"
+	"image/color"
 
 	"github.com/disintegration/imaging"
 	"github.com/lafriks/go-tiled"
@@ -99,20 +100,61 @@ func (e *HexagonalRendererEngine) GetFinalImageSize() image.Rectangle {
 	return image.Rect(0, 0, width, height)
 }
 
-// RotateTileImage rotates provided tile layer.
+// RotateTileImage rotates the provided tile image according to its flip and
+// rotation flags.
+//
+// Hexagonal tiles don't use the flip-composition order that orthogonal and
+// isometric tiles do (Tiled's own docs note "for hexagonal tiles the order
+// does not matter"); instead, HorizontalFlip/VerticalFlip/DiagonalFlip/
+// RotatedHexagonal120 combine to select one of the 6 clockwise rotations of a
+// hex tile in 60-degree steps, confirmed via
+// https://discourse.mapeditor.org/t/rotatedhexagonal120/4795:
+//
+//	no flags set                                -> 0
+//	DiagonalFlip                                -> 60
+//	RotatedHexagonal120                         -> 120
+//	HorizontalFlip+VerticalFlip                 -> 180
+//	HorizontalFlip+VerticalFlip+DiagonalFlip    -> 240
+//	HorizontalFlip+VerticalFlip+RotatedHexagonal120 -> 300
+//
+// Tiled's own hex-rotate editor action only ever produces these 6
+// combinations; any other combination falls back to applying each flag as an
+// independent flip/rotation, best-effort.
 func (e *HexagonalRendererEngine) RotateTileImage(tile *tiled.LayerTile, img image.Image) image.Image {
-	timg := img
-	if tile.DiagonalFlip {
-		timg = imaging.FlipH(imaging.Rotate270(timg))
-	}
-	if tile.HorizontalFlip {
-		timg = imaging.FlipH(timg)
-	}
-	if tile.VerticalFlip {
-		timg = imaging.FlipV(timg)
+	h, v, d, r120 := tile.HorizontalFlip, tile.VerticalFlip, tile.DiagonalFlip, tile.RotatedHexagonal120
+
+	var angle float64
+	switch {
+	case !h && !v && !d && !r120:
+		return img
+	case d && !h && !v && !r120:
+		angle = 60
+	case r120 && !h && !v && !d:
+		angle = 120
+	case h && v && !d && !r120:
+		angle = 180
+	case h && v && d && !r120:
+		angle = 240
+	case h && v && r120 && !d:
+		angle = 300
+	default:
+		timg := img
+		if d {
+			timg = imaging.FlipH(imaging.Rotate270(timg))
+		}
+		if h {
+			timg = imaging.FlipH(timg)
+		}
+		if v {
+			timg = imaging.FlipV(timg)
+		}
+		if r120 {
+			timg = imaging.Rotate(timg, -120, color.RGBA{})
+		}
+		return timg
 	}
 
-	return timg
+	return imaging.Rotate(img, -angle, color.RGBA{})
 }
 
 // GetTilePosition returns tile position in image.

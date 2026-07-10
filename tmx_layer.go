@@ -52,6 +52,13 @@ type LayerTile struct {
 	VerticalFlip bool
 	// Diagonal tile image flip
 	DiagonalFlip bool
+	// RotatedHexagonal120 marks the tile as rotated 120 degrees clockwise.
+	// Only meaningful on hexagonal (and staggered) maps, where it combines with
+	// HorizontalFlip/VerticalFlip/DiagonalFlip to produce all 6 rotations of a
+	// hex tile in 60-degree steps: none = 0, DiagonalFlip = 60, this = 120,
+	// Horizontal+Vertical = 180, Horizontal+Vertical+DiagonalFlip = 240,
+	// Horizontal+Vertical+this = 300. Always false for other orientations.
+	RotatedHexagonal120 bool
 	// Tile is nil
 	Nil bool
 }
