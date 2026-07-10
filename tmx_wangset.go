@@ -1,6 +1,7 @@
 package tiled
 
 import (
+	"encoding/xml"
 	"errors"
 	"strconv"
 	"strings"
@@ -27,6 +28,22 @@ type WangSet struct {
 	WangColors []*WangColor `xml:"wangcolor"`
 	// The list of wang tiles.
 	WangTiles []*WangTile `xml:"wangtile"`
+}
+
+type aliasWangSet WangSet
+
+// UnmarshalXML decodes a single XML element beginning with the given start element.
+func (w *WangSet) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	item := aliasWangSet{}
+
+	if err := d.DecodeElement(&item, &start); err != nil {
+		return err
+	}
+
+	*w = (WangSet)(item)
+	w.Class, w.Type = resolveClassType(w.Class, w.Type)
+
+	return nil
 }
 
 // WangColor that can be used to define the corner and/or edge of a Wang tile.

@@ -201,6 +201,7 @@ var testLoadTilesetFile = &Tileset{
 		{
 			ID:           116,
 			Type:         "door",
+			Class:        "door",
 			Animation:    nil,
 			Image:        nil,
 			ObjectGroups: nil,

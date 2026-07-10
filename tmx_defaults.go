@@ -80,3 +80,17 @@ func (a *aliasText) SetDefaults() {
 	a.VAlign = "top"
 	a.Color = &HexColor{}
 }
+
+// resolveClassType reconciles a Class/Type pair. Tiled renamed the "type" XML
+// attribute to "class" in 1.9: a file written by an older Tiled version has
+// "type", one written by 1.9+ has "class".
+func resolveClassType(class, typ string) (string, string) {
+	resolvedClass, resolvedType := class, typ
+	if resolvedClass == "" {
+		resolvedClass = resolvedType
+	}
+	if resolvedType == "" {
+		resolvedType = resolvedClass
+	}
+	return resolvedClass, resolvedType
+}

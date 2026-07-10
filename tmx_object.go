@@ -183,6 +183,7 @@ func (o *Object) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	*o = (Object)(item)
+	o.Class, o.Type = resolveClassType(o.Class, o.Type)
 
 	return nil
 }

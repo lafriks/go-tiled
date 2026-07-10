@@ -1,6 +1,7 @@
 package tiled
 
 import (
+	"encoding/xml"
 	"errors"
 	"image"
 	"path/filepath"
@@ -119,6 +120,22 @@ type TilesetTile struct {
 	ObjectGroups []*ObjectGroup `xml:"objectgroup"`
 	// List of animation frames
 	Animation []*AnimationFrame `xml:"animation>frame"`
+}
+
+type aliasTilesetTile TilesetTile
+
+// UnmarshalXML decodes a single XML element beginning with the given start element.
+func (t *TilesetTile) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	item := aliasTilesetTile{}
+
+	if err := d.DecodeElement(&item, &start); err != nil {
+		return err
+	}
+
+	*t = (TilesetTile)(item)
+	t.Class, t.Type = resolveClassType(t.Class, t.Type)
+
+	return nil
 }
 
 // AnimationFrame is single frame of animation
