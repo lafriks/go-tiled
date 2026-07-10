@@ -110,7 +110,7 @@ type TilesetTile struct {
 	// array in the order top-left, top-right, bottom-left, bottom-right.
 	// Leaving out a value means that corner has no terrain. (optional) (since 0.9)
 	Terrain string `xml:"terrain,attr"`
-	// A percentage indicating the probability that this tile is chosen when it competes with others while editing with the terrain tool. (optional) (since 0.9)
+	// A percentage indicating the probability that this tile is chosen when it competes with others while editing with the terrain tool. (optional, defaults to 1) (since 0.9)
 	Probability float32 `xml:"probability,attr"`
 	// Custom properties
 	Properties Properties `xml:"properties>property"`
@@ -134,6 +134,22 @@ func (t *TilesetTile) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 
 	*t = (TilesetTile)(item)
 	t.Class, t.Type = resolveClassType(t.Class, t.Type)
+
+	// Per the TMX spec, Probability defaults to 1
+	if t.Probability == 0 {
+		t.Probability = 1
+	}
+
+	// Width/Height default to the tile's own embedded image dimensions when
+	// left unspecified
+	if t.Image != nil {
+		if t.Width == 0 {
+			t.Width = t.Image.Width
+		}
+		if t.Height == 0 {
+			t.Height = t.Image.Height
+		}
+	}
 
 	return nil
 }

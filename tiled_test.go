@@ -203,7 +203,7 @@ func TestFont(t *testing.T) {
 				assert.Equal(t, "sans-serif", text.FontFamily)
 				assert.Equal(t, 16, text.Size)
 				assert.Equal(t, true, text.Wrap)
-				assert.Equal(t, &HexColor{}, text.Color)
+				assert.Equal(t, NewHexColor(0, 0, 0, 255), text.Color)
 				assert.Equal(t, false, text.Bold)
 				assert.Equal(t, false, text.Italic)
 				assert.Equal(t, false, text.Underline)
@@ -385,7 +385,7 @@ func TestParseHexColor(t *testing.T) {
 func TestFormatHexColor(t *testing.T) {
 	type test struct {
 		name  string
-		color HexColor
+		color *HexColor
 		hex   string
 	}
 	cases := []test{

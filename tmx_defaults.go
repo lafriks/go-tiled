@@ -41,34 +41,45 @@ type (
 func (a *aliasGroup) SetDefaults() {
 	a.Opacity = 1
 	a.Visible = true
+	a.ParallaxX = 1
+	a.ParallaxY = 1
 }
 
 // SetDefaults provides default values for ImageLayer.
 func (a *aliasImageLayer) SetDefaults() {
 	a.Opacity = 1
 	a.Visible = true
+	a.ParallaxX = 1
+	a.ParallaxY = 1
 }
 
 // SetDefaults provides default values for Layer.
 func (a *aliasLayer) SetDefaults() {
 	a.internalLayer.Opacity = 1
 	a.internalLayer.Visible = true
+	a.internalLayer.ParallaxX = 1
+	a.internalLayer.ParallaxY = 1
 }
 
 // SetDefaults provides default values for Map.
 func (a *aliasMap) SetDefaults() {
 	a.RenderOrder = "right-down"
+	a.CompressionLevel = -1
 }
 
 // SetDefaults provides default values for Object.
 func (a *aliasObject) SetDefaults() {
 	a.Visible = true
+	a.Opacity = 1
 }
 
 // SetDefaults provides default values for ObjectGroup.
 func (a *aliasObjectGroup) SetDefaults() {
 	a.Visible = true
 	a.Opacity = 1
+	a.ParallaxX = 1
+	a.ParallaxY = 1
+	a.DrawOrder = "topdown"
 }
 
 // SetDefaults provides default values for Text.
@@ -78,7 +89,7 @@ func (a *aliasText) SetDefaults() {
 	a.Kerning = true
 	a.HAlign = "left"
 	a.VAlign = "top"
-	a.Color = &HexColor{}
+	a.Color = NewHexColor(0, 0, 0, 255)
 }
 
 // resolveClassType reconciles a Class/Type pair. Tiled renamed the "type" XML

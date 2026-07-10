@@ -15,21 +15,21 @@ type HexColor struct {
 	c color.RGBA
 }
 
-// ParseHexColor converts hex color strings into HexColor structures
+// ParseHexColor converts hex color strings into a *HexColor type.
 // This function can handle colors with and withouth optional alpha channel
 // The leading '#' character is not required for backwards compatibility with Transparency Tiled filed
 // https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#image
-func ParseHexColor(s string) (HexColor, error) {
+func ParseHexColor(s string) (*HexColor, error) {
 	c, err := parseHexColor(s)
 	if err != nil {
-		return HexColor{}, err
+		return nil, err
 	}
-	return HexColor{c: c}, nil
+	return &HexColor{c: c}, nil
 }
 
-// NewHexColor is a shorthand to build a HexColor
-func NewHexColor(r, g, b, a uint32) HexColor {
-	return HexColor{
+// NewHexColor is a shorthand to build a *HexColor.
+func NewHexColor(r, g, b, a uint32) *HexColor {
+	return &HexColor{
 		c: color.RGBA{
 			uint8(r),
 			uint8(g),

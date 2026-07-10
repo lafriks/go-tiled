@@ -124,6 +124,8 @@ type Object struct {
 	Rotation float64 `xml:"rotation,attr"`
 	// An reference to a tile (optional).
 	GID uint32 `xml:"gid,attr"`
+	// The opacity of the object as a value from 0 to 1. Defaults to 1.
+	Opacity float32 `xml:"opacity,attr"`
 	// Whether the object is shown (1) or hidden (0). Defaults to 1. (since 0.9)
 	Visible bool `xml:"visible,attr"`
 	// Custom properties

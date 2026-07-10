@@ -43,6 +43,13 @@ func (w *WangSet) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	*w = (WangSet)(item)
 	w.Class, w.Type = resolveClassType(w.Class, w.Type)
 
+	// Per the TMX spec, WangColor.Probability defaults to 1
+	for _, c := range w.WangColors {
+		if c.Probability == 0 {
+			c.Probability = 1
+		}
+	}
+
 	return nil
 }
 
@@ -56,7 +63,7 @@ type WangColor struct {
 	Color string `xml:"color,attr"`
 	// The tile ID of the tile representing this color.
 	TileID int64 `xml:"tile,attr"`
-	// The relative probability that this color is chosen over others in case of multiple options. (defaults to 0)
+	// The relative probability that this color is chosen over others in case of multiple options. (defaults to 1)
 	Probability float32 `xml:"probability,attr"`
 }
 

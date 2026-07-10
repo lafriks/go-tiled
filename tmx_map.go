@@ -94,10 +94,19 @@ type Map struct {
 	StaggerAxis Axis `xml:"staggeraxis,attr"`
 	// For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted. (since 0.11)
 	StaggerIndex StaggerIndexType `xml:"staggerindex,attr"`
-	// The background color of the map. (since 0.9, optional, may include alpha value since 0.15 in the form #AARRGGBB)
+	// The background color of the map. (since 0.9, optional, may include alpha value since 0.15 in the form #AARRGGBB, defaults to fully transparent)
 	BackgroundColor *HexColor `xml:"backgroundcolor,attr"`
-	// Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed. (since 0.11)
+	// Stores the next available ID for new layers. This number is stored to prevent reuse of the same ID after layers have been removed.
+	// (since 1.2, defaults to the highest layer id in the file + 1; not computed by this package if absent)
+	NextLayerID uint32 `xml:"nextlayerid,attr"`
+	// Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed.
+	// (since 0.11, defaults to the highest object id in the file + 1; not computed by this package if absent)
 	NextObjectID uint32 `xml:"nextobjectid,attr"`
+	// The compression level to use for tile layer data (defaults to -1, meaning algorithm-specific default level). (since 1.3)
+	CompressionLevel int `xml:"compressionlevel,attr"`
+	// Whether this map is infinite. An infinite map has no fixed size and grows in all directions;
+	// its layer data would be stored in <chunk> elements, which this package does not currently parse.
+	Infinite bool `xml:"infinite,attr"`
 	// Custom properties
 	Properties *Properties `xml:"properties>property"`
 	// Map tilesets

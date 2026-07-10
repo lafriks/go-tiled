@@ -205,7 +205,7 @@ var testLoadTilesetFile = &Tileset{
 			Animation:    nil,
 			Image:        nil,
 			ObjectGroups: nil,
-			Probability:  0,
+			Probability:  1,
 			Properties: Properties{
 				{
 					Name:  "testTileProperty",
@@ -220,7 +220,8 @@ var testLoadTilesetFile = &Tileset{
 }
 
 var testLoadTilesetTileFile = &TilesetTile{
-	ID: 464,
+	ID:          464,
+	Probability: 1,
 	Animation: []*AnimationFrame{
 		{
 			Duration: 500,
@@ -245,6 +246,7 @@ var testLoadTilesetTileFile = &TilesetTile{
 					Height:     6.125,
 					ID:         1,
 					Name:       "",
+					Opacity:    1,
 					PolyLines:  nil,
 					Polygons:   nil,
 					Properties: nil,
@@ -260,6 +262,8 @@ var testLoadTilesetTileFile = &TilesetTile{
 			OffsetX:    0,
 			OffsetY:    0,
 			Opacity:    1,
+			ParallaxX:  1,
+			ParallaxY:  1,
 			Properties: nil,
 			Visible:    true,
 		},
