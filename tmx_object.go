@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017 Lauris Bukšis-Haberkorns <lauris@nix.lv> and contributors
+Copyright (c) 2017 Lauris Bukšis <lauris@nix.lv> and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
