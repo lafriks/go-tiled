@@ -223,6 +223,7 @@ func (m *Points) UnmarshalXMLAttr(attr xml.Attr) error {
 	ps := strings.Split(attr.Value, " ")
 
 	points := make(Points, len(ps))
+	slab := make([]Point, len(ps))
 
 	for i, s := range ps {
 		c := strings.Split(s, ",")
@@ -238,10 +239,8 @@ func (m *Points) UnmarshalXMLAttr(attr xml.Attr) error {
 		if y, err = strconv.ParseFloat(c[1], 64); err != nil {
 			return err
 		}
-		points[i] = &Point{
-			X: x,
-			Y: y,
-		}
+		slab[i] = Point{X: x, Y: y}
+		points[i] = &slab[i]
 	}
 
 	*m = points

@@ -27,6 +27,7 @@ import (
 	"compress/gzip"
 	"compress/zlib"
 	"encoding/base64"
+	"encoding/xml"
 	"errors"
 	"io"
 	"math"
@@ -42,9 +43,9 @@ type Data struct {
 	Encoding string `xml:"encoding,attr"`
 	// The compression used to compress the tile layer data. Tiled Qt supports "gzip" and "zlib".
 	Compression string `xml:"compression,attr"`
-	// Raw data
+	// Raw data. Only populated when Encoding is "csv" or "base64".
 	RawData []byte `xml:",innerxml"`
-	// Only used when layer encoding is xml
+	// Parsed tile elements. Only populated when Encoding is not set.
 	DataTiles []DataTile `xml:"tile"`
 }
 
@@ -52,6 +53,90 @@ type Data struct {
 type DataTile struct {
 	// The global tile ID.
 	GID uint32 `xml:"gid,attr"`
+}
+
+// UnmarshalXML implements a hand-rolled decode of the <data> element.
+//
+// A tile layer's data is either one large text blob (csv/base64) or,
+// for the uncompressed per-tile XML encoding, thousands of <tile gid="N"/>
+// child elements. Letting encoding/xml decode DataTiles via reflection
+// (as driven by the struct tags above) means paying its per-element,
+// per-attribute reflection cost for every tile; walking the token stream
+// directly and parsing "gid" by hand avoids that and is significantly
+// faster for large maps using this encoding. The struct tags are kept so
+// Data/DataTile still unmarshal and marshal correctly (round-trip to XML)
+// when used directly with encoding/xml outside of this package.
+func (d *Data) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "encoding":
+			d.Encoding = attr.Value
+		case "compression":
+			d.Compression = attr.Value
+		}
+	}
+
+	if d.Encoding != "" {
+		return d.decodeCharData(dec)
+	}
+	return d.decodeTileElements(dec)
+}
+
+// decodeCharData collects the element's text content into RawData.
+func (d *Data) decodeCharData(dec *xml.Decoder) error {
+	var buf bytes.Buffer
+	for {
+		tok, err := dec.Token()
+		if err != nil {
+			return err
+		}
+		switch t := tok.(type) {
+		case xml.CharData:
+			buf.Write(t)
+		case xml.EndElement:
+			d.RawData = buf.Bytes()
+			return nil
+		}
+	}
+}
+
+// decodeTileElements parses the <tile gid="N"/> children directly,
+// bypassing reflection-based attribute decoding.
+func (d *Data) decodeTileElements(dec *xml.Decoder) error {
+	for {
+		tok, err := dec.Token()
+		if err != nil {
+			return err
+		}
+		switch t := tok.(type) {
+		case xml.StartElement:
+			if t.Name.Local != "tile" {
+				if err := dec.Skip(); err != nil {
+					return err
+				}
+				continue
+			}
+
+			var dt DataTile
+			for _, attr := range t.Attr {
+				if attr.Name.Local != "gid" {
+					continue
+				}
+				v, err := strconv.ParseUint(attr.Value, 10, 32)
+				if err != nil {
+					return err
+				}
+				dt.GID = uint32(v)
+			}
+			d.DataTiles = append(d.DataTiles, dt)
+
+			if err := dec.Skip(); err != nil {
+				return err
+			}
+		case xml.EndElement:
+			return nil
+		}
+	}
 }
 
 // decodeBase64 decodes (and, if applicable, decompresses) the raw data.
